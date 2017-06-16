@@ -1,14 +1,15 @@
-import { BiosysClientTwoPage } from './app.po';
+import { BiosysClientPage } from './app.po';
 
-describe('biosys-client-two App', () => {
-  let page: BiosysClientTwoPage;
+
+describe('biosys-client App', () => {
+  let page: BiosysClientPage;
 
   beforeEach(() => {
-    page = new BiosysClientTwoPage();
+    page = new BiosysClientPage();
   });
 
   it('should display welcome message', () => {
-    page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!!');
+    BiosysClientPage.navigateTo();
+    expect(BiosysClientPage.getParagraphText()).toEqual('Welcome to Biosys');
   });
 });
