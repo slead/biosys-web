@@ -9,7 +9,7 @@ describe('biosys-client App', () => {
   });
 
   it('should display welcome message', () => {
-    BiosysClientPage.navigateTo();
-    expect(BiosysClientPage.getParagraphText()).toEqual('Welcome to Biosys');
+    page.navigateTo();
+    expect(page.getParagraphText()).toEqual('Welcome to Biosys');
   });
 });

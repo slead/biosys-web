@@ -1,11 +1,11 @@
 import { browser, by, element } from 'protractor';
 
 export class BiosysClientPage {
-  static navigateTo() {
+  navigateTo() {
     return browser.get('/');
   }
 
-  static getParagraphText() {
+  getParagraphText() {
     return element(by.css('app-root h2')).getText();
   }
 }
