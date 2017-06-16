@@ -6,6 +6,6 @@ interface NodeModule {
 
 declare namespace L {
   namespace control {
-    function mousePosition(options?: any): Layer;
+    function mousePosition(options?: any): L.Layer;
   }
 }
