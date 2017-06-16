@@ -1,0 +1,62 @@
+<div class="container">
+    <biosys-header></biosys-header>
+    <biosys-navbar></biosys-navbar>
+    <div class="row mt-1">
+        <div class="col">
+            <h2>Welcome to Biosys</h2>
+            <span *ngIf="user" class="float-right mt-2">Logged in as {{user.first_name}} {{user.last_name}}</span>
+        </div>
+    </div>
+    <div class="row mt-1 main-section">
+        <div class="col-3">
+            <a routerLink="/management/projects">
+                <div class="card mb-2">
+                    <div class="card-block">
+                        <h5 class="card-title text-center">Manage Projects / Sites / Datasets</h5>
+                    </div>
+                    <img class="card-img-bottom" src="/assets/img/project.jpg">
+                </div>
+            </a>
+            <a routerLink="/data/projects">
+                <div class="card mb-2">
+                    <div class="card-block">
+                        <h5 class="card-title text-center">Create / Import / Edit / Delete Records</h5>
+                    </div>
+                    <img class="card-img-bottom" src="/assets/img/data.jpg">
+                </div>
+            </a>
+            <a routerLink="/view">
+                <div class="card mb-2">
+                    <div class="card-block">
+                        <h5 class="card-title text-center">View and Export Records</h5>
+                    </div>
+                    <img class="card-img-bottom" src="/assets/img/export.jpg">
+                </div>
+            </a>
+        </div>
+        <div class="col-6">
+            <div id="map" class="main-section">
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card statistics-card">
+                <div class="card-header">
+                    Biosys summary
+                </div>
+                <div *ngIf="statistic" class="card-block">
+                    <h5>Projects</h5>
+                    <p>Total number of projects: {{ statistic.projects.total }}</p>
+                    <hr>
+                    <h5>Sites</h5>
+                    <p>Total number of sites: {{ statistic.sites.total }}</p>
+                    <hr>
+                    <h5>Records</h5>
+                    <p>Total number of records: {{ statistic.records.total }}</p>
+                    <p class="small">Number of generic records: {{ statistic.records.generic.total }}</p>
+                    <p class="small">Number of observation records: {{ statistic.records.observation.total }}</p>
+                    <p class="small">Number of species records: {{ statistic.records.speciesObservation.total }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

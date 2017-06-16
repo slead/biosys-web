@@ -1,0 +1,53 @@
+<div class="container">
+    <biosys-header></biosys-header>
+    <biosys-navbar></biosys-navbar>
+    <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
+    <p-growl [value]="messages"></p-growl>
+    <div class="row mt-1">
+        <div class="col-md">
+            <div class="ui-fluid">
+                <h3 *ngIf="ds.id">Edit Dataset</h3>
+                <h3 *ngIf="!ds.id">Create Dataset</h3>
+                <p *ngIf="ds.id">
+                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are required.
+                </p>
+                <p *ngIf="!ds.id">
+                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are required.
+                </p>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Name *</label></div>
+                    <div class="col-md-4">
+                        <input type="text" pInputText [(ngModel)]="ds.name"/>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['name']}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Type *</label></div>
+                    <div class="col-md-4">
+                        <p-dropdown [options]="typeChoices" [(ngModel)]="ds.type" [autoWidth]="false">
+                        </p-dropdown>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['type']}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Data Package *</label></div>
+                    <div class="col-md-8" style="height:500px">
+                        <biosys-json-editor id="dataPackage" [options]="editorOptions"
+                                            [(data)]="ds.data_package"></biosys-json-editor>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['data_package']}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col-2">
+            <button pButton icon="fa-close" (click)="confirmDelete()" label="Delete"></button>
+        </div>
+        <div class="col-4">
+            <button pButton icon="fa-close" label="Cancel" (click)="cancel()"></button>
+            <button pButton icon="fa-check" label="Save" (click)="save()"></button>
+        </div>
+    </div>
+</div>
+<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>

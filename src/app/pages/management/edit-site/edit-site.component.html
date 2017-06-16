@@ -1,0 +1,100 @@
+<div class="container">
+    <biosys-header></biosys-header>
+    <biosys-navbar></biosys-navbar>
+    <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
+    <p-growl [value]="messages"></p-growl>
+    <div class="row mt-1">
+        <div class="col-md-4">
+            <h3 *ngIf="site.id">Edit Site</h3>
+            <h3 *ngIf="!site.id">Create Site</h3>
+            <p *ngIf="site.id">
+                Edit the site by changing the details below. Fields marked with a <strong>*</strong> are required.
+            </p>
+            <p *ngIf="!site.id">
+                Create the site by entering the details below. Fields marked with a <strong>*</strong> are required.
+            </p>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col-md-6">
+            <div class="ui-fluid">
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <label class="field-label">Code *</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input id="code" type="text" pInputText [(ngModel)]="site.code" name="code"/>
+                        <div class="text-danger">{{siteErrors['code']}}</div>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <label class="field-label">Name</label>
+                    </div>
+                    <div class="col-md-9">
+                        <input id="name" type="text" pInputText [(ngModel)]="site.name" name="name"/>
+                        <div class="text-danger">{{siteErrors['name']}}</div>
+                    </div>
+                </div>
+                <div class="row mb-1">
+                    <div class="col-md-3">
+                        <label class="field-label">Comments</label>
+                    </div>
+                    <div class="col-md-9">
+                        <textarea pInputTextarea rows="7" [(ngModel)]="site.comments"></textarea>
+                        <div class="col-md-4 text-danger">{{siteErrors['comments']}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label class="field-label">Location</label>
+            <biosys-featuremap
+                [isEditing]="true"
+                [geometry]="site.geometry"
+                [drawFeatureTypes]="['POINT', 'LINE', 'POLYGON']"></biosys-featuremap>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col">
+            <label class="field-label">Additional Attributes</label>
+        </div>
+    </div>
+    <div class="row mt-1 mb-1">
+        <div class="col-md-2">
+            <label class="field-label">Name</label>
+        </div>
+        <div class="col-md-9">
+            <label class="field-label">Value</label>
+        </div>
+    </div>
+    <div class="row mb-1" *ngFor="let keyVal of additionalAttributes; let i = index">
+        <div class="col-md-2 ui-fluid">
+            <input pInputText [(ngModel)]="keyVal[0]"/>
+        </div>
+        <div class="col-md-9 ui-fluid">
+            <input pInputText [(ngModel)]="keyVal[1]"/>
+        </div>
+        <div class="col-md-1">
+            <button pButton icon="fa-minus" class="float-right" style="width: 29px" (click)="removeAdditionalAttribute(i)">
+            </button>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col">
+            <button pButton icon="fa-plus" class="float-right" style="width: 29px" (click)="addAdditionalAttribute()">
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-3">
+        <div class="col-2">
+            <button pButton icon="fa-close" (click)="confirmDelete()" label="Delete"></button>
+        </div>
+        <div class="col-4">
+            <button pButton icon="fa-close" label="Cancel" (click)="cancel()"></button>
+            <button pButton icon="fa-check" label="Save" (click)="save()"></button>
+        </div>
+    </div>
+</div>
+<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>

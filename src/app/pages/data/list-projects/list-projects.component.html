@@ -1,0 +1,34 @@
+<div class="container">
+    <biosys-header></biosys-header>
+    <biosys-navbar></biosys-navbar>
+    <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
+    <div class="row mt-1">
+        <div class="col-md">
+            <h3>Projects</h3>
+            <p>Select a project to view available datasets to create / edit / delete records for</p>
+            <p-dataTable [value]="projects" emptyMessage="No projects found" [paginator]="true" [rows]="15"
+                         [globalFilter]="projectSearch" [responsive]="true">
+                <p-header>
+                    <div class="ui-helper-clearfix" style="width:100%">
+                        <i class="fa fa-search float-left mt-1 mr-1"></i>
+                        <input #projectSearch type="text" class="float-left" pInputText placeholder="Search">
+                    </div>
+                </p-header>
+                <p-column field="title" header="Title" [sortable]="true">
+                    <ng-template let-project="rowData" pTemplate="body">
+                        <a class="table-link" [routerLink]="'/data/projects/' + project.id + '/datasets'">{{project.title}}</a>
+                    </ng-template>
+                </p-column>
+                <p-column field="code" header="Code" [sortable]="true" [style]="{'width':'160px'}"></p-column>
+                <p-column header="Description">
+                    <ng-template let-project="rowData" pTemplate="body">
+                        <label [innerHtml]="project.comments"></label>
+                    </ng-template>
+                </p-column>
+                <p-column field="dataset_count" header="Datasets" [sortable]="true" [style]="{'width':'120px'}"></p-column>
+                <p-column field="site_count" header="Sites" [sortable]="true" [style]="{'width':'100px'}"></p-column>
+                <p-column field="record_count" header="Records" [sortable]="true" [style]="{'width':'120px'}"></p-column>
+            </p-dataTable>
+        </div>
+    </div>
+</div>

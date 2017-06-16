@@ -1,0 +1,42 @@
+:host {
+    display: block;
+    padding: 0 16px;
+}
+
+input {
+    width: 250px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0 0 0 8px;
+}
+
+.sebm-google-map-container {
+    height: 500px;
+    width: 400px;
+}
+
+h2 {
+    display: inline-block;
+}
+
+.card-block {
+    padding-bottom: 0px;
+}
+
+.main-section {
+    height: 478px;
+}
+
+.main-section a {
+    text-decoration: none;
+}
+
+.main-section a h5 {
+    color: #000000;
+}
+
+.statistics-card {
+    height: 100%;
+}
