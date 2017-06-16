@@ -3,6 +3,7 @@ import { OnInit, Component, Directive, ContentChildren, Input, QueryList, OnChan
 import { WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
 import * as L from 'leaflet';
 import 'leaflet-draw';
+import 'leaflet-mouse-position';
 
 @Directive({
     selector: 'biosys-marker'
@@ -89,6 +90,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         });
 
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
+
+        L.control.mousePosition({emptyString: ''}).addTo(this.map);
 
         this.map.addLayer(this.drawnFeatures);
         this.map.on('draw:created', (e: any) => this.onFeatureCreated(e));
