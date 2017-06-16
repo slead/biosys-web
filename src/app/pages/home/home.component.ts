@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Statistic, User, WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer,
   getOverlayLayers } from '../../shared/index';
 import * as L from 'leaflet';
-
+import 'leaflet-mouse-position';
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -53,6 +53,8 @@ export class HomeComponent implements OnInit {
         });
 
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
+
+        L.control.mousePosition({emptyString: ''}).addTo(this.map);
     }
 
     public onMapReady(map: L.Map) {
