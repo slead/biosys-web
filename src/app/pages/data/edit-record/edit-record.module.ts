@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { EditRecordComponent } from './edit-record.component';
-import { APIService } from '../../../shared/services/api/index';
+import { APIService } from '../../../shared/index';
 import { ConfirmationService, DataTableModule, DialogModule, ButtonModule, GrowlModule, MessagesModule, InputTextModule,
     ConfirmDialogModule, CalendarModule, DropdownModule, FileUploadModule, CheckboxModule } from 'primeng/primeng';
 

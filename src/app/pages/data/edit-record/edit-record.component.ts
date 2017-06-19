@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
+import { DATASET_TYPE_MAP } from '../../../shared/index';
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
@@ -13,6 +14,7 @@ import * as moment from 'moment/moment';
 
 export class EditRecordComponent implements OnInit {
     private static AMBIGOUS_DATE_PATTERN: RegExp = /^(\d{1,2}).(\d{1,2}).(\d{4})$/;
+    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
 
     public breadcrumbItems: any = [];
     public messages: Message[] = [];
@@ -20,8 +22,9 @@ export class EditRecordComponent implements OnInit {
     public dropdownItems: any = {};
 
     public record: Record;
+    public dataset: Dataset;
 
-    private dataset: Dataset;
+
     private completeUrl: string;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
@@ -50,7 +53,7 @@ export class EditRecordComponent implements OnInit {
                     routerLink: ['/data/projects/' + projId + '/datasets/' + datasetId]
                 });
 
-                if('recordId' in params) {
+                if ('recordId' in params) {
                     this.apiService.getRecordById(Number(params['recordId'])).subscribe(
                         (record: Record) => {
                             this.record = this.formatRecord(record);

@@ -50,10 +50,7 @@
     "no-empty": false,
     "no-empty-interface": true,
     "no-eval": true,
-    "no-inferrable-types": [
-      true,
-      "ignore-params"
-    ],
+    "no-inferrable-types": false,
     "no-misused-new": true,
     "no-non-null-assertion": true,
     "no-shadowed-variable": true,
@@ -73,7 +70,7 @@
       "check-else",
       "check-whitespace"
     ],
-    "prefer-const": true,
+    "prefer-const": false,
     "quotemark": [
       true,
       "single"
@@ -116,7 +113,7 @@
     "component-selector": [
       true,
       "element",
-      "app",
+      "biosys",
       "kebab-case"
     ],
     "use-input-property-decorator": true,

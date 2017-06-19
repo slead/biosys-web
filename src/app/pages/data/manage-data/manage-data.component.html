@@ -6,7 +6,34 @@
     <div class="row mt-1">
         <div class="col-md">
             <h3>Records for {{dataset?.name}}</h3>
-            <p>Select a particular record to edit or click Add to add a new record</p>
+            <p *ngIf="dataset.type !== 'generic';else noGeometry">
+                All records for the current dataset are can be accessed through the interactive map or by searching the
+                records table below. For the interactive map, you may need to zoom to the appropriate level by clicking
+                on the group marker to access the individual markers. You can also select a particular record to edit
+                by clicking on the Record ID in the records table or click Add to add a new record.
+            </p>
+            <ng-template #noGeometry>
+                <p>
+                    All records for the current dataset are can be found by searching the records table below. You
+                    can select a particular record to edit by clicking on the Record ID in the records table or click
+                    Add to add a new record.
+                </p>
+            </ng-template>
+            <p>
+                To upload numerous records, use the upload tool at the bottom of the page.
+            </p>
+        </div>
+    </div>
+    <div class="row mt-1" *ngIf="dataset.type !== 'generic'">
+        <div class="col-md">
+            <h4>Interactive Map</h4>
+            <div id="map">
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md">
+            <h4>Records Table</h4>
             <div class="scrollable-table-container">
                 <p-dataTable [tableStyle]="getDataTableWidth()" [value]="flatRecords" [emptyMessage]="tablePlaceholder"
                              [paginator]="true" [rows]="10" [globalFilter]="recordSearch">
@@ -26,12 +53,15 @@
                     </p-column>
                     <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width':'120px'}">
                         <ng-template let-flatRecord="rowData" pTemplate="body">
-                            <a class="table-link" [routerLink]="'/data/projects/' + projId + '/datasets/' + datasetId + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
+                            <a class="table-link"
+                               [routerLink]="'/data/projects/' + projId + '/datasets/' + datasetId + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
                         </ng-template>
                     </p-column>
-                    <p-column field="source_info" header="Original Source" [sortable]="true" [style]="{'width':'200px'}"></p-column>
+                    <p-column field="source_info" header="Original Source" [sortable]="true"
+                              [style]="{'width':'200px'}"></p-column>
                     <p-column field="created" header="Created" [sortable]="true" [style]="{'width':'200px'}"></p-column>
-                    <p-column field="last_modified" header="Last Modified" [sortable]="true" [style]="{'width':'200px'}"></p-column>
+                    <p-column field="last_modified" header="Last Modified" [sortable]="true"
+                              [style]="{'width':'200px'}"></p-column>
                     <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
                               [field]="field.name" [header]="field.name" [sortable]="true">
                         <ng-template let-flatRecord="rowData" let-col pTemplate="body">
@@ -42,14 +72,15 @@
                         <div class="ui-helper-clearfix" style="width:100%">
                             <button type="button" pButton icon="fa-trash" style="float:left" label="Delete"
                                     (click)="confirmDeleteSelectedRecords()"></button>
-                            <button type="button" pButton icon="fa-plus" style="float:right" label="Add" (click)="add()"></button>
+                            <button type="button" pButton icon="fa-plus" style="float:right" label="Add"
+                                    (click)="add()"></button>
                         </div>
                     </p-footer>
                 </p-dataTable>
             </div>
         </div>
     </div>
-    <div class="row mt-3">
+    <div class="row mt-3 mb-3">
         <div class="col-md">
             <h4>Upload records</h4>
             <p>Select one or more Excel (xlxs) or CSV files to upload records for the {{ dataset.name }} dataset</p>

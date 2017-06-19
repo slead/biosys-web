@@ -8,41 +8,52 @@
             <div class="col">
                 <h3 *ngIf="record.id">Edit Record</h3>
                 <h3 *ngIf="!record.id">Create Record</h3>
-                <p *ngIf="record.id">Edit the record by changing the details below. Fields marked with a <strong>*</strong> are required.
+                <p *ngIf="record.id">Edit the record by changing the details below. Fields marked with a
+                    <strong>*</strong> are required.
                 </p>
                 <p *ngIf="!record.id">
-                    Create the record by entering the details below. Fields marked with a <strong>*</strong> are required.
+                    Create the record by entering the details below. Fields marked with a <strong>*</strong> are
+                    required.
                 </p>
             </div>
         </div>
-
-        <div class="ui-fluid">
-            <div class="row mt-1" *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
-                <div class="col-2">
-                    <label [for]="field.name" [style.font-weight]="'bold'">
-                        {{field.name}}
-                        <span *ngIf="field.constraints?.required">*</span>
-                    </label>
-                </div>
-                <div [ngSwitch]="field.type" class="col-5">
-                    <div *ngSwitchCase="'date'">
-                        <p-calendar dateFormat="dd/mm/yy" [id]="field.name" [(ngModel)]="record.data[field.name]">
-                        </p-calendar>
+        <div class="row mt-1">
+            <div class="col-md-6">
+                <div class="ui-fluid">
+                    <div class="row mt-1" *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                        <div class="col-4">
+                            <label [for]="field.name" [style.font-weight]="'bold'">
+                                {{field.name}}
+                                <span *ngIf="field.constraints?.required">*</span>
+                            </label>
+                        </div>
+                        <div [ngSwitch]="field.type" class="col-8">
+                            <div *ngSwitchCase="'date'">
+                                <p-calendar dateFormat="dd/mm/yy" [id]="field.name"
+                                            [(ngModel)]="record.data[field.name]">
+                                </p-calendar>
+                            </div>
+                            <div *ngSwitchDefault>
+                                <p-dropdown *ngIf="field.constraints?.enum"
+                                            [placeholder]="'Select a ' + field.name.toLowerCase()"
+                                            [options]="getDropdownOptions(field.name, field.constraints.enum)"
+                                            [(ngModel)]="record.data[field.name]"
+                                            [autoWidth]="false">
+                                </p-dropdown>
+                                <input pInputText *ngIf="!field.constraints?.enum" [id]="field.name"
+                                       [(ngModel)]="record.data[field.name]"/>
+                                <div class="text-danger">
+                                    {{recordErrors[field.name]}}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div *ngSwitchDefault>
-                        <p-dropdown *ngIf="field.constraints?.enum"
-                                    [placeholder]="'Select a ' + field.name.toLowerCase()"
-                                    [options]="getDropdownOptions(field.name, field.constraints.enum)"
-                                    [(ngModel)]="record.data[field.name]"
-                                    [autoWidth]="false">
-                        </p-dropdown>
-                        <input pInputText *ngIf="!field.constraints?.enum"[id]="field.name"
-                               [(ngModel)]="record.data[field.name]"/>
-                    </div>
                 </div>
-                <div class="col-5 text-danger">
-                    {{recordErrors[field.name]}}
-                </div>
+            </div>
+            <div class="col-md-6" *ngIf="dataset.type !== DATASET_TYPE_MAP.generic">
+                <label class="field-label">Location</label>
+                <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']">
+                </biosys-featuremap>
             </div>
         </div>
         <div class="row mt-3 mb-3">

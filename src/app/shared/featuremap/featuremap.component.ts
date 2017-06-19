@@ -25,7 +25,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public geometry: GeoJSON.DirectGeometryObject;
     @ContentChildren(MarkerDirective)
     set markers(markers: QueryList<MarkerDirective>) {
-        markers.forEach((marker:MarkerDirective) => {
+        markers.forEach((marker: MarkerDirective) => {
             if (marker.geometry) {
                 let coord: GeoJSON.Position = marker.geometry.coordinates as GeoJSON.Position;
                 let leafletMarker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]), {icon: this.extraMarkerIcon});
@@ -118,7 +118,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
                     this.drawnFeatureType = 'polygon';
                 } else if (this.geometry.type === 'Point') {
                     let coord: GeoJSON.Position = this.geometry.coordinates as GeoJSON.Position;
-                    let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]));
+                    let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                        {icon: DEFAULT_MARKER_ICON});
                     this.drawnFeatures.addLayer(marker);
                     this.drawnFeatureType = 'point';
                 }
