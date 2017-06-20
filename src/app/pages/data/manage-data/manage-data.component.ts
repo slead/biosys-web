@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
 import {
-    APIService, APIError, Project, Dataset, Record, WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer,
+    APIService, APIError, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer,
     getOverlayLayers, DATASET_TYPE_MAP } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Message, ConfirmationService, FileUpload } from 'primeng/primeng';
@@ -27,7 +27,9 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
         'application/vnd.msexcel'
     ];
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
+
     public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
+    public PAGE_SIZE: number = 10;
 
     @ViewChild(FileUpload)
     public uploader: FileUpload;
@@ -55,6 +57,11 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     public uploadDeleteExistingRecords: boolean = false;
     public uploadErrorMessages: Message[] = [];
     public uploadWarningMessages: Message[] = [];
+    public pageState: any = {
+        mapZoom: DEFAULT_ZOOM,
+        mapPosition: DEFAULT_CENTER,
+        firstRow: 0
+    }
 
     private map: L.Map;
     private uploadButton: any;
@@ -69,6 +76,10 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
 
         this.projId = Number(params['projId']);
         this.datasetId = Number(params['datasetId']);
+
+        if (sessionStorage.getItem('pageState' + this.datasetId) !== null) {
+            this.pageState = JSON.parse(sessionStorage.getItem('pageState' + this.datasetId));
+        }
 
         this.apiService.getProjectById(this.projId)
         .subscribe(
@@ -128,10 +139,16 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
         this.uploadButton = document.querySelector('p-fileupload button[icon="fa-upload"]');
     }
 
+    public ngOnDestroy() {
+        this.pageState.mapZoom = this.map.getZoom();
+        this.pageState.mapPosition = this.map.getCenter();
+        sessionStorage.setItem('pageState' + this.datasetId, JSON.stringify(this.pageState));
+    }
+
     private initMap() {
         this.map = L.map('map', {
-            zoom: 4,
-            center: WA_CENTER,
+            zoom: this.pageState.mapZoom,
+            center: this.pageState.mapPosition,
             layers: [getDefaultBaseLayer()]
         });
 
@@ -195,6 +212,10 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
                 );
             }
         });
+    }
+
+    public onPageChange(event) {
+        this.pageState.firstRow = event.first;
     }
 
     public onUpload(event: any) {

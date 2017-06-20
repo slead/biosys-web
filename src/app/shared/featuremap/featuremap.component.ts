@@ -1,6 +1,6 @@
 import { OnInit, Component, Directive, ContentChildren, Input, QueryList, OnChanges, SimpleChange }
     from '@angular/core';
-import { WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
+import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';
@@ -84,8 +84,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         this.initialised = true;
 
         this.map = L.map('map', {
-            zoom: 4,
-            center: WA_CENTER,
+            zoom: DEFAULT_ZOOM,
+            center: DEFAULT_CENTER,
             layers: [getDefaultBaseLayer()]
         });
 

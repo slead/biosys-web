@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { EditDatasetComponent } from './edit-dataset.component';
 import { APIService } from '../../../shared/services/api/index';
-import { InputTextModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule,
+import { InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule,
     ConfirmationService } from 'primeng/primeng';
 import { JSONEditorModule } from '../../../shared/index';
 
@@ -12,6 +12,7 @@ import { JSONEditorModule } from '../../../shared/index';
         CommonModule,
         SharedModule,
         InputTextModule,
+        InputTextareaModule,
         ButtonModule,
         DropdownModule,
         GrowlModule,

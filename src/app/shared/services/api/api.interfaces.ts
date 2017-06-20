@@ -61,6 +61,7 @@ export interface Dataset {
         'resources'?: any[]
     };
     record_count?: number;
+    comments?: string;
 }
 export interface Record {
     id?: number;

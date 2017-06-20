@@ -24,7 +24,6 @@ export class EditRecordComponent implements OnInit {
     public record: Record;
     public dataset: Dataset;
 
-
     private completeUrl: string;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
