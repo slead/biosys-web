@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record, DATASET_TYPE_MAP } from '../../../shared/index';
 import { Router } from '@angular/router';
-import { SelectItem, AutoComplete } from 'primeng/primeng';
+import { SelectItem } from 'primeng/primeng';
 
 @Component({
     moduleId: module.id,
@@ -15,9 +15,9 @@ export class ViewRecordsComponent implements OnInit {
 
     public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
     public breadcrumbItems: any = [];
-    public projectDropdownItems: SelectItem[] = [{label: 'Select Project', value: null}];
+    public projectDropdownItems: SelectItem[] = [{label: 'All Projects', value: null}];
     public projectsMap: any = {};
-    public speciesDropdownItems: SelectItem[] = [{label: 'Select Species', value: null}];
+    public speciesDropdownItems: SelectItem[] = [{label: 'All Species', value: null}];
 
     public datasets: Dataset[];
     public records: Record[];
@@ -92,7 +92,7 @@ export class ViewRecordsComponent implements OnInit {
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
-        if(this.selectedDataset) {
+        if (this.selectedDataset) {
             recordParams['dataset__id'] = this.selectedDataset.id;
             this.apiService.getRecords(recordParams).subscribe(
                 (records: Record[]) => this.records = records,
@@ -104,7 +104,7 @@ export class ViewRecordsComponent implements OnInit {
             Object.keys(recordParams).reduce(function(left, right) {
                 left.push(right + '=' + encodeURIComponent(recordParams[right]));
                 return left;
-            },[]).join('&');
+            }, []).join('&');
     }
 
     public selectDataset(event: any) {
@@ -121,13 +121,13 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     public getDataTableWidth(): any {
-        if(!this.selectedDataset) {
+        if (!this.selectedDataset) {
             return { width: '100%'};
         }
 
         // need to do the following to prevent linting error
-        let data_package:any = this.selectedDataset.data_package;
-        let resources:any = data_package['resources'];
+        let data_package: any = this.selectedDataset.data_package;
+        let resources: any = data_package['resources'];
 
         if (resources[0].schema.fields.length > 3) {
             return {'width': String(resources[0].schema.fields.length * ViewRecordsComponent.COLUMN_WIDTH) + 'px'};

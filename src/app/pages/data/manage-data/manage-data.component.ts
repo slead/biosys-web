@@ -29,7 +29,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     @Input()
     set selectAllRecords(selected: boolean) {
         this.isAllRecordsSelected = selected;
-        this.selectedRecords = selected ? this.flatRecords.map((record:Record) => record.id): [];
+        this.selectedRecords = selected ? this.flatRecords.map((record: Record) => record.id) : [];
     }
     get selectAllRecords(): boolean {
         return this.isAllRecordsSelected;
@@ -40,9 +40,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     public projId: number;
     public datasetId: number;
     public dataset: Dataset = <Dataset>{};
-    public flatRecords: any[] = [];
-    public recordErrors: any = {};
-    public tablePlaceholder: string = 'Loading Records';
+    public flatRecords: any[];
     public messages: Message[] = [];
     public uploadURL: string;
     public uploadCreateSites: boolean = true;
@@ -84,14 +82,13 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
         this.apiService.getRecordsByDatasetId(this.datasetId)
             .subscribe(
                 (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
-                (error: APIError) => console.log('error.msg', error.msg),
-                () => this.tablePlaceholder = 'No records found'
+                (error: APIError) => console.log('error.msg', error.msg)
             );
 
         this.uploadURL = this.apiService.getRecordsUploadURL(this.datasetId);
 
         this.breadcrumbItems = [
-            {label:'Enter Records - Projects', routerLink: '/data/projects'}
+            {label: 'Enter Records - Projects', routerLink: '/data/projects'}
         ];
 
         if ('recordSaved' in params) {
@@ -150,11 +147,12 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
 
     public onUpload(event: any) {
         this.parseAndDisplayResponse(event.xhr.response);
+
+        this.flatRecords = null;
         this.apiService.getRecordsByDatasetId(this.dataset.id)
             .subscribe(
                 (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
-                (error: APIError) => console.log('error.msg', error.msg),
-                () => this.tablePlaceholder = 'No records found'
+                (error: APIError) => console.log('error.msg', error.msg)
             );
     }
 
@@ -207,9 +205,9 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     }
 
     private formatFlatRecords(records: Record[]) {
-        return records.map((r:Record) => Object.assign({
+        return records.map((r: Record) => Object.assign({
             id: r.id,
-            source_info: r.source_info ? r.source_info.file_name + ' row ' + r.source_info.row: 'Manually created',
+            source_info: r.source_info ? r.source_info.file_name + ' row ' + r.source_info.row : 'Manually created',
             created: moment(r.created).format(ManageDataComponent.DATETIME_FORMAT),
             last_modified: moment(r.last_modified).format(ManageDataComponent.DATETIME_FORMAT)
         }, r.data));
@@ -221,8 +219,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
         this.apiService.getRecordsByDatasetId(this.datasetId)
         .subscribe(
             (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
-            (error: APIError) => console.log('error.msg', error.msg),
-            () => this.tablePlaceholder = 'No records found'
+            (error: APIError) => console.log('error.msg', error.msg)
         );
 
         this.messages.push({
