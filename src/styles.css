@@ -64,6 +64,16 @@ table td {
   color: #2779aa;
 }
 
+.ui-widget-content a:not([href]):not([tabindex]):hover {
+  cursor: pointer;
+  color: #87CEFA;
+}
+
+.ui-widget-content a:not([href]):not([tabindex]) {
+  color: #87CEFA;
+}
+
+
 .ui-fileupload {
     position: relative;
 }

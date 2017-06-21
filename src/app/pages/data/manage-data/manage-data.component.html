@@ -10,7 +10,8 @@
             <div class="scrollable-table-container">
                 <p-dataTable [tableStyle]="getDataTableWidth()" [value]="flatRecords"
                              [emptyMessage]="flatRecords == null ? '' : 'No records found'"
-                             [paginator]="true" [rows]="10" [globalFilter]="recordSearch" [loading]="flatRecords == null">
+                             [paginator]="true" [rows]="10" [globalFilter]="recordSearch"
+                             [loading]="flatRecords == null" resizableColumns="true">
                     <p-header>
                         <div class="ui-helper-clearfix" style="width:100%">
                             <i class="fa fa-search float-left mt-1 mr-1"></i>
@@ -36,7 +37,7 @@
                     <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
                               [field]="field.name" [header]="field.name" [sortable]="true">
                         <ng-template let-flatRecord="rowData" let-col pTemplate="body">
-                            <span [innerHTML]="flatRecord[col.field] | truncate:28"></span>
+                            <span [innerHTML]="flatRecord[col.field] | truncate:25"></span>
                         </ng-template>
                     </p-column>
                     <p-footer>

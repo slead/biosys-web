@@ -38,7 +38,7 @@
             <h4>Datasets</h4>
             <p-dataTable selectionMode="single" [(selection)]="selectedDataset" (onRowSelect)="selectDataset($event)"
                          [value]="datasets" [paginator]="true" [rows]="10" [responsive]="true"
-                         [loading]="datasets == null">
+                         [loading]="datasets == null" resizableColumns="true">
                 <p-column field="name" header="Name" [sortable]="true"></p-column>
                 <p-column field="type" header="Type" [sortable]="true">
                     <ng-template let-dataset="rowData" pTemplate="body">
@@ -60,17 +60,16 @@
                 <h4>Records for {{selectedDataset?.name}}</h4>
                 <div class="data-table-container">
                     <p-dataTable [tableStyle]="getDataTableWidth()" [value]="records" [paginator]="true" [rows]="10"
-                                 [responsive]="true" [loading]="records == null"
+                                 [responsive]="true" [loading]="records == null" resizableColumns="true"
                                  [emptyMessage]="records == null ? 'Loading records': 'No records found'">
                         <p-column *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields"
                                   [field]="field.name" [header]="field.name" [sortable]="true">
                             <ng-template let-record="rowData" let-col pTemplate="body">
-                                <span [innerHTML]="record.data[col.field] | truncate:30"></span>
+                                <span [innerHTML]="record.data[col.field] | truncate:25"></span>
                             </ng-template>
                         </p-column>
                     </p-dataTable>
                 </div>
-
                 <a class="mt-3 mb-3" [href]="exportURL" style="float:right">
                     <button pButton type="button" label="Export"></button>
                 </a>
