@@ -4,7 +4,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { ManageDataComponent } from './manage-data.component';
 import { APIService } from '../../../shared/services/api/index';
 import { DataTableModule, ButtonModule, GrowlModule, MessagesModule, FileUploadModule, CheckboxModule, TooltipModule,
-    ConfirmDialogModule, BlockUIModule, PanelModule } from 'primeng/primeng';
+    ConfirmDialogModule } from 'primeng/primeng';
 
 @NgModule({
     imports: [CommonModule, SharedModule, DataTableModule, ButtonModule, GrowlModule, MessagesModule,
