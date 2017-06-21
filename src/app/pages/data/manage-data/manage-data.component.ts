@@ -45,7 +45,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     public tablePlaceholder: string = 'Loading Records';
     public messages: Message[] = [];
     public uploadURL: string;
-    public uploadCreateSites: boolean = true;
+    public uploadCreateSites: boolean = false;
     public uploadDeleteExistingRecords: boolean = false;
     public uploadErrorMessages: Message[] = [];
     public uploadWarningMessages: Message[] = [];
