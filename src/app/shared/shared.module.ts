@@ -8,18 +8,21 @@ import { BreadcrumbsComponent } from './breadcrumbs/index';
 import { FeatureMapComponent, MarkerDirective } from './featuremap/index';
 import { TruncatePipe } from './pipes/index';
 import { APIService } from './services/api/index';
-import { MenubarModule, BreadcrumbModule } from 'primeng/primeng';
+import { ButtonModule, MenubarModule, BreadcrumbModule, MessagesModule, ProgressBarModule } from 'primeng/primeng';
+import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
+import { FileuploaderComponent } from './fileuploader/fileuploader.component';
 
 /**
  * Do not specify providers for modules that might be imported by a lazy loaded module.
  */
 
 @NgModule({
-  imports: [CommonModule, RouterModule, MenubarModule, BreadcrumbModule],
-  declarations: [HeaderComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent, MarkerDirective,
-      TruncatePipe],
+  imports: [CommonModule, RouterModule, MenubarModule, BreadcrumbModule, ButtonModule, MessagesModule,
+      ProgressBarModule, PrimeSharedModule],
+  declarations: [HeaderComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent, FileuploaderComponent,
+      MarkerDirective, TruncatePipe],
   exports: [CommonModule, FormsModule, RouterModule, HeaderComponent, NavbarComponent, BreadcrumbsComponent,
-      FeatureMapComponent, MarkerDirective, TruncatePipe]
+      FeatureMapComponent, FileuploaderComponent, MarkerDirective, TruncatePipe]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
-import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { APIService, APIError, FileuploaderComponent, Project, Dataset, Record } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService, FileUpload } from 'primeng/primeng';
+import { Message, ConfirmationService, } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
 @Component({
@@ -10,7 +10,7 @@ import * as moment from 'moment/moment';
     templateUrl: 'manage-data.component.html'
 })
 
-export class ManageDataComponent implements OnInit, AfterViewInit {
+export class ManageDataComponent implements OnInit {
     private static COLUMN_WIDTH: number = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 720;
     private static ACCEPTED_TYPES: string[] = [
@@ -23,8 +23,8 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     ];
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
 
-    @ViewChild(FileUpload)
-    public uploader: FileUpload;
+    @ViewChild(FileuploaderComponent)
+    public uploader: FileuploaderComponent;
 
     @Input()
     set selectAllRecords(selected: boolean) {
@@ -43,12 +43,12 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     public flatRecords: any[];
     public messages: Message[] = [];
     public uploadURL: string;
+    public isUploading: boolean = false;
     public uploadCreateSites: boolean = true;
     public uploadDeleteExistingRecords: boolean = false;
     public uploadErrorMessages: Message[] = [];
     public uploadWarningMessages: Message[] = [];
 
-    private uploadButton: any;
     private isAllRecordsSelected: boolean = false;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
@@ -106,11 +106,6 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
         }
     }
 
-    public ngAfterViewInit() {
-        // TODO: find a better way to access the upload button.
-        this.uploadButton = document.querySelector('p-fileupload button[icon="fa-upload"]');
-    }
-
     public getDataTableWidth(): any {
         if (!('data_package' in this.dataset)) {
             return {width: '100%'};
@@ -147,7 +142,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
 
     public onUpload(event: any) {
         this.parseAndDisplayResponse(event.xhr.response);
-
+        this.isUploading = false;
         this.flatRecords = null;
         this.apiService.getRecordsByDatasetId(this.dataset.id)
             .subscribe(
@@ -157,7 +152,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     }
 
     public onBeforeUpload(event: any) {
-        this.uploadButton.disabled = true;
+        this.isUploading = true;
         event.formData.append('create_site', this.uploadCreateSites);
         event.formData.append('delete_previous', this.uploadDeleteExistingRecords);
     }
@@ -175,6 +170,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
                 detail: statusCode + ':' + resp
             });
         }
+        this.isUploading = false;
     }
 
     public onUploadBeforeSend(event: any) {

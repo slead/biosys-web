@@ -50,16 +50,17 @@
             </div>
         </div>
     </div>
-    <div class="row mt-3">
+    <div class="row mt-3 mb-3">
         <div class="col-md">
             <h4>Upload records</h4>
             <p>Select one or more Excel (xlxs) or CSV files to upload records for the {{ dataset.name }} dataset</p>
             <p-messages [value]="uploadErrorMessages"></p-messages>
             <p-messages [value]="uploadWarningMessages"></p-messages>
-            <p-fileUpload name="file" [url]="uploadURL" accept=".csv,.xlsx"
-                          (onUpload)="onUpload($event)" (onError)="onUploadError($event)"
-                          (onSelect)="onUploadSelect($event)" (onBeforeSend)="onUploadBeforeSend($event)"
-                          (onBeforeUpload)="onBeforeUpload($event)">
+            <biosys-fileuploader name="file" [url]="uploadURL" accept=".csv,.xlsx"
+                                 (onUpload)="onUpload($event)" (onError)="onUploadError($event)"
+                                 (onSelect)="onUploadSelect($event)" (onBeforeSend)="onUploadBeforeSend($event)"
+                                 (onBeforeUpload)="onBeforeUpload($event)" [loading]="isUploading"
+                                 [cancellable]="false">
                 <ng-template pTemplate="content">
                     <p-checkbox styleClass="mr-3" label="Create Sites" [(ngModel)]="uploadCreateSites" binary="true"
                                 pTooltip="Sites that doesn't exist will be created on the fly with the provided code.">
@@ -68,7 +69,7 @@
                                 pTooltip="If selected, previous records for this dataset will be deleted.">
                     </p-checkbox>
                 </ng-template>
-            </p-fileUpload>
+            </biosys-fileuploader>
         </div>
     </div>
 </div>
