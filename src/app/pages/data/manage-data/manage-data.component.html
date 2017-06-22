@@ -35,9 +35,10 @@
         <div class="col-md">
             <h4>Records Table</h4>
             <div class="scrollable-table-container">
-                <p-dataTable [tableStyle]="getDataTableWidth()" [value]="flatRecords" [emptyMessage]="tablePlaceholder"
-                             [paginator]="true" [rows]="PAGE_SIZE" [globalFilter]="recordSearch"
-                             [(first)]="pageState.firstRow" (onPage)="onPageChange($event)">
+                <p-dataTable [tableStyle]="getDataTableWidth()" [value]="flatRecords"
+                             [emptyMessage]="flatRecords == null ? '' : 'No records found'"
+                             [paginator]="true" [rows]="10" [globalFilter]="recordSearch"
+                             [loading]="flatRecords == null" resizableColumns="true">
                     <p-header>
                         <div class="ui-helper-clearfix" style="width:100%">
                             <i class="fa fa-search float-left mt-1 mr-1"></i>
@@ -61,12 +62,11 @@
                     <p-column field="source_info" header="Original Source" [sortable]="true"
                               [style]="{'width':'200px'}"></p-column>
                     <p-column field="created" header="Created" [sortable]="true" [style]="{'width':'200px'}"></p-column>
-                    <p-column field="last_modified" header="Last Modified" [sortable]="true"
-                              [style]="{'width':'200px'}"></p-column>
+                    <p-column field="last_modified" header="Last Modified" [sortable]="true" [style]="{'width':'200px'}"></p-column>
                     <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
                               [field]="field.name" [header]="field.name" [sortable]="true">
                         <ng-template let-flatRecord="rowData" let-col pTemplate="body">
-                            <span [innerHTML]="flatRecord[col.field] | truncate:28"></span>
+                            <span [innerHTML]="flatRecord[col.field] | truncate:25"></span>
                         </ng-template>
                     </p-column>
                     <p-footer>
@@ -87,10 +87,11 @@
             <p>Select one or more Excel (xlxs) or CSV files to upload records for the {{ dataset.name }} dataset</p>
             <p-messages [value]="uploadErrorMessages"></p-messages>
             <p-messages [value]="uploadWarningMessages"></p-messages>
-            <p-fileUpload name="file" [url]="uploadURL" accept=".csv,.xlsx"
-                          (onUpload)="onUpload($event)" (onError)="onUploadError($event)"
-                          (onSelect)="onUploadSelect($event)" (onBeforeSend)="onUploadBeforeSend($event)"
-                          (onBeforeUpload)="onBeforeUpload($event)">
+            <biosys-fileuploader name="file" [url]="uploadURL" accept=".csv,.xlsx"
+                                 (onUpload)="onUpload($event)" (onError)="onUploadError($event)"
+                                 (onSelect)="onUploadSelect($event)" (onBeforeSend)="onUploadBeforeSend($event)"
+                                 (onBeforeUpload)="onBeforeUpload($event)" [loading]="isUploading"
+                                 [cancellable]="false">
                 <ng-template pTemplate="content">
                     <p-checkbox styleClass="mr-3" label="Create Sites" [(ngModel)]="uploadCreateSites" binary="true"
                                 pTooltip="Sites that doesn't exist will be created on the fly with the provided code.">
@@ -99,7 +100,7 @@
                                 pTooltip="If selected, previous records for this dataset will be deleted.">
                     </p-checkbox>
                 </ng-template>
-            </p-fileUpload>
+            </biosys-fileuploader>
         </div>
     </div>
 </div>

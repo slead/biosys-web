@@ -5,6 +5,7 @@ export * from './header/index';
 export * from './navbar/index';
 export * from './breadcrumbs/index';
 export * from './featuremap/index';
+export * from './fileuploader/index';
 export * from './services/index';
 export * from './auth.guard';
 export * from './jsoneditor/index';

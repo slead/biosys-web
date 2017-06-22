@@ -120,7 +120,7 @@
                 <div class="col-md">
                     <h4>Datasets</h4>
                     <p-dataTable [value]="datasets" [globalFilter]="datasetSearch" [paginator]="true" [rows]="10"
-                                 [responsive]="true">
+                                 [responsive]="true" [loading]="datasets == null" resizableColumns="true">
                         <p-header>
                             <div class="ui-helper-clearfix" style="width:100%">
                                 <i class="fa fa-search float-left mt-1 mr-1"></i>
@@ -166,7 +166,8 @@
                     <div class="scrollable-table-container">
                         <h4>Sites</h4>
                         <p-dataTable [tableStyle]="getSiteTableWidth()" [value]="flatSites" [globalFilter]="siteSearch"
-                                     [paginator]="true" [rows]="10" [responsive]="true">
+                                     [paginator]="true" [rows]="10" [responsive]="true" [loading]="flatSites == null"
+                                     resizableColumns="true">
                             <p-header>
                                 <div class="ui-helper-clearfix" style="width:100%">
                                     <i class="fa fa-search float-left mt-1 mr-1"></i>
@@ -184,16 +185,21 @@
                             </p-column>
                             <p-column field="code" header="Code" [style]="{'width':'160px'}">
                                 <ng-template let-flatSite="rowData" pTemplate="body">
-                                    <a [routerLink]="'/management/projects/edit-project/' + project.id + '/edit-site/' + flatSite.id">{{flatSite.code}}</a>
+                                    <a [routerLink]="'/management/projects/edit-project/' + project.id + '/edit-site/' +
+                                      flatSite.id" [innerHTML]='flatSite.code | truncate:18'></a>
                                 </ng-template>
                             </p-column>
                             <p-column field="name" header="Name" [style]="{'width':'160px'}"></p-column>
-                            <p-column field="comments" header="Comments" [style]="{'width':'240px'}"></p-column>
+                            <p-column field="comments" header="Comments" [style]="{'width':'240px'}">
+                              <ng-template let-flatSite="rowData" let-col pTemplate="body">
+                                <span [innerHTML]="flatSite.comments | truncate:25"></span>
+                              </ng-template>
+                            </p-column>
                             <p-column *ngFor="let attribute of siteAttributeKeys"
                                       [field]="attribute" [header]="attribute" [sortable]="true">
                                 <ng-template let-flatSite="rowData" let-col pTemplate="body">
                                     <span
-                                        [innerHTML]="flatSite.hasOwnProperty(col.field) ? (flatSite[col.field] | truncate:28) : ''"></span>
+                                        [innerHTML]="flatSite.hasOwnProperty(col.field) ? (flatSite[col.field] | truncate:25) : ''"></span>
                                 </ng-template>
                             </p-column>
                             <p-footer>

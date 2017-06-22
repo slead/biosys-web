@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { APIService, APIError, User, Project, Site, Dataset, ModelChoice, FeatureMapComponent, MarkerDirective, DATASET_TYPE_MAP }
+import { APIService, APIError, User, Project, Site, Dataset, ModelChoice, FeatureMapComponent, DATASET_TYPE_MAP }
     from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
@@ -19,7 +19,7 @@ export class EditProjectComponent implements OnInit {
     @Input()
     set selectAllSites(selected: boolean) {
         this.isAllSitesSelected = selected;
-        this.selectedSites = selected ? this.flatSites.map((site:Site) => site.id): [];
+        this.selectedSites = selected ? this.flatSites.map((site: Site) => site.id) : [];
     }
     get selectAllSites(): boolean {
         return this.isAllSitesSelected;
@@ -109,7 +109,7 @@ export class EditProjectComponent implements OnInit {
             );
 
         this.breadcrumbItems = [
-            {label:'Manage - Projects', routerLink: ['/management/projects']},
+            {label: 'Manage - Projects', routerLink: ['/management/projects']},
         ];
 
         if (this.isEditing) {
@@ -122,7 +122,7 @@ export class EditProjectComponent implements OnInit {
             );
         }
 
-        if('siteSaved' in params) {
+        if ('siteSaved' in params) {
             this.messages.push({
                 severity: 'success',
                 summary: 'Site saved',
@@ -134,13 +134,13 @@ export class EditProjectComponent implements OnInit {
                 summary: 'Dataset saved',
                 detail: 'The dataset was saved'
             });
-        } else if('siteDeleted' in params) {
+        } else if ('siteDeleted' in params) {
             this.messages.push({
                 severity: 'success',
                 summary: 'Site deleted',
                 detail: 'The site was deleted'
             });
-        } else if('datasetDeleted' in params) {
+        } else if ('datasetDeleted' in params) {
             this.messages.push({
                 severity: 'success',
                 summary: 'Dataset deleted',
@@ -230,7 +230,7 @@ export class EditProjectComponent implements OnInit {
         this.isEditing = false;
     }
 
-    public confirmDeleteDataset(dataset:Dataset) {
+    public confirmDeleteDataset(dataset: Dataset) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this dataset?',
             accept: () => {
@@ -243,7 +243,7 @@ export class EditProjectComponent implements OnInit {
         });
     }
 
-    public confirmDeleteSelectedSites(site:Site) {
+    public confirmDeleteSelectedSites(site: Site) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all selected sites?',
             accept: () => {
@@ -257,6 +257,7 @@ export class EditProjectComponent implements OnInit {
     }
 
     private onDeleteDatasetSuccess(dataset: Dataset) {
+        this.datasets = null;
         this.apiService.getAllDatasetsForProjectID(this.project.id).subscribe(
             (datasets: Dataset[]) => this.datasets = datasets,
             (error: APIError) => console.log('error.msg', error.msg)
@@ -284,7 +285,7 @@ export class EditProjectComponent implements OnInit {
     }
 
     private formatFlatSites(sites: Site[]): any[] {
-        return sites.map((s:Site) => Object.assign({
+        return sites.map((s: Site) => Object.assign({
             id: s.id,
             code: s.code,
             name: s.name,
@@ -294,8 +295,7 @@ export class EditProjectComponent implements OnInit {
     }
 
     private onDeleteSitesSuccess() {
-        this.flatSites = [];
-
+        this.flatSites = null;
         this.apiService.getAllSitesForProjectID(this.project.id).subscribe(
             (sites: Site[]) => {
                 this.flatSites = this.formatFlatSites(sites);

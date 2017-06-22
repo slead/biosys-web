@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import {
-    APIService, APIError, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer,
+    APIService, APIError, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer,
     getOverlayLayers, DATASET_TYPE_MAP } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService, FileUpload } from 'primeng/primeng';
+import { Message, ConfirmationService, } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -15,7 +15,7 @@ import 'leaflet.markercluster';
     styleUrls: ['manage-data.component.css'],
 })
 
-export class ManageDataComponent implements OnInit, AfterViewInit {
+export class ManageDataComponent implements OnInit {
     private static COLUMN_WIDTH: number = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 720;
     private static ACCEPTED_TYPES: string[] = [
@@ -31,15 +31,14 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
     public PAGE_SIZE: number = 10;
 
-    @ViewChild(FileUpload)
-    public uploader: FileUpload;
+    @ViewChild(FileuploaderComponent)
+    public uploader: FileuploaderComponent;
 
     @Input()
     set selectAllRecords(selected: boolean) {
         this.isAllRecordsSelected = selected;
         this.selectedRecords = selected ? this.flatRecords.map((record: Record) => record.id) : [];
     }
-
     get selectAllRecords(): boolean {
         return this.isAllRecordsSelected;
     }
@@ -49,11 +48,11 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
     public projId: number;
     public datasetId: number;
     public dataset: Dataset = <Dataset>{};
-    public flatRecords: any[] = [];
-    public tablePlaceholder: string = 'Loading Records';
+    public flatRecords: any[];
     public messages: Message[] = [];
     public uploadURL: string;
-    public uploadCreateSites: boolean = true;
+    public isUploading: boolean = false;
+    public uploadCreateSites: boolean = false;
     public uploadDeleteExistingRecords: boolean = false;
     public uploadErrorMessages: Message[] = [];
     public uploadWarningMessages: Message[] = [];
@@ -109,8 +108,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
                         this.loadRecordMarkers();
                     }
                 },
-                (error: APIError) => console.log('error.msg', error.msg),
-                () => this.tablePlaceholder = 'No records found'
+                (error: APIError) => console.log('error.msg', error.msg)
         ));
 
         this.uploadURL = this.apiService.getRecordsUploadURL(this.datasetId);
@@ -132,11 +130,6 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
                 detail: 'The record was deleted'
             });
         }
-    }
-
-    public ngAfterViewInit() {
-        // TODO: find a better way to access the upload button.
-        this.uploadButton = document.querySelector('p-fileupload button[icon="fa-upload"]');
     }
 
     public ngOnDestroy() {
@@ -170,7 +163,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
 
                 marker.bindPopup(popupContent);
                 marker.on('mouseover', function () {
-                   this.openPopup();
+                    this.openPopup();
                 });
                 markers.addLayer(marker);
             }
@@ -220,16 +213,17 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
 
     public onUpload(event: any) {
         this.parseAndDisplayResponse(event.xhr.response);
+        this.isUploading = false;
+        this.flatRecords = null;
         this.apiService.getRecordsByDatasetId(this.dataset.id)
-        .subscribe(
-            (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
-            (error: APIError) => console.log('error.msg', error.msg),
-            () => this.tablePlaceholder = 'No records found'
-        );
+            .subscribe(
+                (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
     }
 
     public onBeforeUpload(event: any) {
-        this.uploadButton.disabled = true;
+        this.isUploading = true;
         event.formData.append('create_site', this.uploadCreateSites);
         event.formData.append('delete_previous', this.uploadDeleteExistingRecords);
     }
@@ -247,6 +241,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
                 detail: statusCode + ':' + resp
             });
         }
+        this.isUploading = false;
     }
 
     public onUploadBeforeSend(event: any) {
@@ -292,8 +287,7 @@ export class ManageDataComponent implements OnInit, AfterViewInit {
         this.apiService.getRecordsByDatasetId(this.datasetId)
         .subscribe(
             (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
-            (error: APIError) => console.log('error.msg', error.msg),
-            () => this.tablePlaceholder = 'No records found'
+            (error: APIError) => console.log('error.msg', error.msg)
         );
 
         this.messages.push({
