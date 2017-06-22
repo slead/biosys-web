@@ -10,7 +10,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 
 export class ListDatasetsComponent implements OnInit {
-    public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
+    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
 
     public breadcrumbItems: any = [];
     public project: Project;

@@ -260,6 +260,26 @@ export class APIService {
         return this.baseUrl + 'records/?output=xlsx&';
     }
 
+    public recordDataToGeometry(recordId: number, geometry: GeoJSON.DirectGeometryObject, data: any) {
+        return this.fetch('utils/data-to-geometry/record/' + recordId, {
+            method: 'Post',
+            data: {
+                geometry: geometry,
+                data: data
+            }
+        });
+    }
+
+    public recordGeometryToData(recordId: number, geometry: GeoJSON.DirectGeometryObject, data: any) {
+        return this.fetch('utils/geometry-to-data/record/' + recordId, {
+            method: 'Post',
+            data: {
+                geometry: geometry,
+                data: data
+            }
+        });
+    }
+
     /**
      * Returns an array of [header, value] of headers necessary for authentication
      * @returns {[string,string][]}

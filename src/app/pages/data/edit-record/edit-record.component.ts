@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
+import { DATASET_TYPE_MAP } from '../../../shared/index';
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
@@ -14,14 +15,16 @@ import * as moment from 'moment/moment';
 export class EditRecordComponent implements OnInit {
     private static AMBIGOUS_DATE_PATTERN: RegExp = /^(\d{1,2}).(\d{1,2}).(\d{4})$/;
 
+    public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
+
     public breadcrumbItems: any = [];
     public messages: Message[] = [];
     public recordErrors: any = {};
     public dropdownItems: any = {};
 
     public record: Record;
+    public dataset: Dataset;
 
-    private dataset: Dataset;
     private completeUrl: string;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
@@ -86,6 +89,30 @@ export class EditRecordComponent implements OnInit {
         }
 
         return this.dropdownItems[fieldName];
+    }
+
+    public onFeatureMapGeometryChanged(geometry: GeoJSON.DirectGeometryObject) {
+        this.apiService.recordGeometryToData(this.record.id, geometry, this.record.data)
+        .subscribe(
+            (geometryAndData: any) => {
+                let recordCopy = JSON.parse(JSON.stringify(this.record));
+                recordCopy.data = geometryAndData.data;
+                recordCopy.geometry = geometryAndData.geometry;
+                this.record = this.formatRecord(recordCopy);
+            }
+        );
+    }
+
+    public onInputChanged(event) {
+        this.apiService.recordDataToGeometry(this.record.id, this.record.geometry, this.record.data)
+        .subscribe(
+            (geometryAndData: any) => {
+                let recordCopy = JSON.parse(JSON.stringify(this.record));
+                recordCopy.data = geometryAndData.data;
+                recordCopy.geometry = geometryAndData.geometry;
+                this.record = this.formatRecord(recordCopy);
+            }
+        );
     }
 
     public save(event: any) {

@@ -3,6 +3,7 @@ import { APIService, APIError, User, Project, Site, Dataset, ModelChoice, Featur
     from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     moduleId: module.id,
@@ -29,6 +30,8 @@ export class EditProjectComponent implements OnInit {
     public featureMapComponent: FeatureMapComponent;
 
     public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
+    public TEMPLATE_LATLNG_URL: string = environment.server + '/utils/templates/site/lat-long';
+    public TEMPLATE_EASTNORTH_URL: string = environment.server + '/utils/templates/site/easting-northing';
     public selectedSites: number[] = [];
     public flatSites: any[];
     public siteAttributeKeys: string[] = [];

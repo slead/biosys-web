@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {
-    APIService, APIError, Project, Statistic, User, WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer,
-    getOverlayLayers
-} from '../../shared/index';
+import { APIService, APIError, Project, Statistic, User, DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM,
+    getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
 import * as L from 'leaflet';
 import 'leaflet-mouse-position';
 
@@ -50,8 +48,8 @@ export class HomeComponent implements OnInit {
         );
 
         this.map = L.map('map', {
-            zoom: 4,
-            center: WA_CENTER,
+            zoom: DEFAULT_ZOOM,
+            center: DEFAULT_CENTER,
             layers: [getDefaultBaseLayer()]
         });
 

@@ -1,6 +1,8 @@
 import * as L from 'leaflet';
 
-export let WA_CENTER: L.LatLng = L.latLng([-27, 121]);
+export let DEFAULT_ZOOM: number = 4;
+
+export let DEFAULT_CENTER: L.LatLng = L.latLng([-27, 121]);
 
 export let DEFAULT_MARKER_ICON: L.Icon = L.icon({
   iconRetinaUrl: 'css/images/marker-icon-2x.png',

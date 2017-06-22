@@ -1,8 +1,5 @@
-import {
-    OnInit, Component, Directive, ContentChildren, Input, QueryList, OnChanges, SimpleChange
-}
-    from '@angular/core';
-import { WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers } from '../utils/maputils';
+import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges, EventEmitter, SimpleChange } from '@angular/core';
+import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';
@@ -25,7 +22,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public drawFeatureTypes: [string] = [] as [string];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.DirectGeometryObject;
-
+    @Output() public onGeometryChanged = new EventEmitter<GeoJSON.DirectGeometryObject>();
     @ContentChildren(MarkerDirective)
     set markers(markers: QueryList<MarkerDirective>) {
         markers.forEach((marker: MarkerDirective) => {
@@ -87,8 +84,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         this.initialised = true;
 
         this.map = L.map('map', {
-            zoom: 4,
-            center: WA_CENTER,
+            zoom: DEFAULT_ZOOM,
+            center: DEFAULT_CENTER,
             layers: [getDefaultBaseLayer()]
         });
 
@@ -98,6 +95,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
 
         this.map.addLayer(this.drawnFeatures);
         this.map.on('draw:created', (e: any) => this.onFeatureCreated(e));
+        this.map.on('draw:edited', (e: any) => this.onFeatureEdited(e));
 
         this.drawControl = new L.Control.Draw(this.drawOptions);
 
@@ -121,7 +119,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
                     this.drawnFeatureType = 'polygon';
                 } else if (this.geometry.type === 'Point') {
                     let coord: GeoJSON.Position = this.geometry.coordinates as GeoJSON.Position;
-                    let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]));
+                    let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                        {icon: DEFAULT_MARKER_ICON});
                     this.drawnFeatures.addLayer(marker);
                     this.drawnFeatureType = 'point';
                 }
@@ -159,5 +158,11 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         this.drawnFeatures.clearLayers();
         this.drawnFeatures.addLayer(e.layer);
         this.drawnFeatureType = e.layerType;
+
+        this.onGeometryChanged.emit(this.getFeatureGeometry());
+    }
+
+    private onFeatureEdited(e: any) {
+        this.onGeometryChanged.emit(this.getFeatureGeometry());
     }
 }

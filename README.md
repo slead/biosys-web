@@ -1,18 +1,20 @@
 # Biosys Client
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.1.1.
+The Biosys Client is build on AngularJS. To use the commands below, you need to globally install Angular-CLI:
+
+`npm install -g @angular/cli`
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve` for a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## Build for UAT
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|module`.
+Run `ng build --env=uat` to build the project for UAT. The build artifacts will be stored in the `dist/` directory.
 
-## Build
+## Build for production
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+Run `ng build --env=prod` to build the project for production. The build artifacts will be stored in the `dist/` directory.
 
 ## Running unit tests
 
