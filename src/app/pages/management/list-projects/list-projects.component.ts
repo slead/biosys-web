@@ -14,9 +14,8 @@ export class ManagementListProjectsComponent implements OnInit {
     public breadcrumbItems: any = [];
     public projects: Project[] = [];
     public messages: Message[] = [];
-    public custodiansString: string = '';
 
-    private user:User;
+    private user: User;
 
     constructor(private apiService: APIService, private router: Router,
                 private confirmationService: ConfirmationService) {
@@ -43,11 +42,11 @@ export class ManagementListProjectsComponent implements OnInit {
             }, (error: APIError) => console.log('error.msg', error.msg));
 
         this.breadcrumbItems = [
-            {label:'Manage - Projects'}
+            {label: 'Manage - Projects'}
         ];
     }
 
-    public confirmDelete(project:Project) {
+    public confirmDelete(project: Project) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this project?',
             accept: () => {

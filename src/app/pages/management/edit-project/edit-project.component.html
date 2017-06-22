@@ -117,7 +117,7 @@
                 <div class="col-md">
                     <h4>Datasets</h4>
                     <p-dataTable [value]="datasets" [globalFilter]="datasetSearch" [paginator]="true" [rows]="10"
-                                 [responsive]="true" resizableColumns="true">
+                                 [responsive]="true" [loading]="datasets == null" resizableColumns="true">
                         <p-header>
                             <div class="ui-helper-clearfix" style="width:100%">
                                 <i class="fa fa-search float-left mt-1 mr-1"></i>
@@ -156,7 +156,8 @@
                     <div class="scrollable-table-container">
                         <h4>Sites</h4>
                         <p-dataTable [tableStyle]="getSiteTableWidth()" [value]="flatSites" [globalFilter]="siteSearch"
-                                     [paginator]="true" [rows]="10" [responsive]="true" resizableColumns="true">
+                                     [paginator]="true" [rows]="10" [responsive]="true" [loading]="flatSites == null"
+                                     resizableColumns="true">
                             <p-header>
                                 <div class="ui-helper-clearfix" style="width:100%">
                                     <i class="fa fa-search float-left mt-1 mr-1"></i>
