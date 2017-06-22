@@ -44,9 +44,9 @@ var HomeComponent = (function () {
             var project = _a[_i];
             if (project.centroid) {
                 var marker = L.geoJSON(project.centroid).addTo(this.map);
-                var popupContent = '<p class="m-0"><strong>' + project.title + '</strong></p>';
-                if (project.comments) {
-                    popupContent += '<p class="mt-1 mb-0">' + project.comments + '</p>';
+                var popupContent = '<p class="m-0"><strong>' + project.name + '</strong></p>';
+                if (project.description) {
+                    popupContent += '<p class="mt-1 mb-0">' + project.description + '</p>';
                 }
                 if (this.user && project.custodians.indexOf(this.user.id) > -1) {
                     popupContent += '<p class="mt-1"><a href="#/management/projects/edit-project/' + project.id +

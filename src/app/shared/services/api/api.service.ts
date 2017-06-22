@@ -190,7 +190,7 @@ export class APIService {
         return this.fetch('records/' + id, {});
     }
 
-    public createRecord(record: Record, strict=true): Observable<Record> {
+    public createRecord(record: Record, strict = true): Observable<Record> {
         let urlParams = strict ? {strict: 'true'} : {};
         return this.fetch('records', {
             method: 'Post',
@@ -199,7 +199,7 @@ export class APIService {
         });
     }
 
-    public updateRecord(id: number, record: Record, strict=true): Observable<Record> {
+    public updateRecord(id: number, record: Record, strict = true): Observable<Record> {
         let urlParams = strict ? {strict: 'true'} : {};
         return this.fetch('records/' + id, {
             method: 'Put',

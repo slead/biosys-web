@@ -15,15 +15,15 @@
                         <input #projectSearch type="text" class="float-left" pInputText placeholder="Search">
                     </div>
                 </p-header>
-                <p-column field="title" header="Title" [sortable]="true">
+                <p-column field="name" header="Name" [sortable]="true">
                     <ng-template let-project="rowData" pTemplate="body">
-                        <a class="table-link" [routerLink]="'/management/projects/edit-project/' + project.id">{{project.title}}</a>
+                        <a class="table-link" [routerLink]="'/management/projects/edit-project/' + project.id">{{project.name}}</a>
                     </ng-template>
                 </p-column>
                 <p-column field="code" header="Code" [sortable]="true" [style]="{'width':'160px'}"></p-column>
                 <p-column header="Description">
                     <ng-template let-project="rowData" pTemplate="body">
-                        <label [innerHtml]="project.comments"></label>
+                        <label [innerHtml]="project.description"></label>
                     </ng-template>
                 </p-column>
                 <p-column field="dataset_count" header="Datasets" [sortable]="true" [style]="{'width':'120px'}"></p-column>

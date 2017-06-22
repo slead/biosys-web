@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { APIService, APIError } from './index';
-import { Observable, Observer } from 'rxjs';
+import { Observable } from 'rxjs/Observable';
+import { Observer } from 'rxjs/Observer';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
+import 'rxjs/add/operator/map';
 
 @Injectable()
 export class AuthService {

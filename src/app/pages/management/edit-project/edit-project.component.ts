@@ -59,7 +59,7 @@ export class EditProjectComponent implements OnInit {
             this.apiService.getProjectById(Number(params['id'])).subscribe(
                 (project: Project) => {
                     this.project = project;
-                    this.breadcrumbItems.push({label: this.project.title});
+                    this.breadcrumbItems.push({label: this.project.name});
                 },
                 (error: APIError) => console.log('error.msg', error.msg)
             );
@@ -168,8 +168,8 @@ export class EditProjectComponent implements OnInit {
 
     public formatSitePopup(site: Site): string {
         let popupContent: string = '<p class="m-0"><strong>' + (site.name ? site.name : site.code) + '</strong></p>';
-        if (site.comments) {
-            popupContent += '<p class="mt-1">' + site.comments + '</p>';
+        if (site.description) {
+            popupContent += '<p class="mt-1">' + site.description + '</p>';
         }
 
         let projId = this.project.id ? this.project.id : Number(this.route.snapshot.params['id']);
@@ -208,7 +208,7 @@ export class EditProjectComponent implements OnInit {
                 (project: Project) => {
                     this.project = project;
                     this.breadcrumbItems.pop();
-                    this.breadcrumbItems.push({label: 'Edit ' + this.project.title});
+                    this.breadcrumbItems.push({label: 'Edit ' + this.project.name});
                     this.projectErrors = {};
                     this.isEditing = false;
                 },
@@ -289,7 +289,7 @@ export class EditProjectComponent implements OnInit {
             id: s.id,
             code: s.code,
             name: s.name,
-            comments: s.comments,
+            description: s.description,
             centroid: s.centroid
         }, s.attributes));
     }

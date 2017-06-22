@@ -22,6 +22,14 @@
                     <div class="col-md-4 text-danger">{{dsErrors['name']}}</div>
                 </div>
                 <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Description</label></div>
+                    <div class="col-md-4">
+                        <textarea pInputTextarea rows="7" [(ngModel)]="ds.description"></textarea>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['description']}}</div>
+
+                </div>
+                <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Type *</label></div>
                     <div class="col-md-4">
                         <p-dropdown [options]="typeChoices" [(ngModel)]="ds.type" [autoWidth]="false">
