@@ -7,14 +7,14 @@
         <div class="col-md">
             <h3>Records for {{dataset?.name}}</h3>
             <p *ngIf="dataset.type !== 'generic';else noGeometry">
-                All records for the current dataset are can be accessed through the interactive map or by searching the
+                All records for the current dataset can be accessed through the interactive map or by searching the
                 records table below. For the interactive map, you may need to zoom to the appropriate level by clicking
                 on the group marker to access the individual markers. You can also select a particular record to edit
                 by clicking on the Record ID in the records table or click Add to add a new record.
             </p>
             <ng-template #noGeometry>
                 <p>
-                    All records for the current dataset are can be found by searching the records table below. You
+                    All records for the current dataset can be found by searching the records table below. You
                     can select a particular record to edit by clicking on the Record ID in the records table or click
                     Add to add a new record.
                 </p>
