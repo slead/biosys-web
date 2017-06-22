@@ -44,7 +44,7 @@ export class ManageDataComponent implements OnInit {
     public messages: Message[] = [];
     public uploadURL: string;
     public isUploading: boolean = false;
-    public uploadCreateSites: boolean = true;
+    public uploadCreateSites: boolean = false;
     public uploadDeleteExistingRecords: boolean = false;
     public uploadErrorMessages: Message[] = [];
     public uploadWarningMessages: Message[] = [];
