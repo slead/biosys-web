@@ -173,6 +173,15 @@
                                 <div class="ui-helper-clearfix" style="width:100%">
                                     <i class="fa fa-search float-left mt-1 mr-1"></i>
                                     <input #siteSearch type="text" class="float-left" placeholder="Search">
+                                    <a href="{{TEMPLATE_EASTNORTH_URL}}">
+                                        <button type="button" pButton icon="fa-file-excel-o" style="float:right"
+                                                label="Download Site Template (east/north)"></button>
+                                    </a>
+                                    <a href="{{TEMPLATE_LATLNG_URL}}">
+                                        <button type="button" class="ml-1" pButton icon="fa-file-excel-o"
+                                                style="float:right"
+                                                label="Download Site Template (lat/lng)"></button>
+                                    </a>
                                 </div>
                             </p-header>
                             <p-column styleClass="col-button" [style]="{'width':'100px'}">
@@ -196,9 +205,9 @@
                                 </ng-template>
                             </p-column>
                             <p-column field="description" header="Description" [style]="{'width':'240px'}">
-                              <ng-template let-flatSite="rowData" let-col pTemplate="body">
-                                <span [innerHTML]="flatSite.description | truncate:38"></span>
-                              </ng-template>
+                                <ng-template let-flatSite="rowData" let-col pTemplate="body">
+                                    <span [innerHTML]="flatSite.description | truncate:38"></span>
+                                </ng-template>
                             </p-column>
                             <p-column *ngFor="let attribute of siteAttributeKeys"
                                       [field]="attribute" [header]="attribute" [sortable]="true">
