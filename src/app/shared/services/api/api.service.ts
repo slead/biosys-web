@@ -3,6 +3,7 @@ import { Http, Response, Headers, RequestOptions, Request, URLSearchParams, Resp
 import { Observable } from 'rxjs';
 import { AuthService } from '../index';
 import { FetchOptions, APIError, User, Project, Dataset, Site, Record, Statistic, ModelChoice } from './api.interfaces';
+import { environment } from '../../../../environments/environment';
 
 /**
  * This class provides the Biosys API service.
@@ -39,8 +40,8 @@ export class APIService {
      * @constructor
      */
     constructor(private http: Http) {
-        this.baseUrl = 'http://localhost:8000/api';
-        if (!this.baseUrl.endsWith('/')) this.baseUrl += '/';
+        this.baseUrl = environment.server;
+        this.baseUrl = !this.baseUrl.endsWith('/') ? this.baseUrl += '/' : this.baseUrl;
     }
 
     public getAuthToken(username: string, password: string): Observable<string> {
