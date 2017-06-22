@@ -28,7 +28,7 @@ export class ListDatasetsComponent implements OnInit {
             .subscribe(
                 (project: Project) => {
                     this.project = project;
-                    this.breadcrumbItems.push({label: this.project.title});
+                    this.breadcrumbItems.push({label: this.project.name});
                 },
                 (error: APIError) => console.log('error.msg', error.msg)
             );

@@ -1,6 +1,8 @@
-import { OnInit, Component, Directive, ContentChildren, Input, QueryList, OnChanges, SimpleChange }
+import {
+    OnInit, Component, Directive, ContentChildren, Input, QueryList, OnChanges, SimpleChange
+}
     from '@angular/core';
-import { WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
+import { WA_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers } from '../utils/maputils';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';
@@ -23,9 +25,10 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public drawFeatureTypes: [string] = [] as [string];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.DirectGeometryObject;
+
     @ContentChildren(MarkerDirective)
     set markers(markers: QueryList<MarkerDirective>) {
-        markers.forEach((marker:MarkerDirective) => {
+        markers.forEach((marker: MarkerDirective) => {
             if (marker.geometry) {
                 let coord: GeoJSON.Position = marker.geometry.coordinates as GeoJSON.Position;
                 let leafletMarker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]), {icon: this.extraMarkerIcon});
@@ -46,9 +49,9 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         iconUrl: 'assets/img/extra-marker-icon.png',
         shadowUrl: 'css/images/marker-shadow.png',
         iconSize: [25, 41],
-        iconAnchor:  [12, 41],
+        iconAnchor: [12, 41],
         popupAnchor: [1, -34],
-        shadowSize:  [41, 41]
+        shadowSize: [41, 41]
     });
 
     private drawOptions: any;
@@ -73,7 +76,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
                 rectangle: this.drawFeatureTypes.indexOf('POLYGON') > -1,
                 circle: false,
                 marker: this.drawFeatureTypes.indexOf('POINT') > -1 ? {
-                  icon: DEFAULT_MARKER_ICON
+                    icon: DEFAULT_MARKER_ICON
                 } : false
             },
             edit: {
@@ -103,7 +106,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
         if (changes['geometry']) {
             this.drawnFeatures.clearLayers();
             if (this.geometry) {

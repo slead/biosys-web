@@ -35,13 +35,13 @@ export class EditSiteComponent implements OnInit {
         let projId: number = Number(params['projId']);
 
         this.apiService.getProjectById(projId)
-            .subscribe(
-                (project: Project) => this.breadcrumbItems.splice(1, 0, {
-                    label: project.title,
-                    routerLink: ['/management/projects/edit-project/' + projId]
-                }),
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
+        .subscribe(
+            (project: Project) => this.breadcrumbItems.splice(1, 0, {
+                label: project.name,
+                routerLink: ['/management/projects/edit-project/' + projId]
+            }),
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
 
         if ('id' in params) {
             this.apiService.getSiteById(Number(params['id'])).subscribe(
@@ -50,7 +50,7 @@ export class EditSiteComponent implements OnInit {
                     if (this.site.attributes) {
                         this.additionalAttributes = Object.keys(this.site.attributes).map((k) => [k, this.site.attributes[k]]);
                     }
-                    this.breadcrumbItems.push({label: this.site.code ? this.site.code: this.site.name});
+                    this.breadcrumbItems.push({label: this.site.code ? this.site.code : this.site.name});
                 },
                 (error: APIError) => console.log('error.msg', error.msg),
             );
@@ -105,10 +105,10 @@ export class EditSiteComponent implements OnInit {
         this.router.navigate([this.completeUrl]);
     }
 
-    public confirmDelete(event:any) {
+    public confirmDelete(event: any) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this site?',
-            accept: () =>  this.apiService.deleteSite(this.site.id).subscribe(
+            accept: () => this.apiService.deleteSite(this.site.id).subscribe(
                 (site: Site) => this.onDeleteSuccess(this.site),
                 (error: APIError) => this.onDeleteError(error))
         });

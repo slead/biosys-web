@@ -6,7 +6,7 @@ export function main() {
 }
 
 @Component({
-  selector: 'test-cmp',
+  selector: 'biosys-cmp',
   template: '<home></home>'
 })
-class TestComponent { }
+class HomeComponent { }

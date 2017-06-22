@@ -39,12 +39,12 @@ export class ViewRecordsComponent implements OnInit {
             (projects: Project[]) => {
                 this.projectDropdownItems = this.projectDropdownItems.concat(
                     projects.map(project => ({
-                        'label': project.title,
+                        'label': project.name,
                         'value': project.id
                     }))
                 );
 
-                projects.forEach(project => this.projectsMap[project.id] = project.title);
+                projects.forEach(project => this.projectsMap[project.id] = project.name);
             },
             (error: APIError) => console.log('error.msg', error.msg)
         );
