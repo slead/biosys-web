@@ -81,7 +81,7 @@ export class ManageDataComponent implements OnInit {
         this.apiService.getProjectById(this.projId)
         .subscribe(
             (project: Project) => this.breadcrumbItems.splice(1, 0, {
-                label: project.title,
+                label: project.name,
                 routerLink: ['/data/projects/' + this.projId + '/datasets']
             }),
             (error: APIError) => console.log('error.msg', error.msg)

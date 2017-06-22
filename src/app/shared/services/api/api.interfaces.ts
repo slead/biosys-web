@@ -27,12 +27,12 @@ export interface User {
 }
 export interface Project {
     id?: number;
-    title?: string;
+    name?: string;
     code?: string;
     timezone?: string;
     datum?: number | string | null;
     attributes?: {[key: string]: string} | null;
-    comments?: string;
+    description?: string;
     geometry?: GeoJSON.DirectGeometryObject | null;
     centroid?: GeoJSON.DirectGeometryObject | null;
     site_data_package?: {} | null;
@@ -49,7 +49,7 @@ export interface Site {
     project?: number;
     geometry?: GeoJSON.DirectGeometryObject | null;
     centroid?: GeoJSON.DirectGeometryObject | null;
-    comments?: string;
+    description?: string;
     attributes?: {[key: string]: string} | null;
 }
 export interface Dataset {
@@ -61,7 +61,7 @@ export interface Dataset {
         'resources'?: any[]
     };
     record_count?: number;
-    comments?: string;
+    description?: string;
 }
 export interface Record {
     id?: number;

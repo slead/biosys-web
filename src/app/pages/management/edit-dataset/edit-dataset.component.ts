@@ -47,7 +47,7 @@ export class EditDatasetComponent implements OnInit {
         this.apiService.getProjectById(projId)
             .subscribe(
                 (project: Project) => this.breadcrumbItems.splice(1, 0, {
-                    label: project.title,
+                    label: project.name,
                     routerLink: ['/management/projects/edit-project/' + projId]
                 }),
                 (error: APIError) => console.log('error.msg', error.msg)
@@ -112,7 +112,7 @@ export class EditDatasetComponent implements OnInit {
         this.router.navigate([this.completeUrl]);
     }
 
-    public confirmDelete(event:any) {
+    public confirmDelete(event: any) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this dataset?',
             accept: () =>  this.apiService.deleteDataset(this.ds.id).subscribe(

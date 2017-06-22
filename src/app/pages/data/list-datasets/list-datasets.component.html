@@ -4,7 +4,7 @@
     <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
     <div class="row mt-1">
         <div class="col-md">
-            <h3>Datasets for {{project?.title}}</h3>
+            <h3>Datasets for {{project?.name}}</h3>
             <p>Select the dataset the records belong to</p>
             <p-dataTable [value]="datasets" emptyMessage="No datasets found" [paginator]="true" [rows]="15"
                          [globalFilter]="datasetSearch" [responsive]="true" [loading]="datasets == null"
@@ -15,18 +15,22 @@
                         <input #datasetSearch type="text" class="float-left" pInputText placeholder="Search">
                     </div>
                 </p-header>
-                <p-column field="name" header="Name" [sortable]="true">
+                <p-column field="name" header="Name" [sortable]="true" [style]="{'width':'120px'}">
                     <ng-template let-dataset="rowData" pTemplate="body">
                         <a [routerLink]="'/data/projects/' + project?.id + '/datasets/' + dataset.id">{{dataset.name}}</a>
                     </ng-template>
                 </p-column>
-                <p-column field="type" header="Type" [sortable]="true">
+                <p-column field="type" header="Type" [sortable]="true" [style]="{'width':'120px'}">
                     <ng-template let-dataset="rowData" pTemplate="body">
                         {{DATASET_TYPE_MAP[dataset.type]}}
                     </ng-template>
                 </p-column>
                 <p-column field="record_count" header="Records" [sortable]="true" [style]="{'width':'120px'}"></p-column>
-                <p-column field="comments" header="Description" [sortable]="true"></p-column>
+                <p-column field="description" header="Description" [style]="{'width':'300px'}">
+                    <ng-template let-dataset="rowData" let-col pTemplate="body">
+                        <span [innerHTML]="dataset.description | truncate:60"></span>
+                    </ng-template>
+                </p-column>
             </p-dataTable>
         </div>
     </div>

@@ -21,30 +21,31 @@ export class HomeComponent implements OnInit {
 
     private map: L.Map;
 
-    constructor(public apiService: APIService) {}
+    constructor(public apiService: APIService) {
+    }
 
     ngOnInit() {
 
         // need to get user before projects so use Promise 'then' syntax
         this.apiService.whoAmI()
-            .toPromise()
-            .then((user: User) => this.user = user,
-                (error: APIError) => console.log('error.msg', error.msg)
-            )
-            .then(() => this.apiService.getProjects()
-                .subscribe(
-                (projects: Project[]) => {
-                    this.projects = projects;
-                    this.loadProjectMarkers();
-                },
-                (error: APIError) => console.log('error.msg', error.msg)
-            ));
+        .toPromise()
+        .then((user: User) => this.user = user,
+            (error: APIError) => console.log('error.msg', error.msg)
+        )
+        .then(() => this.apiService.getProjects()
+        .subscribe(
+            (projects: Project[]) => {
+                this.projects = projects;
+                this.loadProjectMarkers();
+            },
+            (error: APIError) => console.log('error.msg', error.msg)
+        ));
 
         this.apiService.getStatistics()
-            .subscribe(
-                (statistic: Statistic) => this.statistic = statistic,
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
+        .subscribe(
+            (statistic: Statistic) => this.statistic = statistic,
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
 
         this.map = L.map('map', {
             zoom: DEFAULT_ZOOM,
@@ -63,13 +64,13 @@ export class HomeComponent implements OnInit {
 
     private loadProjectMarkers() {
         for (let project of this.projects) {
-            if(project.centroid) {
+            if (project.centroid) {
                 let coord: GeoJSON.Position = project.centroid.coordinates as GeoJSON.Position;
                 let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
-                  {icon: DEFAULT_MARKER_ICON});
-                let popupContent: string = '<p class="m-0"><strong>' + project.title + '</strong></p>';
-                if (project.comments) {
-                    popupContent += '<p class="mt-1 mb-0">' + project.comments + '</p>';
+                    {icon: DEFAULT_MARKER_ICON});
+                let popupContent: string = '<p class="m-0"><strong>' + project.name + '</strong></p>';
+                if (project.description) {
+                    popupContent += '<p class="mt-1 mb-0">' + project.description + '</p>';
                 }
                 if (this.user && project.custodians.indexOf(this.user.id) > -1) {
                     popupContent += '<p class="mt-1"><a href="#/management/projects/edit-project/' + project.id +

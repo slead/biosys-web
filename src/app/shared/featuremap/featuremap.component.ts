@@ -46,9 +46,9 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         iconUrl: 'assets/img/extra-marker-icon.png',
         shadowUrl: 'css/images/marker-shadow.png',
         iconSize: [25, 41],
-        iconAnchor:  [12, 41],
+        iconAnchor: [12, 41],
         popupAnchor: [1, -34],
-        shadowSize:  [41, 41]
+        shadowSize: [41, 41]
     });
 
     private drawOptions: any;
@@ -73,7 +73,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
                 rectangle: this.drawFeatureTypes.indexOf('POLYGON') > -1,
                 circle: false,
                 marker: this.drawFeatureTypes.indexOf('POINT') > -1 ? {
-                  icon: DEFAULT_MARKER_ICON
+                    icon: DEFAULT_MARKER_ICON
                 } : false
             },
             edit: {
@@ -104,7 +104,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         }
     }
 
-    ngOnChanges(changes: {[propertyName: string]: SimpleChange}) {
+    ngOnChanges(changes: { [propertyName: string]: SimpleChange }) {
         if (changes['geometry']) {
             this.drawnFeatures.clearLayers();
             if (this.geometry) {

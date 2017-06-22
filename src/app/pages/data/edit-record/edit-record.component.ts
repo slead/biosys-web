@@ -14,7 +14,6 @@ import * as moment from 'moment/moment';
 
 export class EditRecordComponent implements OnInit {
     private static AMBIGOUS_DATE_PATTERN: RegExp = /^(\d{1,2}).(\d{1,2}).(\d{4})$/;
-    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
 
     public breadcrumbItems: any = [];
     public messages: Message[] = [];
@@ -24,6 +23,7 @@ export class EditRecordComponent implements OnInit {
     public record: Record;
     public dataset: Dataset;
 
+    private dataset: Dataset;
     private completeUrl: string;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
@@ -38,7 +38,7 @@ export class EditRecordComponent implements OnInit {
 
         this.apiService.getProjectById(projId).subscribe(
             (project: Project) => this.breadcrumbItems.splice(1, 0, {
-                label: project.title,
+                label: project.name,
                 routerLink: ['/data/projects/' + projId + '/datasets']
             }),
             (error: APIError) => console.log('error.msg', error.msg)
