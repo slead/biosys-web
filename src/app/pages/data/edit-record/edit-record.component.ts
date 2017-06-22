@@ -61,7 +61,7 @@ export class EditRecordComponent implements OnInit {
                     );
                 } else {
                     let data: any = {};
-                    for(let datum of this.dataset.data_package.resources[0].schema.fields) {
+                    for (let datum of this.dataset.data_package.resources[0].schema.fields) {
                         data[datum['name']] = '';
                     }
 
@@ -83,44 +83,68 @@ export class EditRecordComponent implements OnInit {
     }
 
     public getDropdownOptions(fieldName: string, options: string[]): SelectItem[] {
-        if(!(fieldName in this.dropdownItems)) {
+        if (!(fieldName in this.dropdownItems)) {
             this.dropdownItems[fieldName] = options.map(option => ({'label': option, 'value': option}));
         }
 
         return this.dropdownItems[fieldName];
     }
 
-    public save(event:any) {
+    public onFeatureMapGeometryChanged(geometry: GeoJSON.DirectGeometryObject) {
+        this.apiService.recordGeometryToData(this.record.id, geometry, this.record.data)
+        .subscribe(
+            (geometryAndData: any) => {
+                let recordCopy = JSON.parse(JSON.stringify(this.record));
+                recordCopy.data = geometryAndData.data;
+                recordCopy.geometry = geometryAndData.geometry;
+                this.record = this.formatRecord(recordCopy);
+            }
+        );
+    }
+
+    public onInputChanged(event) {
+        this.apiService.recordDataToGeometry(this.record.id, this.record.geometry, this.record.data)
+        .subscribe(
+            (geometryAndData: any) => {
+                let recordCopy = JSON.parse(JSON.stringify(this.record));
+                recordCopy.data = geometryAndData.data;
+                recordCopy.geometry = geometryAndData.geometry;
+                this.record = this.formatRecord(recordCopy);
+            }
+        );
+    }
+
+    public save(event: any) {
         // need to use a copy because there may be Date objects within this.selectedRecord which are bound
         // to calendar elements which must remain dates
         let recordCopy = JSON.parse(JSON.stringify(this.record));
 
         // convert Date types back to string in DD/MM/YYYY format
-        for(let field of this.dataset.data_package.resources[0].schema.fields) {
-            if(field.type === 'date' && recordCopy.data[field.name]) {
+        for (let field of this.dataset.data_package.resources[0].schema.fields) {
+            if (field.type === 'date' && recordCopy.data[field.name]) {
                 recordCopy.data[field.name] = moment(recordCopy.data[field.name]).format('DD/MM/YYYY');
             }
         }
 
-        if('id' in recordCopy) {
+        if ('id' in recordCopy) {
             this.apiService.updateRecord(recordCopy.id, recordCopy)
-                .subscribe(
-                    (record: Record) => this.onSaveSuccess(record),
-                    (error: APIError) => this.onSaveError(error)
-                );
+            .subscribe(
+                (record: Record) => this.onSaveSuccess(record),
+                (error: APIError) => this.onSaveError(error)
+            );
         } else {
             this.apiService.createRecord(recordCopy)
-                .subscribe(
-                    (record: Record) => this.onSaveSuccess(record),
-                    (error: APIError) => this.onSaveError(error)
-                );
+            .subscribe(
+                (record: Record) => this.onSaveSuccess(record),
+                (error: APIError) => this.onSaveError(error)
+            );
         }
     }
 
-    public confirmDelete(event:any) {
+    public confirmDelete(event: any) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this record?',
-            accept: () =>  this.apiService.deleteRecord(this.record.id).subscribe(
+            accept: () => this.apiService.deleteRecord(this.record.id).subscribe(
                 (record: Record) => this.onDeleteSuccess(this.record),
                 (error: APIError) => this.onDeleteError(error))
         });
@@ -163,13 +187,13 @@ export class EditRecordComponent implements OnInit {
 
     private formatRecord(record: Record) {
         // convert date fields to Date type because calendar element in form expects a Date
-        for(let field of this.dataset.data_package.resources[0].schema.fields) {
-            if(field.type === 'date') {
+        for (let field of this.dataset.data_package.resources[0].schema.fields) {
+            if (field.type === 'date') {
                 // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
                 // and IE expect this when creating Date from a string
-                let dateString:string = record.data[field.name];
+                let dateString: string = record.data[field.name];
                 let regexGroup: string[] = dateString.match(EditRecordComponent.AMBIGOUS_DATE_PATTERN);
-                if(regexGroup) {
+                if (regexGroup) {
                     dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
                 }
                 record.data[field.name] = new Date(dateString);

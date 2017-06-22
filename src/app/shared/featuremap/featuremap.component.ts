@@ -1,5 +1,4 @@
-import { OnInit, Component, Directive, ContentChildren, Input, QueryList, OnChanges, SimpleChange }
-    from '@angular/core';
+import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges, EventEmitter, SimpleChange } from '@angular/core';
 import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
 import * as L from 'leaflet';
 import 'leaflet-draw';
@@ -23,6 +22,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public drawFeatureTypes: [string] = [] as [string];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.DirectGeometryObject;
+    @Output() public onGeometryChanged = new EventEmitter<GeoJSON.DirectGeometryObject>();
     @ContentChildren(MarkerDirective)
     set markers(markers: QueryList<MarkerDirective>) {
         markers.forEach((marker: MarkerDirective) => {
@@ -95,6 +95,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
 
         this.map.addLayer(this.drawnFeatures);
         this.map.on('draw:created', (e: any) => this.onFeatureCreated(e));
+        this.map.on('draw:edited', (e: any) => this.onFeatureEdited(e));
 
         this.drawControl = new L.Control.Draw(this.drawOptions);
 
@@ -157,5 +158,11 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         this.drawnFeatures.clearLayers();
         this.drawnFeatures.addLayer(e.layer);
         this.drawnFeatureType = e.layerType;
+
+        this.onGeometryChanged.emit(this.getFeatureGeometry());
+    }
+
+    private onFeatureEdited(e: any) {
+        this.onGeometryChanged.emit(this.getFeatureGeometry());
     }
 }

@@ -41,7 +41,7 @@
                                             [autoWidth]="false">
                                 </p-dropdown>
                                 <input pInputText *ngIf="!field.constraints?.enum" [id]="field.name"
-                                       [(ngModel)]="record.data[field.name]"/>
+                                       [(ngModel)]="record.data[field.name]" (change)="onInputChanged($event)"/>
                                 <div class="text-danger">
                                     {{recordErrors[field.name]}}
                                 </div>
@@ -52,7 +52,8 @@
             </div>
             <div class="col-md-6" *ngIf="dataset.type !== DATASET_TYPE_MAP.generic">
                 <label class="field-label">Location</label>
-                <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']">
+                <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']"
+                    (onGeometryChanged)="onFeatureMapGeometryChanged($event)">
                 </biosys-featuremap>
             </div>
         </div>

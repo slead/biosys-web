@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import {
-    APIService, APIError, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer,
-    getOverlayLayers, DATASET_TYPE_MAP } from '../../../shared/index';
+import { APIService, APIError, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER,
+    DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DATASET_TYPE_MAP } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Message, ConfirmationService, } from 'primeng/primeng';
 import * as moment from 'moment/moment';
@@ -14,7 +13,6 @@ import 'leaflet.markercluster';
     templateUrl: 'manage-data.component.html',
     styleUrls: ['manage-data.component.css'],
 })
-
 export class ManageDataComponent implements OnInit {
     private static COLUMN_WIDTH: number = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 720;
