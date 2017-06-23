@@ -38,13 +38,6 @@
                     <div class="col-md-4 text-danger">{{dsErrors['type']}}</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-md-2"><label class="field-label">Description</label></div>
-                    <div class="col-md-4">
-                        <textarea pInputTextarea [(ngModel)]="ds.comments" rows="7"></textarea>
-                    </div>
-                    <div class="col-md-4 text-danger">{{dsErrors['comments']}}</div>
-                </div>
-                <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Data Package *</label></div>
                     <div class="col-md-8" style="height:500px">
                         <biosys-json-editor id="dataPackage" [options]="editorOptions"

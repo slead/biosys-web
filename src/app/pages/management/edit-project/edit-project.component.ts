@@ -31,8 +31,8 @@ export class EditProjectComponent implements OnInit {
 
     public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-    public TEMPLATE_LATLNG_URL: string = environment.server + '/utils/templates/site/lat-long';
-    public TEMPLATE_EASTNORTH_URL: string = environment.server + '/utils/templates/site/easting-northing';
+    public TEMPLATE_LATLNG_URL: string = environment.server + '/main/download/templates/site/lat-long';
+    public TEMPLATE_EASTNORTH_URL: string = environment.server + '/main/download/templates/site/easting-northing';
     public selectedSites: number[] = [];
     public flatSites: any[];
     public siteAttributeKeys: string[] = [];
