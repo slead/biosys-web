@@ -11,6 +11,7 @@ import { APIService } from './services/api/index';
 import { ButtonModule, MenubarModule, BreadcrumbModule, MessagesModule, ProgressBarModule } from 'primeng/primeng';
 import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
 import { FileuploaderComponent } from './fileuploader/fileuploader.component';
+import { ExpandableMessagesComponent } from './expandablemessages/expandablemessages.component';
 
 /**
  * Do not specify providers for modules that might be imported by a lazy loaded module.
@@ -20,9 +21,9 @@ import { FileuploaderComponent } from './fileuploader/fileuploader.component';
   imports: [CommonModule, RouterModule, MenubarModule, BreadcrumbModule, ButtonModule, MessagesModule,
       ProgressBarModule, PrimeSharedModule],
   declarations: [HeaderComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent, FileuploaderComponent,
-      MarkerDirective, TruncatePipe],
+      MarkerDirective, TruncatePipe, ExpandableMessagesComponent],
   exports: [CommonModule, FormsModule, RouterModule, HeaderComponent, NavbarComponent, BreadcrumbsComponent,
-      FeatureMapComponent, FileuploaderComponent, MarkerDirective, TruncatePipe]
+      ExpandableMessagesComponent, FeatureMapComponent, FileuploaderComponent, MarkerDirective, TruncatePipe]
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

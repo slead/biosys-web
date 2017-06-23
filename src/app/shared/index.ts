@@ -4,6 +4,7 @@
 export * from './header/index';
 export * from './navbar/index';
 export * from './breadcrumbs/index';
+export * from './expandablemessages/index';
 export * from './featuremap/index';
 export * from './fileuploader/index';
 export * from './services/index';

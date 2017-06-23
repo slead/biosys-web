@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { APIService, APIError, User, Project, Site, Dataset, ModelChoice, FeatureMapComponent, DATASET_TYPE_MAP }
-    from '../../../shared/index';
+import { APIService, APIError, User, Project, Site, Dataset, ModelChoice, FeatureMapComponent, DATASET_TYPE_MAP,
+    DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
 import { environment } from '../../../../environments/environment';
@@ -30,8 +30,9 @@ export class EditProjectComponent implements OnInit {
     public featureMapComponent: FeatureMapComponent;
 
     public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
-    public TEMPLATE_LATLNG_URL: string = environment.server + '/utils/templates/site/lat-long';
-    public TEMPLATE_EASTNORTH_URL: string = environment.server + '/utils/templates/site/easting-northing';
+    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
+    public TEMPLATE_LATLNG_URL: string = environment.server + '/main/download/templates/site/lat-long';
+    public TEMPLATE_EASTNORTH_URL: string = environment.server + '/main/download/templates/site/easting-northing';
     public selectedSites: number[] = [];
     public flatSites: any[];
     public siteAttributeKeys: string[] = [];
@@ -150,6 +151,12 @@ export class EditProjectComponent implements OnInit {
                 detail: 'The dataset was deleted'
             });
         }
+
+        // for some reason the growls won't disappear if messages populated during init, so need
+        // to set a timeout to remove
+        setTimeout(() => {
+            this.messages = [];
+        }, DEFAULT_GROWL_LIFE);
     }
 
     public getDatumLabel(value: string): string {

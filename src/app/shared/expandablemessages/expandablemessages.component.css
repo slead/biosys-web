@@ -1,0 +1,17 @@
+.message-list {
+    display: block;
+}
+
+.expander {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.expander hr {
+    color: white;
+}
+
+.expander a {
+    cursor: pointer;
+    text-decoration: underline;
+}

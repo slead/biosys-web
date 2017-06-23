@@ -40,8 +40,7 @@ export class APIService {
      * @constructor
      */
     constructor(private http: Http) {
-        this.baseUrl = environment.server;
-        this.baseUrl = !this.baseUrl.endsWith('/') ? this.baseUrl += '/' : this.baseUrl;
+        this.baseUrl = environment.server + environment.apiExtension;
     }
 
     public getAuthToken(username: string, password: string): Observable<string> {

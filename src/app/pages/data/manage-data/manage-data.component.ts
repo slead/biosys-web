@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { APIService, APIError, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER,
-    DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DATASET_TYPE_MAP } from '../../../shared/index';
+    DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DATASET_TYPE_MAP, DEFAULT_GROWL_LIFE }
+    from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Message, ConfirmationService, } from 'primeng/primeng';
 import * as moment from 'moment/moment';
@@ -13,7 +14,7 @@ import 'leaflet.markercluster';
     templateUrl: 'manage-data.component.html',
     styleUrls: ['manage-data.component.css'],
 })
-export class ManageDataComponent implements OnInit {
+export class ManageDataComponent implements OnInit, OnDestroy {
     private static COLUMN_WIDTH: number = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 720;
     private static ACCEPTED_TYPES: string[] = [
@@ -27,6 +28,7 @@ export class ManageDataComponent implements OnInit {
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
 
     public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
+    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
     public PAGE_SIZE: number = 10;
 
     @ViewChild(FileuploaderComponent)
@@ -128,6 +130,12 @@ export class ManageDataComponent implements OnInit {
                 detail: 'The record was deleted'
             });
         }
+
+        // for some reason the growls won't disappear if messages populated during init, so need
+        // to set a timeout to remove
+        setTimeout(() => {
+            this.messages = [];
+        }, DEFAULT_GROWL_LIFE);
     }
 
     public ngOnDestroy() {
@@ -240,6 +248,12 @@ export class ManageDataComponent implements OnInit {
             });
         }
         this.isUploading = false;
+        this.flatRecords = null;
+        this.apiService.getRecordsByDatasetId(this.dataset.id)
+        .subscribe(
+            (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
     }
 
     public onUploadBeforeSend(event: any) {

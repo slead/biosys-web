@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { APIService, APIError, Project, Site, FeatureMapComponent } from '../../../shared/index';
+import { APIService, APIError, Project, Site, FeatureMapComponent, DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, Message } from 'primeng/primeng';
 
@@ -15,6 +15,8 @@ export class EditSiteComponent implements OnInit {
 
     @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
+
+    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public site: Site = <Site>{};
     public siteErrors: any = {};
