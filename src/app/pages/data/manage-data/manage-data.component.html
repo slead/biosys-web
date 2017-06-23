@@ -2,7 +2,7 @@
     <biosys-header></biosys-header>
     <biosys-navbar></biosys-navbar>
     <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
-    <p-growl [value]="messages"></p-growl>
+    <p-growl [value]="messages" [life]="DEFAULT_GROWL_LIFE"></p-growl>
     <div class="row mt-1">
         <div class="col-md">
             <h3>Records for {{dataset?.name}}</h3>
@@ -85,8 +85,8 @@
         <div class="col-md">
             <h4>Upload records</h4>
             <p>Select one or more Excel (xlxs) or CSV files to upload records for the {{ dataset.name }} dataset</p>
-            <p-messages [value]="uploadErrorMessages"></p-messages>
-            <p-messages [value]="uploadWarningMessages"></p-messages>
+            <biosys-expandablemessages [value]="uploadErrorMessages" [maxItems]="5"></biosys-expandablemessages>
+            <biosys-expandablemessages [value]="uploadWarningMessages" [maxItems]="5"></biosys-expandablemessages>
             <biosys-fileuploader name="file" [url]="uploadURL" accept=".csv,.xlsx"
                                  (onUpload)="onUpload($event)" (onError)="onUploadError($event)"
                                  (onSelect)="onUploadSelect($event)" (onBeforeSend)="onUploadBeforeSend($event)"

@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { APIService, APIError, Project, Dataset } from '../../../shared/index';
+import { APIService, APIError, Project, Dataset, JsonEditorComponent, JsonEditorOptions, DEFAULT_GROWL_LIFE }
+    from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { JsonEditorComponent, JsonEditorOptions } from '../../../shared/index';
+
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import { ModelChoice } from '../../../shared/services/api/api.interfaces';
 
@@ -18,6 +19,8 @@ export class EditDatasetComponent implements OnInit {
 
     @ViewChild(JsonEditorComponent)
     public editor: JsonEditorComponent;
+
+    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];
     public typeChoices: SelectItem[];

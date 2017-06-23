@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { APIService, APIError, Project, User } from '../../../shared/index';
+import { APIService, APIError, Project, User, DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { Router } from '@angular/router';
 import { ConfirmationService, Message } from 'primeng/primeng';
 
@@ -11,6 +11,8 @@ import { ConfirmationService, Message } from 'primeng/primeng';
 })
 
 export class ManagementListProjectsComponent implements OnInit {
+    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
+
     public breadcrumbItems: any = [];
     public projects: Project[] = [];
     public messages: Message[] = [];

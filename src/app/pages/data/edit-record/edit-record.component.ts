@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DATASET_TYPE_MAP } from '../../../shared/index';
+import { DATASET_TYPE_MAP, DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
@@ -16,6 +16,7 @@ export class EditRecordComponent implements OnInit {
     private static AMBIGOUS_DATE_PATTERN: RegExp = /^(\d{1,2}).(\d{1,2}).(\d{4})$/;
 
     public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
+    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];
     public messages: Message[] = [];
