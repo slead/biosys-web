@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { APIService, APIError } from './index';
-import { Observable, Observer } from 'rxjs';
+import { APIService } from './index';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class AuthService {
@@ -27,26 +27,11 @@ export class AuthService {
     }
 
     logout() {
-        let localLogout = () => {
-            localStorage.removeItem('auth_token');
-            Cookie.deleteAll();
-            this.hasAuthToken = false;
-        };
-        return Observable.create((observer: Observer<boolean>) => {
-            this.api.logout().subscribe(
-                () => {
-                    localLogout();
-                    observer.next(true);
-                    observer.complete();
-                },
-                (error: APIError) => {
-                    console.log('error.msg', error.msg);
-                    localLogout();
-                    observer.next(true);
-                    observer.complete();
-                }
-            );
-        });
+        localStorage.removeItem('auth_token');
+        Cookie.deleteAll();
+        this.hasAuthToken = false;
+
+        window.location.href = environment.logoutUrl;
     }
 
     isLoggedIn() {

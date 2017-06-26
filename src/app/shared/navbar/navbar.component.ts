@@ -48,8 +48,6 @@ export class NavbarComponent implements OnInit {
     }
 
     logout() {
-        this.auth.logout().subscribe(
-            () => location.reload()
-        );
+        this.auth.logout();
     }
 }

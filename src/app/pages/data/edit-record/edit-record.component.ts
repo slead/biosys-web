@@ -93,26 +93,28 @@ export class EditRecordComponent implements OnInit {
     }
 
     public onFeatureMapGeometryChanged(geometry: GeoJSON.DirectGeometryObject) {
-        this.apiService.recordGeometryToData(this.record.id, geometry, this.record.data)
+        this.apiService.recordGeometryToData(this.dataset.id, geometry, this.record.data)
         .subscribe(
             (geometryAndData: any) => {
                 let recordCopy = JSON.parse(JSON.stringify(this.record));
                 recordCopy.data = geometryAndData.data;
                 recordCopy.geometry = geometryAndData.geometry;
                 this.record = this.formatRecord(recordCopy);
-            }
+            },
+            (error: APIError) => {}
         );
     }
 
     public onInputChanged(event) {
-        this.apiService.recordDataToGeometry(this.record.id, this.record.geometry, this.record.data)
+        this.apiService.recordDataToGeometry(this.dataset.id, this.record.geometry, this.record.data)
         .subscribe(
             (geometryAndData: any) => {
                 let recordCopy = JSON.parse(JSON.stringify(this.record));
                 recordCopy.data = geometryAndData.data;
                 recordCopy.geometry = geometryAndData.geometry;
                 this.record = this.formatRecord(recordCopy);
-            }
+            },
+            (error: APIError) => {}
         );
     }
 
@@ -190,7 +192,7 @@ export class EditRecordComponent implements OnInit {
     private formatRecord(record: Record) {
         // convert date fields to Date type because calendar element in form expects a Date
         for (let field of this.dataset.data_package.resources[0].schema.fields) {
-            if (field.type === 'date') {
+            if (field.type === 'date' && record.data[field.name]) {
                 // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
                 // and IE expect this when creating Date from a string
                 let dateString: string = record.data[field.name];
