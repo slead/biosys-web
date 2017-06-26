@@ -15,7 +15,6 @@ import * as moment from 'moment/moment';
 export class EditRecordComponent implements OnInit {
     private static AMBIGOUS_DATE_PATTERN: RegExp = /^(\d{1,2}).(\d{1,2}).(\d{4})$/;
 
-    public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];

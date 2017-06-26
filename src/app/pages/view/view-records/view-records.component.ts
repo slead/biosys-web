@@ -13,7 +13,7 @@ import { SelectItem } from 'primeng/primeng';
 export class ViewRecordsComponent implements OnInit {
     private static COLUMN_WIDTH: number = 240;
 
-    public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
+    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
     public breadcrumbItems: any = [];
     public projectDropdownItems: SelectItem[] = [{label: 'All Projects', value: null}];
     public projectsMap: any = {};

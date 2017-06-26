@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { APIService, APIError, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER,
-    DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DATASET_TYPE_MAP, DEFAULT_GROWL_LIFE }
+    DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE }
     from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Message, ConfirmationService, } from 'primeng/primeng';
@@ -27,9 +27,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     ];
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
 
-    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-    public PAGE_SIZE: number = 10;
 
     @ViewChild(FileuploaderComponent)
     public uploader: FileuploaderComponent;
@@ -60,10 +58,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         mapZoom: DEFAULT_ZOOM,
         mapPosition: DEFAULT_CENTER,
         firstRow: 0
-    }
+    };
 
     private map: L.Map;
-    private uploadButton: any;
     private isAllRecordsSelected: boolean = false;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
@@ -139,8 +136,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy() {
-        this.pageState.mapZoom = this.map.getZoom();
-        this.pageState.mapPosition = this.map.getCenter();
+        if (this.map) {
+            this.pageState.mapZoom = this.map.getZoom();
+            this.pageState.mapPosition = this.map.getCenter();
+        }
         sessionStorage.setItem('pageState' + this.datasetId, JSON.stringify(this.pageState));
     }
 

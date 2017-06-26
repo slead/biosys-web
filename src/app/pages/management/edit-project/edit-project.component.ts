@@ -29,7 +29,7 @@ export class EditProjectComponent implements OnInit {
     @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
 
-    public DATASET_TYPE_MAP: string = DATASET_TYPE_MAP;
+    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
     public TEMPLATE_LATLNG_URL: string = environment.server + '/main/download/templates/site/lat-long';
     public TEMPLATE_EASTNORTH_URL: string = environment.server + '/main/download/templates/site/easting-northing';

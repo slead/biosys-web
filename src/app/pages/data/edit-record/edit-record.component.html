@@ -15,7 +15,7 @@
                     Create the record by entering the details below. Fields marked with a <strong>*</strong> are
                     required.
                 </p>
-                <p *ngIf="dataset.type !== DATASET_TYPE_MAP.generic">
+                <p *ngIf="dataset.type !== 'generic'">
                     When entering or altering the record geometry, you can enter via either the geomerty fields on the
                     left such as latitude/longitude and/or easting/northing, or by placing a marker on the map on
                     the right. Any changes to either will be reflected in the fields or the marker.
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6" *ngIf="dataset.type !== DATASET_TYPE_MAP.generic">
+            <div class="col-md-6" *ngIf="dataset.type !== 'generic'">
                 <label class="field-label">Location</label>
                 <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']"
                     (onGeometryChanged)="onFeatureMapGeometryChanged($event)">
