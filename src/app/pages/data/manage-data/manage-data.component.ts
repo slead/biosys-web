@@ -153,6 +153,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: ''}).addTo(this.map);
+
+        L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
     private loadRecordMarkers() {

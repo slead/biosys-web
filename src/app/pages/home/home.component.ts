@@ -56,6 +56,8 @@ export class HomeComponent implements OnInit {
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: ''}).addTo(this.map);
+
+        L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
     public onMapReady(map: L.Map) {

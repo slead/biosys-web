@@ -1,5 +1,7 @@
-import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges, EventEmitter, SimpleChange } from '@angular/core';
-import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
+import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
+    EventEmitter, SimpleChange } from '@angular/core';
+import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers }
+    from '../../shared/index';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';
@@ -28,7 +30,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         markers.forEach((marker: MarkerDirective) => {
             if (marker.geometry) {
                 let coord: GeoJSON.Position = marker.geometry.coordinates as GeoJSON.Position;
-                let leafletMarker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]), {icon: this.extraMarkerIcon});
+                let leafletMarker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                    {icon: this.extraMarkerIcon});
                 leafletMarker.bindPopup(marker.popupText);
                 leafletMarker.on('mouseover', function () {
                     this.openPopup();
@@ -92,6 +95,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: ''}).addTo(this.map);
+
+        L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
 
         this.map.addLayer(this.drawnFeatures);
         this.map.on('draw:created', (e: any) => this.onFeatureCreated(e));
