@@ -38,7 +38,9 @@
                 <p-dataTable [tableStyle]="getDataTableWidth()" [value]="flatRecords"
                              [emptyMessage]="flatRecords == null ? '' : 'No records found'"
                              [paginator]="true" [rows]="10" [globalFilter]="recordSearch"
-                             [loading]="flatRecords == null" resizableColumns="true">
+                             [loading]="flatRecords == null" [first]="pageState.firstRow"
+                             (onPage)='onPageChange($event)' resizableColumns="true"
+                             columnResizeMode="expand">
                     <p-header>
                         <div class="ui-helper-clearfix" style="width:100%">
                             <i class="fa fa-search float-left mt-1 mr-1"></i>

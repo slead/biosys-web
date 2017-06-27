@@ -8,7 +8,7 @@
             <p>Select a project to view available datasets to create / edit / delete records for</p>
             <p-dataTable [value]="projects" emptyMessage="No projects found" [paginator]="true" [rows]="15"
                          [globalFilter]="projectSearch" [responsive]="true" [loading]="projects == null"
-                         resizableColumns="true">
+                         resizableColumns="true" columnResizeMode="expand">
                 <p-header>
                     <div class="ui-helper-clearfix" style="width:100%">
                         <i class="fa fa-search float-left mt-1 mr-1"></i>
