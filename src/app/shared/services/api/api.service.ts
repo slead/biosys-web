@@ -10,12 +10,22 @@ import { environment } from '../../../../environments/environment';
  */
 @Injectable()
 export class APIService {
-    baseUrl: string;
+    private baseUrl: string;
+    private _receivedUnauthenticatedError = false;
+
+    public get receivedUnauthenticatedError() {
+        if (this._receivedUnauthenticatedError) {
+            this._receivedUnauthenticatedError = false;
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Handle HTTP error
      */
-    private static handleError(res: Response) {
+    private handleError(res: Response) {
         let error: APIError = {
             status: res.status,
             statusText: res.statusText,
@@ -31,6 +41,9 @@ export class APIService {
         } else {
             error.msg = body;
         }
+
+        this._receivedUnauthenticatedError = res.status === 401;
+
         return Observable.throw(error);
     }
 
@@ -331,6 +344,6 @@ export class APIService {
             .map((res: Response) => {
                 return options.map ? options.map(res.json()) : res.json();
             })
-            .catch(APIService.handleError);
+            .catch((res: Response) => this.handleError(res));
     }
 }

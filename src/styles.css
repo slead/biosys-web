@@ -11,10 +11,6 @@ table td {
   vertical-align: top;
 }
 
-.scrollable-table-container {
-  overflow-x: auto;
-}
-
 .ui-breadcrumb {
   border: none;
   background: none;
@@ -60,17 +56,12 @@ table td {
   color: #ffffff;
 }
 
-.ui-widget-content a {
+.ui-cell-data a {
   color: #2779aa;
 }
 
-.ui-widget-content a:not([href]):not([tabindex]):hover {
+.truncated {
   cursor: pointer;
-  color: #87CEFA;
-}
-
-.ui-widget-content a:not([href]):not([tabindex]) {
-  color: #87CEFA;
 }
 
 .ui-fileupload {

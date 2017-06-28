@@ -8,7 +8,7 @@
             <p>Select a project to view available datasets to create / edit / delete records for</p>
             <p-dataTable [value]="projects" emptyMessage="No projects found" [paginator]="true" [rows]="15"
                          [globalFilter]="projectSearch" [responsive]="true" [loading]="projects == null"
-                         resizableColumns="true">
+                         resizableColumns="true" columnResizeMode="expand">
                 <p-header>
                     <div class="ui-helper-clearfix" style="width:100%">
                         <i class="fa fa-search float-left mt-1 mr-1"></i>
@@ -21,9 +21,9 @@
                     </ng-template>
                 </p-column>
                 <p-column field="code" header="Code" [sortable]="true" [style]="{'width':'160px'}"></p-column>
-                <p-column header="Description">
+                <p-column header="Description" [style]="{'width':'300px'}">
                     <ng-template let-project="rowData" pTemplate="body">
-                        <label [innerHtml]="project.description"></label>
+                        <label [innerHtml]="project.description | truncate:54"></label>
                     </ng-template>
                 </p-column>
                 <p-column field="dataset_count" header="Datasets" [sortable]="true" [style]="{'width':'120px'}"></p-column>
