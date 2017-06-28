@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './services/index';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -14,7 +15,7 @@ export class AuthGuard implements CanActivate {
 
     canActivate() {
         if (!this.auth.isLoggedIn()) {
-            this.router.navigate(['/login']);
+            window.location.href = environment.logoutUrl;
             return false;
         }
         return true;

@@ -5,37 +5,33 @@ import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class AuthService {
-    private api: APIService;
-    private hasAuthToken = false;
-
     static getAuthToken() {
-        return localStorage.getItem('auth_token');
+        return Cookie.get(environment.cookieAuthToken);
     }
 
-    constructor(api: APIService) {
-        this.hasAuthToken = !!localStorage.getItem('auth_token');
-        this.api = api;
+    constructor(private api: APIService) {
     }
 
     login(username: string, password: string) {
         return this.api.getAuthToken(username, password)
             .map(token => {
                 // set the token
-                localStorage.setItem('auth_token', token);
-                this.hasAuthToken = true;
+                Cookie.set(environment.cookieAuthToken, token);
             });
     }
 
     logout() {
-        localStorage.removeItem('auth_token');
         Cookie.deleteAll();
-        this.hasAuthToken = false;
 
         window.location.href = environment.logoutUrl;
     }
 
     isLoggedIn() {
-        return true;
-    }
+        if (this.api.receivedUnauthenticatedError) {
+            Cookie.deleteAll();
+            return false;
+        }
 
+        return Cookie.get(environment.cookieAuthToken);
+    }
 }
