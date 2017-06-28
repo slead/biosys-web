@@ -23,13 +23,8 @@ export function getDefaultBaseLayer(): L.TileLayer {
 
 export function getOverlayLayers(): any {
     return {
-        'Auslig 250K': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
-            layers: 'cddp:auslig_cddp',
-            format: 'image/png',
-            transparent: true,
-        }),
-        'Pre-European Vegetation': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
-            layers: 'cddp:pre_european',
+        'State Map Base 250K': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
+            layers: 'cddp:state_map_base',
             format: 'image/png',
             transparent: true,
         }),
@@ -40,6 +35,16 @@ export function getOverlayLayers(): any {
         }),
         'P&W Estate': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
             layers: 'cddp:dpaw_tenure',
+            format: 'image/png',
+            transparent: true,
+        }),
+        'Unallocated Crown Land': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
+            layers: 'cddp:unallocated_crown_land',
+            format: 'image/png',
+            transparent: true,
+        }),
+        'Local Government Authority Boundaries': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
+            layers: 'cddp:local_gov_authority',
             format: 'image/png',
             transparent: true,
         }),
@@ -55,6 +60,11 @@ export function getOverlayLayers(): any {
         }),
         'Interim Biogeographic Regionalisation for WA': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
             layers: 'cddp:ibra_wa_subregions',
+            format: 'image/png',
+            transparent: true,
+        }),
+        'Remnant Vegetation': L.tileLayer.wms('https://kmi.dpaw.wa.gov.au/geoserver/cddp/wms', {
+            layers: 'cddp:remnant_vegetation',
             format: 'image/png',
             transparent: true,
         }),

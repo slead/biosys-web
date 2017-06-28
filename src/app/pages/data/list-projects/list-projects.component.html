@@ -21,9 +21,9 @@
                     </ng-template>
                 </p-column>
                 <p-column field="code" header="Code" [sortable]="true" [style]="{'width':'160px'}"></p-column>
-                <p-column header="Description">
+                <p-column header="Description" [style]="{'width':'300px'}">
                     <ng-template let-project="rowData" pTemplate="body">
-                        <label [innerHtml]="project.description"></label>
+                        <label [innerHtml]="project.description | truncate:54"></label>
                     </ng-template>
                 </p-column>
                 <p-column field="dataset_count" header="Datasets" [sortable]="true" [style]="{'width':'120px'}"></p-column>

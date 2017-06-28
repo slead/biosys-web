@@ -295,7 +295,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     private onDeleteRecordsSuccess() {
-        this.flatRecords = [];
+        this.flatRecords = null;
 
         this.apiService.getRecordsByDatasetId(this.datasetId)
         .subscribe(

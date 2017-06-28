@@ -6,6 +6,10 @@
     <div class="row mt-1">
         <div class="col-md">
             <h3>Records for {{dataset?.name}}</h3>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="{{ dataset.type === 'generic' ? 'col-md-12' : 'col-md-4' }} ">
             <p *ngIf="dataset.type !== 'generic';else noGeometry">
                 All records for the current dataset can be accessed through the interactive map or by searching the
                 records table below. For the interactive map, you may need to zoom to the appropriate level by clicking
@@ -23,10 +27,7 @@
                 To upload numerous records, use the upload tool at the bottom of the page.
             </p>
         </div>
-    </div>
-    <div class="row mt-1" *ngIf="dataset.type !== 'generic'">
-        <div class="col-md">
-            <h4>Interactive Map</h4>
+        <div class="col-md-8" *ngIf="dataset.type !== 'generic'">
             <div id="map">
             </div>
         </div>
@@ -55,16 +56,21 @@
                             <p-checkbox [value]="flatRecord.id" [(ngModel)]="selectedRecords"></p-checkbox>
                         </ng-template>
                     </p-column>
-                    <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width':'120px'}">
+                    <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width':'100px'}">
                         <ng-template let-flatRecord="rowData" pTemplate="body">
                             <a class="table-link"
                                [routerLink]="'/data/projects/' + projId + '/datasets/' + datasetId + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
                         </ng-template>
                     </p-column>
                     <p-column field="source_info" header="Original Source" [sortable]="true"
-                              [style]="{'width':'200px'}"></p-column>
+                              [style]="{'width':'200px'}">
+                        <ng-template let-flatRecord="rowData" pTemplate="body">
+                            <span [innerHTML]="flatRecord.source_info | truncate:28"></span>
+                        </ng-template>
+                    </p-column>
                     <p-column field="created" header="Created" [sortable]="true" [style]="{'width':'200px'}"></p-column>
-                    <p-column field="last_modified" header="Last Modified" [sortable]="true" [style]="{'width':'200px'}"></p-column>
+                    <p-column field="last_modified" header="Last Modified" [sortable]="true"
+                              [style]="{'width':'200px'}"></p-column>
                     <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
                               [field]="field.name" [header]="field.name" [sortable]="true">
                         <ng-template let-flatRecord="rowData" let-col pTemplate="body">
