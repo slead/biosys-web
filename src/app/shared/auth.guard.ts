@@ -15,7 +15,11 @@ export class AuthGuard implements CanActivate {
 
     canActivate() {
         if (!this.auth.isLoggedIn()) {
-            window.location.href = environment.logoutUrl;
+            if (environment.production) {
+                window.location.href = environment.logoutUrl;
+            } else {
+                this.router.navigate(['/login']);
+            }
             return false;
         }
         return true;

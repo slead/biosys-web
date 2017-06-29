@@ -3,6 +3,7 @@ import { APIService, APIError, Project, Statistic, User, DEFAULT_CENTER, DEFAULT
     getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
 import * as L from 'leaflet';
 import 'leaflet-mouse-position';
+import '../../../lib/leaflet.latlng-graticule'
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -56,6 +57,8 @@ export class HomeComponent implements OnInit {
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: ''}).addTo(this.map);
+
+        L.latlngGraticule().addTo(this.map);
 
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }

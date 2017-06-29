@@ -7,6 +7,7 @@ import { Message, ConfirmationService, } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
+import '../../../../lib/leaflet.latlng-graticule'
 
 @Component({
     moduleId: module.id,
@@ -153,6 +154,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: ''}).addTo(this.map);
+
+        L.latlngGraticule().addTo(this.map);
 
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }

@@ -8,4 +8,6 @@ declare namespace L {
   namespace control {
     function mousePosition(options?: any): L.Layer;
   }
+
+  function latlngGraticule(options?: any): L.Layer;
 }
