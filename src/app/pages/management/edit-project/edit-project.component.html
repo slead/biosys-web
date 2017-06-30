@@ -219,7 +219,7 @@
                         <p-footer>
                             <div class="ui-helper-clearfix" style="width:100%">
                                 <button type="button" pButton icon="fa-trash" style="float:left" label="Delete"
-                                        (click)="confirmDeleteSelectedSites()"></button>
+                                        (click)="confirmDeleteSelectedSites()" [disabled]="selectedSites.length === 0"></button>
                                 <button type="button" class="ml-1" pButton icon="fa-plus" style="float:right"
                                         label="Add"
                                         [routerLink]="'/management/projects/edit-project/' + project.id + '/create-site'"></button>
