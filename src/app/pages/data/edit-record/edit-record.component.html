@@ -34,7 +34,7 @@
                         </div>
                         <div [ngSwitch]="field.type" class="col-8">
                             <div *ngSwitchCase="'date'">
-                                <p-calendar dateFormat="dd/mm/yy" [id]="field.name"
+                                <p-calendar dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}" [id]="field.name"
                                             [(ngModel)]="record.data[field.name]">
                                 </p-calendar>
                             </div>
