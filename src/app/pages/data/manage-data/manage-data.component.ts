@@ -62,6 +62,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     };
 
     private map: L.Map;
+    private markers: L.MarkerClusterGroup;
+
     private isAllRecordsSelected: boolean = false;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
@@ -151,6 +153,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             layers: [getDefaultBaseLayer()]
         });
 
+        this.markers = L.markerClusterGroup();
+        this.markers.addTo(this.map);
+
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: '', lngFirst: true, separator: ', '}).addTo(this.map);
@@ -161,7 +166,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     private loadRecordMarkers() {
-        let markers: L.MarkerClusterGroup = L.markerClusterGroup();
         for (let record of this.flatRecords) {
             if (record.geometry) {
                 let coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
@@ -175,10 +179,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 marker.on('mouseover', function () {
                     this.openPopup();
                 });
-                markers.addLayer(marker);
+                this.markers.addLayer(marker);
             }
         }
-        this.map.addLayer(markers);
     }
 
     public getDataTableWidth(): any {
@@ -225,9 +228,15 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.parseAndDisplayResponse(event.xhr.response);
         this.isUploading = false;
         this.flatRecords = null;
+        if (this.dataset.type !== 'generic') {
+            this.markers.clearLayers();
+        }
         this.apiService.getRecordsByDatasetId(this.dataset.id)
             .subscribe(
-                (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
+                (data: any[]) => {
+                    this.flatRecords = this.formatFlatRecords(data);
+                    this.loadRecordMarkers();
+                },
                 (error: APIError) => console.log('error.msg', error.msg)
             );
     }
@@ -253,9 +262,15 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         }
         this.isUploading = false;
         this.flatRecords = null;
+        if (this.dataset.type !== 'generic') {
+            this.markers.clearLayers();
+        }
         this.apiService.getRecordsByDatasetId(this.dataset.id)
         .subscribe(
-            (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
+            (data: any[]) => {
+                this.flatRecords = this.formatFlatRecords(data);
+                this.loadRecordMarkers();
+            },
             (error: APIError) => console.log('error.msg', error.msg)
         );
     }
@@ -299,10 +314,15 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     private onDeleteRecordsSuccess() {
         this.flatRecords = null;
-
+        if (this.dataset.type !== 'generic') {
+            this.markers.clearLayers();
+        }
         this.apiService.getRecordsByDatasetId(this.datasetId)
         .subscribe(
-            (data: any[]) => this.flatRecords = this.formatFlatRecords(data),
+            (data: any[]) => {
+                this.flatRecords = this.formatFlatRecords(data);
+                this.loadRecordMarkers();
+            },
             (error: APIError) => console.log('error.msg', error.msg)
         );
 

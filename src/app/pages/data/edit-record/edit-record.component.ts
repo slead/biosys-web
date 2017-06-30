@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DATASET_TYPE_MAP, DEFAULT_GROWL_LIFE } from '../../../shared/index';
+import {  DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
+import { pyDateFormatToMomentDateFormat } from '../../../shared/utils/functions';
 
 @Component({
     moduleId: module.id,
@@ -122,10 +123,11 @@ export class EditRecordComponent implements OnInit {
         // to calendar elements which must remain dates
         let recordCopy = JSON.parse(JSON.stringify(this.record));
 
-        // convert Date types back to string in DD/MM/YYYY format
+        // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
         for (let field of this.dataset.data_package.resources[0].schema.fields) {
             if (field.type === 'date' && recordCopy.data[field.name]) {
-                recordCopy.data[field.name] = moment(recordCopy.data[field.name]).format('DD/MM/YYYY');
+                recordCopy.data[field.name] = moment(recordCopy.data[field.name]).
+                    format(pyDateFormatToMomentDateFormat(field.format));
             }
         }
 
@@ -195,6 +197,10 @@ export class EditRecordComponent implements OnInit {
                 // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
                 // and IE expect this when creating Date from a string
                 let dateString: string = record.data[field.name];
+
+                // use '-' rather than '_' in case '_' is used as the separator
+                dateString = dateString.replace(/_/g, '-');
+
                 let regexGroup: string[] = dateString.match(EditRecordComponent.AMBIGOUS_DATE_PATTERN);
                 if (regexGroup) {
                     dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
