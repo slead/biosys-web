@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import {  DEFAULT_GROWL_LIFE } from '../../../shared/index';
+import { DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import { pyDateFormatToMomentDateFormat } from '../../../shared/utils/functions';
