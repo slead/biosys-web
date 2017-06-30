@@ -56,7 +56,7 @@ export class HomeComponent implements OnInit {
 
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
-        L.control.mousePosition({emptyString: ''}).addTo(this.map);
+        L.control.mousePosition({emptyString: '', lngFirst: true, separator: ', '}).addTo(this.map);
 
         L.latlngGraticule().addTo(this.map);
 
