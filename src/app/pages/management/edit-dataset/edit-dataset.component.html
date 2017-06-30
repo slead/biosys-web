@@ -49,8 +49,9 @@
         </div>
     </div>
     <div class="row mt-3 mb-3">
-        <div class="col-2">
-            <button pButton icon="fa-close" (click)="confirmDelete()" label="Delete"></button>
+        <div class="col-4">
+            <button pButton icon="fa-trash" (click)="confirmDelete()" label="Delete"></button>
+            <button pButton icon="fa-trash" (click)="confirmDeleteRecords()" label="Delete Records"></button>
         </div>
         <div class="col-4">
             <button pButton icon="fa-close" label="Cancel" (click)="cancel()"></button>

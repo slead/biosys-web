@@ -233,6 +233,13 @@ export class APIService {
         });
     }
 
+    public deleteAllRecords(datasetId: number): Observable<void> {
+        return this.fetch('datasets/' + datasetId + '/records/', {
+            method: 'Delete',
+            data: 'all'
+        });
+    }
+
     public getStatistics(): Observable<Statistic> {
         return this.fetch('statistics', {});
     }

@@ -128,6 +128,23 @@ export class EditDatasetComponent implements OnInit {
         this.router.navigate([this.completeUrl, {'datasetDeleted': true}]);
     }
 
+    public confirmDeleteRecords(event: any) {
+        this.confirmationService.confirm({
+            message: 'Are you sure that you want to delete all records for this dataset?',
+            accept: () =>  this.apiService.deleteAllRecords(this.ds.id).subscribe(
+                () => this.onDeleteRecordsSuccess(),
+                (error: APIError) => this.onDeleteError(error))
+        });
+    }
+
+    private onDeleteRecordsSuccess() {
+        this.messages.push({
+            severity: 'success',
+            summary: 'Records Deleted',
+            detail: 'All records for this dataset have been deleted.'
+        });
+    }
+
     private onEditorChanged() {
         try {
             this.ds.data_package = this.editor.get();

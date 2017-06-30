@@ -5,6 +5,7 @@ import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer,
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';
+import '../../../lib/leaflet.latlng-graticule'
 
 @Directive({
     selector: 'biosys-marker'
@@ -95,6 +96,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: ''}).addTo(this.map);
+
+        L.latlngGraticule().addTo(this.map);
 
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
 
