@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment';
 @Injectable()
 export class AuthService {
     static getAuthToken() {
-        return Cookie.get(environment.cookieAuthToken);
+        return Cookie.get('auth_token');
     }
 
     constructor(private api: APIService) {
@@ -16,7 +16,7 @@ export class AuthService {
         return this.api.getAuthToken(username, password)
             .map(token => {
                 // set the token
-                Cookie.set(environment.cookieAuthToken, token);
+                Cookie.set('auth_token', token);
             });
     }
 
