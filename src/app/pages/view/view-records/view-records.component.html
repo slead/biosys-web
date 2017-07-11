@@ -45,11 +45,7 @@
                         {{DATASET_TYPE_MAP[dataset.type]}}
                     </ng-template>
                 </p-column>
-                <p-column header="Project" [sortable]="true">
-                    <ng-template let-dataset="rowData" pTemplate="body">
-                        <span>{{projectsMap[dataset.project]}}</span>
-                    </ng-template>
-                </p-column>
+                <p-column field="projectName" header="Project" [sortable]="true"></p-column>
             </p-dataTable>
 
             <div *ngIf="selectedDataset" class="mt-5">

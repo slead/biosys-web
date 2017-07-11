@@ -15,7 +15,7 @@ export let DEFAULT_MARKER_ICON: L.Icon = L.icon({
 });
 
 export function getDefaultBaseLayer(): L.TileLayer {
-    return L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: 'Open Street Map'
     });

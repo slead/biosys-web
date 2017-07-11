@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record, DATASET_TYPE_MAP } from '../../../shared/index';
 import { Router } from '@angular/router';
 import { SelectItem } from 'primeng/primeng';
+import { Observable } from 'rxjs/Observable'
 
 @Component({
     moduleId: module.id,
@@ -35,16 +36,22 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.apiService.getProjects().subscribe(
-            (projects: Project[]) => {
+        // projects and datasets
+        Observable.forkJoin([
+            this.apiService.getProjects(),
+            this.apiService.getDatasets()
+        ]).subscribe(
+            (data: any) => {
+                let projects = data[0];
+                this.datasets = data[1];
+                projects.forEach(project => this.projectsMap[project.id] = project.name);
+                this.addProjectNameToDatasets();
                 this.projectDropdownItems = this.projectDropdownItems.concat(
                     projects.map(project => ({
                         'label': project.name,
                         'value': project.id
                     }))
                 );
-
-                projects.forEach(project => this.projectsMap[project.id] = project.name);
             },
             (error: APIError) => console.log('error.msg', error.msg)
         );
@@ -52,11 +59,6 @@ export class ViewRecordsComponent implements OnInit {
         this.apiService.getSpecies().subscribe(
             (species: string[]) => this.speciesDropdownItems =
                 this.speciesDropdownItems.concat(species.map(s => ({'label': s, 'value': s}))),
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
-
-        this.apiService.getDatasets().subscribe(
-            (datasets: Dataset[]) => this.datasets = datasets,
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
@@ -88,7 +90,10 @@ export class ViewRecordsComponent implements OnInit {
         }
 
         this.apiService.getDatasets(datasetParams).subscribe(
-            (datasets: Dataset[]) => this.datasets = datasets,
+            (datasets: Dataset[]) => {
+                this.datasets = datasets;
+                this.addProjectNameToDatasets();
+            },
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
@@ -133,6 +138,12 @@ export class ViewRecordsComponent implements OnInit {
             return {'width': String(resources[0].schema.fields.length * ViewRecordsComponent.COLUMN_WIDTH) + 'px'};
         } else {
             return { width: '100%'};
+        }
+    }
+
+    private addProjectNameToDatasets(): void {
+        if (this.datasets && this.projectsMap) {
+            this.datasets.forEach(dataset => dataset['projectName'] = this.projectsMap[dataset.project] || '')
         }
     }
 }
