@@ -221,6 +221,9 @@ export class EditProjectComponent implements OnInit {
                     this.breadcrumbItems.push({label: 'Edit ' + this.project.name});
                     this.projectErrors = {};
                     this.isEditing = false;
+                    // The next two lines are for stopping the spinner on datasets and sites tables
+                    this.datasets = [];
+                    this.flatSites = [];
                 },
                 (errors: APIError) => this.projectErrors = errors.text
             );
