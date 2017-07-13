@@ -1,7 +1,7 @@
 export const environment = {
     production: true,
-    server: 'https://biosys-uat.dpaw.wa.gov.au',
+    server: 'https://biosys-uat.dbca.wa.gov.au',
     apiExtension: '/sso-api/',
-    logoutUrl: 'https://oim.dpaw.wa.gov.au/logout',
+    logoutUrl: 'https://oim.dbca.wa.gov.au/logout',
     cookieAuthToken: 'oim_dpaw_wa_gov_au_sessionid'
 };
