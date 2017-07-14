@@ -21,8 +21,9 @@ export class AuthService {
     }
 
     logout() {
-        Cookie.deleteAll();
-
+        if (!environment.production) {
+            Cookie.deleteAll();
+        }
         window.location.href = environment.logoutUrl;
     }
 
