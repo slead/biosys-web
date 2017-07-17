@@ -14,15 +14,15 @@ export class AuthGuard implements CanActivate {
     }
 
     canActivate() {
-        // disabled for now to stop SSO problem of getting kicked out prematurely
-        // if (!this.auth.isLoggedIn()) {
-        //     if (environment.production) {
-        //         window.location.href = environment.logoutUrl;
-        //     } else {
-        //         this.router.navigate(['/login']);
-        //     }
-        //     return false;
-        // }
+        if (!this.auth.isLoggedIn()) {
+            if (environment.production) {
+                window.location.reload(true);
+            } else {
+                this.router.navigate(['/login']);
+            }
+            return false;
+        }
+
         return true;
     }
 }
