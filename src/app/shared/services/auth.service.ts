@@ -28,6 +28,7 @@ export class AuthService {
     }
 
     isLoggedIn() {
+        // disabled for now to stop SSO problem of getting kicked out prematurely
         // if (this.api.receivedUnauthenticatedError) {
         //     Cookie.deleteAll();
         //     return false;
