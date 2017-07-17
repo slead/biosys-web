@@ -28,10 +28,10 @@ export class AuthService {
     }
 
     isLoggedIn() {
-        if (this.api.receivedUnauthenticatedError) {
-            Cookie.deleteAll();
-            return false;
-        }
+        // if (this.api.receivedUnauthenticatedError) {
+        //     Cookie.deleteAll();
+        //     return false;
+        // }
 
         return Cookie.get(environment.cookieAuthToken);
     }
