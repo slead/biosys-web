@@ -33,8 +33,8 @@ export interface Project {
     datum?: number | string | null;
     attributes?: {[key: string]: string} | null;
     description?: string;
-    geometry?: GeoJSON.DirectGeometryObject | null;
-    centroid?: GeoJSON.DirectGeometryObject | null;
+    geometry?: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
+    centroid?: GeoJSON.Point | null;
     site_data_package?: {} | null;
     custodians?: number[];
     dataset_count?: number;
@@ -47,8 +47,8 @@ export interface Site {
     name?: string;
     parent_site?: number | null;
     project?: number;
-    geometry?: GeoJSON.DirectGeometryObject | null;
-    centroid?: GeoJSON.DirectGeometryObject | null;
+    geometry?: GeoJSON.GeometryObject | null;
+    centroid?: GeoJSON.GeometryObject | null;
     description?: string;
     attributes?: {[key: string]: string} | null;
 }
@@ -57,9 +57,7 @@ export interface Dataset {
     name?: string;
     type?: string;
     project?: number;
-    data_package?: {
-        'resources'?: any[]
-    };
+    data_package?: any;
     record_count?: number;
     description?: string;
 }
@@ -72,7 +70,7 @@ export interface Record {
     created?: string;
     data?: {[key: string]: any} | null;
     datetime?: string;
-    geometry?: GeoJSON.DirectGeometryObject | null;
+    geometry?: GeoJSON.GeometryObject | null;
     species_name?: string;
     name_id?: number;
 }

@@ -279,7 +279,7 @@ export class APIService {
         return this.baseUrl + 'records/?output=xlsx&';
     }
 
-    public recordDataToGeometry(datasetId: number, geometry: GeoJSON.DirectGeometryObject, data: any) {
+    public recordDataToGeometry(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
         return this.fetch('utils/data-to-geometry/dataset/' + datasetId, {
             method: 'Post',
             data: {
@@ -289,7 +289,7 @@ export class APIService {
         });
     }
 
-    public recordGeometryToData(datasetId: number, geometry: GeoJSON.DirectGeometryObject, data: any) {
+    public recordGeometryToData(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
         return this.fetch('utils/geometry-to-data/dataset/' + datasetId, {
             method: 'Post',
             data: {
