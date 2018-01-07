@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions, Request, URLSearchParams, ResponseContentType } from '@angular/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
+// import { Http, Response, Headers, RequestOptions, Request, URLhttpParams, ResponseContentType } from '@angular/http';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AuthService } from '../index';
 import { FetchOptions, APIError, User, Project, Dataset, Site, Record, Statistic, ModelChoice } from './api.interfaces';
 import { environment } from '../../../../environments/environment';
@@ -25,7 +27,7 @@ export class APIService {
     /**
      * Handle HTTP error
      */
-    private handleError(res: Response) {
+    private handleError(operation = 'operation', res: any) {
         let error: APIError = {
             status: res.status,
             statusText: res.statusText,
@@ -52,7 +54,7 @@ export class APIService {
      * @param {Http} http - The injected Http.
      * @constructor
      */
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
         this.baseUrl = environment.server + environment.apiExtension;
     }
 
@@ -303,54 +305,95 @@ export class APIService {
      * Returns an array of [header, value] of headers necessary for authentication
      * @returns {[string,string][]}
      */
-    public getAuthHeaders(): [string, string][] {
-        let headers: [string, string][] = [];
+    public getAuthHeader(): any {
         let authToken = AuthService.getAuthToken();
         if (authToken) {
-            headers.push(['Authorization', 'Token ' + authToken]);
+            return {'Authorization': 'Token ' + authToken};
         }
-        return headers;
     }
 
     public logout(): Observable<any> {
         return this.fetch('logout', {});
     }
 
+    // public fetch(path: string, options: FetchOptions): Observable<any> {
+    //     if (path && !path.endsWith('/')) {
+    //         // enforce '/' at the end
+    //         path += '/';
+    //     }
+    //     let headers = new Headers();
+    //     headers.append('Content-Type', 'application/json');
+    //     for (let header of this.getAuthHeader()) {
+    //         headers.append(header[0], header[1]);
+    //     }
+    //     if (options.headers) {
+    //         for (let key in options.headers) {
+    //             headers.append(key, options.headers[key]);
+    //         }
+    //     }
+    //     let httpParams = new URLhttpParams();
+    //     if (options.urlParams) {
+    //         for (let key in options.urlParams) {
+    //             httpParams.append(key, options.urlParams[key]);
+    //         }
+    //     }
+    //     let reqOptions = new RequestOptions({
+    //         url: this.baseUrl + path,
+    //         method: options.method || 'Get',
+    //         headers: headers,
+    //         search: httpParams,
+    //         body: JSON.stringify(options.data),
+    //         withCredentials: true,
+    //         responseType: ResponseContentType.Json
+    //     });
+    //     let request = new Request(reqOptions);
+    //     return this.http.request(request)
+    //         .map((res: Response) => {
+    //             return options.map ? options.map(res.json()) : res.json();
+    //         })
+    //         .catch((res: Response) => this.handleError(res));
+    // }
+
     public fetch(path: string, options: FetchOptions): Observable<any> {
         if (path && !path.endsWith('/')) {
             // enforce '/' at the end
             path += '/';
         }
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        for (let header of this.getAuthHeaders()) {
-            headers.append(header[0], header[1]);
-        }
+
+        let headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, this.getAuthHeader()));
         if (options.headers) {
             for (let key in options.headers) {
-                headers.append(key, options.headers[key]);
+                headers = headers.append(key, options.headers[key]);
             }
         }
-        let searchParams = new URLSearchParams();
+
+        let httpParams = new HttpParams();
         if (options.urlParams) {
             for (let key in options.urlParams) {
-                searchParams.append(key, options.urlParams[key]);
+                httpParams = httpParams.append(key, options.urlParams[key]);
             }
         }
-        let reqOptions = new RequestOptions({
-            url: this.baseUrl + path,
-            method: options.method || 'Get',
+
+        // let reqOptions = new RequestOptions({
+        //     url: this.baseUrl + path,
+        //     method: options.method || 'Get',
+        //     headers: headers,
+        //     search: httpParams,
+        //     body: JSON.stringify(options.data),
+        //     withCredentials: true,
+        //     responseType: ResponseContentType.Json
+        // });
+
+        let request = new HttpRequest(options.method || 'GET', this.baseUrl + path, {
             headers: headers,
-            search: searchParams,
-            body: JSON.stringify(options.data),
+            params: httpParams,
             withCredentials: true,
-            responseType: ResponseContentType.Json
+            body: JSON.stringify(options.data)
         });
-        let request = new Request(reqOptions);
+
         return this.http.request(request)
-            .map((res: Response) => {
-                return options.map ? options.map(res.json()) : res.json();
-            })
-            .catch((res: Response) => this.handleError(res));
+            // .pipe(
+            //     catchError((this.handleError(null)))
+            // )
     }
 }

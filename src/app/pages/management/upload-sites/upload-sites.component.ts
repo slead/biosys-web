@@ -86,8 +86,9 @@ export class UploadSitesComponent implements OnInit {
 
     onBeforeSend(event: any) {
         let xhr = event.xhr;
-        for (let header of this.apiService.getAuthHeaders()) {
-            xhr.setRequestHeader(header[0], header[1]);
+        const header = this.apiService.getAuthHeader();
+        if (header) {
+            xhr.setRequestHeader(header.keys()[0], header[header.keys()[0]]);
         }
     }
 

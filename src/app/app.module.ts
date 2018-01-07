@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { routes } from './app.routes';
 import { LoginModule } from './pages/login/login.module';
@@ -16,35 +16,36 @@ import * as view from './pages/view/index';
 import { AppComponent } from './app.component';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpModule,
-    RouterModule.forRoot(routes),
-    SharedModule,
-    LoginModule,
-    HomeModule,
-    management.ManagementListProjectsModule,
-    management.EditProjectModule,
-    management.EditDatasetModule,
-    management.UploadSitesModule,
-    management.EditSiteModule,
-    data.DataListProjectsModule,
-    data.ListDatasetsModule,
-    data.ManageDataModule,
-    data.EditRecordModule,
-    view.ViewRecordsModule
-  ],
-  providers: [
-    {
-      provide: LocationStrategy,
-      useClass: HashLocationStrategy
-    },
-    AuthGuard
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent
+    ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        RouterModule.forRoot(routes),
+        SharedModule,
+        LoginModule,
+        HomeModule,
+        management.ManagementListProjectsModule,
+        management.EditProjectModule,
+        management.EditDatasetModule,
+        management.UploadSitesModule,
+        management.EditSiteModule,
+        data.DataListProjectsModule,
+        data.ListDatasetsModule,
+        data.ManageDataModule,
+        data.EditRecordModule,
+        view.ViewRecordsModule
+    ],
+    providers: [
+        {
+            provide: LocationStrategy,
+            useClass: HashLocationStrategy
+        },
+        AuthGuard
+    ],
+    bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
