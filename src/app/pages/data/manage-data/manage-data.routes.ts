@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { ManageDataComponent } from './index';
+import { ManageDataComponent } from './manage-data.component';
 import { AuthGuard } from '../../../shared/index';
 
 export const ManageDataRoutes: Route[] = [

@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { ManagementListProjectsComponent } from './index';
+import { ManagementListProjectsComponent } from './list-projects.component';
 import { AuthGuard } from '../../../shared/index';
 import { EditProjectRoutes } from '../edit-project/index';
 import { EditSiteRoutes } from '../edit-site/index';

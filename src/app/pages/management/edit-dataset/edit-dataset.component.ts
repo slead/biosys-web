@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { APIService, APIError, Project, Dataset, JsonEditorComponent, JsonEditorOptions, DEFAULT_GROWL_LIFE }
     from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -72,14 +73,16 @@ export class EditDatasetComponent implements OnInit {
         }
 
         this.apiService.getModelChoices('dataset', 'type')
-            .map(
-                (choices: ModelChoice[]): SelectItem[] =>
-                    choices.map((choice: ModelChoice): SelectItem => {
-                        return {
-                            label: choice.display_name,
-                            value: choice.value
-                        };
-                    })
+            .pipe(
+                map(
+                    (choices: ModelChoice[]): SelectItem[] =>
+                        choices.map((choice: ModelChoice): SelectItem => {
+                            return {
+                                label: choice.display_name,
+                                value: choice.value
+                            };
+                        })
+                )
             )
             .subscribe(
                 (choices: SelectItem[]) => this.typeChoices = choices,

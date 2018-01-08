@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { APIService } from './index';
+import { map } from 'rxjs/operators';
+import { APIService } from './api/api.service';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 import { environment } from '../../../environments/environment';
 
@@ -13,11 +14,9 @@ export class AuthService {
     }
 
     login(username: string, password: string) {
-        return this.api.getAuthToken(username, password)
-            .map(token => {
-                // set the token
-                Cookie.set('auth_token', token);
-            });
+        return this.api.getAuthToken(username, password).pipe(
+            map(res => Cookie.set('auth_token', res.token))
+        );
     }
 
     logout() {

@@ -4,12 +4,11 @@ export interface APIError {
     text: string;
     msg: any;
 }
-export interface FetchOptions {
+export interface RequestOptions {
     method?: string;
     headers?: {[key: string]: string};
     urlParams?: {[key: string]: string};
     data?: any;
-    map?: (resp: any) => any;
 }
 export interface User {
     id?: number;

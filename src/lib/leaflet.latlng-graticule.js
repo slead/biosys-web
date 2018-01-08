@@ -7,7 +7,7 @@
 (function (window, document, undefined) {
 
 L.LatLngGraticule = L.Layer.extend({
-    includes: L.Mixin.Events,
+    includes: L.Evented,
 
     options: {
         showLabel: true,
@@ -145,6 +145,18 @@ L.LatLngGraticule = L.Layer.extend({
         });
     },
 
+    _getTranslateString: function (point) {
+        // on WebKit browsers (Chrome/Safari/iOS Safari/Android) using translate3d instead of translate
+        // makes animation smoother as it ensures HW accel is used. Firefox 13 doesn't care
+        // (same speed either way), Opera 12 doesn't support translate3d
+
+        var is3d = L.Browser.webkit3d,
+            open = 'translate' + (is3d ? '3d' : '') + '(',
+            close = (is3d ? ',0' : '') + ')';
+
+        return open + point.x + 'px,' + point.y + 'px' + close;
+    },
+
     _animateZoom: function (e) {
         var map = this._map,
             container = this._container,
@@ -158,7 +170,7 @@ L.LatLngGraticule = L.Layer.extend({
             origin = topLeft._add(size._multiplyBy((1 / 2) * (1 - 1 / scale)));
 
         container.style[L.DomUtil.TRANSFORM] =
-                L.DomUtil.getTranslateString(origin) + ' scale(' + scale + ') ';
+                this._getTranslateString(origin) + ' scale(' + scale + ') ';
     },
 
     _reset: function () {

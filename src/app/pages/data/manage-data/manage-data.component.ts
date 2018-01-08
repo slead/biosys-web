@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
-import { APIService, APIError, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER,
+import { APIService, APIError, AuthService, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER,
     DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE }
     from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -277,9 +277,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     public onUploadBeforeSend(event: any) {
         let xhr = event.xhr;
-        const header = this.apiService.getAuthHeader();
-        if (header) {
-            xhr.setRequestHeader(header.keys()[0], header[header.keys()[0]]);
+
+        const authToken = AuthService.getAuthToken();
+        if (authToken) {
+            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
         }
     }
 

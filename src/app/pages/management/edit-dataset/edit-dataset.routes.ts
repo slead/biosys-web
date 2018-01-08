@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { EditDatasetComponent } from './index';
+import { EditDatasetComponent } from './edit-dataset.component';
 import { AuthGuard } from '../../../shared/index';
 
 export const EditDatasetRoutes: Route[] = [

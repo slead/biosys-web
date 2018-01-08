@@ -242,7 +242,7 @@ var APIService = APIService_1 = (function () {
     APIService.prototype.logout = function () {
         return this.fetch('logout', {});
     };
-    APIService.prototype.fetch = function (path, options) {
+    APIService.prototype.request = function (path, options) {
         if (path && !path.endsWith('/')) {
             // enforce '/' at the end
             path += '/';

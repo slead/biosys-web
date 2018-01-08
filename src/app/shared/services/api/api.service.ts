@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
-// import { Http, Response, Headers, RequestOptions, Request, URLhttpParams, ResponseContentType } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { AuthService } from '../index';
-import { FetchOptions, APIError, User, Project, Dataset, Site, Record, Statistic, ModelChoice } from './api.interfaces';
+import { map, catchError } from 'rxjs/operators';
+import { RequestOptions, APIError, User, Project, Dataset, Site, Record, Statistic, ModelChoice } from './api.interfaces';
 import { environment } from '../../../../environments/environment';
 
 /**
@@ -27,15 +25,40 @@ export class APIService {
     /**
      * Handle HTTP error
      */
-    private handleError(operation = 'operation', res: any) {
+    // private handleError(res: any) {
+    //     let error: APIError = {
+    //         status: res.status,
+    //         statusText: res.statusText,
+    //         text: res.json(),
+    //         msg: ''
+    //     };
+    //     // The error message is usually in the body as 'detail' or 'non_field_errors'
+    //     let body = res.json();
+    //     if ('detail' in body) {
+    //         error.msg = body['detail'];
+    //     } else if ('non_field_errors' in body) {
+    //         error.msg = body['non_field_errors'];
+    //     } else {
+    //         error.msg = body;
+    //     }
+    //
+    //     this._receivedUnauthenticatedError = res.status === 401;
+    //
+    //     return Observable.throw(error);
+    // }
+
+    private handleError (err?: any) {
+        // this doesn't seem to be working properly
+
         let error: APIError = {
-            status: res.status,
-            statusText: res.statusText,
-            text: res.json(),
+            status: err.status,
+            statusText: err.statusText,
+            text: err.json(),
             msg: ''
         };
+
         // The error message is usually in the body as 'detail' or 'non_field_errors'
-        let body = res.json();
+        let body = err.error;
         if ('detail' in body) {
             error.msg = body['detail'];
         } else if ('non_field_errors' in body) {
@@ -44,7 +67,7 @@ export class APIService {
             error.msg = body;
         }
 
-        this._receivedUnauthenticatedError = res.status === 401;
+        this._receivedUnauthenticatedError = err.status === 401;
 
         return Observable.throw(error);
     }
@@ -58,156 +81,155 @@ export class APIService {
         this.baseUrl = environment.server + environment.apiExtension;
     }
 
-    public getAuthToken(username: string, password: string): Observable<string> {
-        return this.fetch('auth-token', {
-            method: 'Post',
+    public getAuthToken(username: string, password: string): Observable<any> {
+        return this.request('auth-token', {
+            method: 'POST',
             data: {
                 username: username,
                 password: password
-            },
-            map: (res) => res.token
+            }
         });
     }
 
     public getUser(id: number): Observable<User> {
-        return this.fetch('users/' + id, {});
+        return this.request('users/' + id, {});
     }
 
     public getUsers(): Observable<User[]> {
-        return this.fetch('users', {});
+        return this.request('users', {});
     }
 
     public whoAmI(): Observable<User> {
-        return this.fetch('whoami', {});
+        return this.request('whoami', {});
     }
 
     public getProjects(custodians?: number[]): Observable<Project[]> {
-        let params: FetchOptions = {};
+        let params: RequestOptions = {};
         if (custodians) {
             params['urlParams'] = {custodians: custodians.toString()};
         }
 
-        return this.fetch('projects', params);
+        return this.request('projects', params);
     }
 
     public getProjectById(id: number): Observable<Project> {
-        return this.fetch('projects/' + id, {});
+        return this.request('projects/' + id, {});
     }
 
     public createProject(project: Project): Observable<Project> {
-        return this.fetch('projects', {
-            method: 'Post',
+        return this.request('projects', {
+            method: 'POST',
             data: project
         });
     }
 
     public updateProject(project: Project): Observable<Project> {
-        return this.fetch('projects/' + project.id, {
+        return this.request('projects/' + project.id, {
             method: 'Patch',
             data: project
         });
     }
 
     public deleteProject(id: number): Observable<Project> {
-        return this.fetch('projects/' + id, {
+        return this.request('projects/' + id, {
             method: 'Delete',
         });
     }
 
     public getAllSites(): Observable<Site[]> {
-        return this.fetch('sites', {});
+        return this.request('sites', {});
     }
 
     public getAllSitesForProjectID(id: number): Observable<Site[]> {
-        return this.fetch('projects/' + id + '/sites', {});
+        return this.request('projects/' + id + '/sites', {});
     }
 
     public getSiteById(id: number): Observable<Site> {
-        return this.fetch('sites/' + id, {});
+        return this.request('sites/' + id, {});
     }
 
     public createSite(site: Site): Observable<Site> {
-        return this.fetch('sites/', {
-            method: 'Post',
+        return this.request('sites/', {
+            method: 'POST',
             data: site
         });
     }
 
     public updateSite(site: Site): Observable<Site> {
-        return this.fetch('sites/' + site.id, {
+        return this.request('sites/' + site.id, {
             method: 'Patch',
             data: site
         });
     }
 
     public deleteSite(id: number): Observable<Site> {
-        return this.fetch('sites/' + id, {
+        return this.request('sites/' + id, {
             method: 'Delete',
         });
     }
 
     public deleteSites(projectId: number, siteIds: number[]): Observable<void> {
-        return this.fetch('projects/' + projectId + '/sites/', {
+        return this.request('projects/' + projectId + '/sites/', {
             method: 'Delete',
             data: siteIds
         });
     }
 
     public getDatasets(params?: any): Observable<Dataset[]> {
-        return this.fetch('datasets', params ? {urlParams: params} : {});
+        return this.request('datasets', params ? {urlParams: params} : {});
     }
 
     public getAllDatasetsForProjectID(id: number): Observable<Dataset[]> {
-        return this.fetch('datasets', {urlParams: {project: String(id)}});
+        return this.request('datasets', {urlParams: {project: String(id)}});
     }
 
     public getDatasetById(id: number): Observable<Dataset> {
-        return this.fetch('datasets/' + id, {});
+        return this.request('datasets/' + id, {});
     }
 
     public createDataset(dataset: Dataset): Observable<Dataset> {
-        return this.fetch('datasets', {
-            method: 'Post',
+        return this.request('datasets', {
+            method: 'POST',
             data: dataset
         });
     }
 
     public updateDataset(dataset: Dataset): Observable<Dataset> {
-        return this.fetch('datasets/' + dataset.id, {
+        return this.request('datasets/' + dataset.id, {
             method: 'Patch',
             data: dataset
         });
     }
 
     public deleteDataset(id: number): Observable<Dataset> {
-        return this.fetch('dataset/' + id, {
+        return this.request('dataset/' + id, {
             method: 'Delete',
         });
     }
 
     public getRecordsByDatasetId(id: number): Observable<any[]> {
-        return this.fetch('datasets/' + id + '/records/', {});
+        return this.request('datasets/' + id + '/records/', {});
     }
 
     public createRecordsForDatasetId(id: number, data: any[]) {
-        return this.fetch('datasets/' + id + '/records/', {
-            method: 'Post',
+        return this.request('datasets/' + id + '/records/', {
+            method: 'POST',
             data: data
         });
     }
 
     public getRecords(params?: any): Observable<Record[]> {
-        return this.fetch('records', params ? {urlParams: params} : {});
+        return this.request('records', params ? {urlParams: params} : {});
     }
 
     public getRecordById(id: number): Observable<Record> {
-        return this.fetch('records/' + id, {});
+        return this.request('records/' + id, {});
     }
 
     public createRecord(record: Record, strict = true): Observable<Record> {
         let urlParams = strict ? {strict: 'true'} : {};
-        return this.fetch('records', {
-            method: 'Post',
+        return this.request('records', {
+            method: 'POST',
             data: record,
             urlParams: urlParams
         });
@@ -215,7 +237,7 @@ export class APIService {
 
     public updateRecord(id: number, record: Record, strict = true): Observable<Record> {
         let urlParams = strict ? {strict: 'true'} : {};
-        return this.fetch('records/' + id, {
+        return this.request('records/' + id, {
             method: 'Put',
             data: record,
             urlParams: urlParams
@@ -223,38 +245,37 @@ export class APIService {
     }
 
     public deleteRecord(id: number): Observable<Record> {
-        return this.fetch('records/' + id, {
+        return this.request('records/' + id, {
             method: 'Delete',
         });
     }
 
     public deleteRecords(datasetId: number, recordIds: number[]): Observable<void> {
-        return this.fetch('datasets/' + datasetId + '/records/', {
+        return this.request('datasets/' + datasetId + '/records/', {
             method: 'Delete',
             data: recordIds
         });
     }
 
     public deleteAllRecords(datasetId: number): Observable<void> {
-        return this.fetch('datasets/' + datasetId + '/records/', {
+        return this.request('datasets/' + datasetId + '/records/', {
             method: 'Delete',
             data: 'all'
         });
     }
 
     public getStatistics(): Observable<Statistic> {
-        return this.fetch('statistics', {});
+        return this.request('statistics', {});
     }
 
     public getModelChoices(modelName: string, fieldName: string): Observable<ModelChoice[]> {
-        return this.getModelMetadata(modelName)
-            .map(
-                (metaData) => metaData.actions['POST'][fieldName]['choices']
-            );
+        return this.getModelMetadata(modelName).pipe(
+            map((metaData) => metaData.actions['POST'][fieldName]['choices'])
+        );
     }
 
     public getModelMetadata(modelName: string): Observable<any> {
-        return this.fetch(modelName, {
+        return this.request(modelName, {
             'method': 'Options'
         });
     }
@@ -264,7 +285,7 @@ export class APIService {
         if (search) {
             urlParams['search'] = search;
         }
-        return this.fetch('species', {
+        return this.request('species', {
             urlParams: urlParams
         });
     }
@@ -282,8 +303,8 @@ export class APIService {
     }
 
     public recordDataToGeometry(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
-        return this.fetch('utils/data-to-geometry/dataset/' + datasetId, {
-            method: 'Post',
+        return this.request('utils/data-to-geometry/dataset/' + datasetId, {
+            method: 'POST',
             data: {
                 geometry: geometry,
                 data: data
@@ -292,8 +313,8 @@ export class APIService {
     }
 
     public recordGeometryToData(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
-        return this.fetch('utils/geometry-to-data/dataset/' + datasetId, {
-            method: 'Post',
+        return this.request('utils/geometry-to-data/dataset/' + datasetId, {
+            method: 'POST',
             data: {
                 geometry: geometry,
                 data: data
@@ -301,99 +322,23 @@ export class APIService {
         });
     }
 
-    /**
-     * Returns an array of [header, value] of headers necessary for authentication
-     * @returns {[string,string][]}
-     */
-    public getAuthHeader(): any {
-        let authToken = AuthService.getAuthToken();
-        if (authToken) {
-            return {'Authorization': 'Token ' + authToken};
-        }
-    }
-
     public logout(): Observable<any> {
-        return this.fetch('logout', {});
+        return this.request('logout', {});
     }
 
-    // public fetch(path: string, options: FetchOptions): Observable<any> {
-    //     if (path && !path.endsWith('/')) {
-    //         // enforce '/' at the end
-    //         path += '/';
-    //     }
-    //     let headers = new Headers();
-    //     headers.append('Content-Type', 'application/json');
-    //     for (let header of this.getAuthHeader()) {
-    //         headers.append(header[0], header[1]);
-    //     }
-    //     if (options.headers) {
-    //         for (let key in options.headers) {
-    //             headers.append(key, options.headers[key]);
-    //         }
-    //     }
-    //     let httpParams = new URLhttpParams();
-    //     if (options.urlParams) {
-    //         for (let key in options.urlParams) {
-    //             httpParams.append(key, options.urlParams[key]);
-    //         }
-    //     }
-    //     let reqOptions = new RequestOptions({
-    //         url: this.baseUrl + path,
-    //         method: options.method || 'Get',
-    //         headers: headers,
-    //         search: httpParams,
-    //         body: JSON.stringify(options.data),
-    //         withCredentials: true,
-    //         responseType: ResponseContentType.Json
-    //     });
-    //     let request = new Request(reqOptions);
-    //     return this.http.request(request)
-    //         .map((res: Response) => {
-    //             return options.map ? options.map(res.json()) : res.json();
-    //         })
-    //         .catch((res: Response) => this.handleError(res));
-    // }
-
-    public fetch(path: string, options: FetchOptions): Observable<any> {
+    public request(path: string, options: RequestOptions): Observable<any> {
         if (path && !path.endsWith('/')) {
             // enforce '/' at the end
             path += '/';
         }
 
-        let headers = new HttpHeaders(Object.assign({'Content-Type': 'application/json'}, this.getAuthHeader()));
-        if (options.headers) {
-            for (let key in options.headers) {
-                headers = headers.append(key, options.headers[key]);
-            }
-        }
-
-        let httpParams = new HttpParams();
-        if (options.urlParams) {
-            for (let key in options.urlParams) {
-                httpParams = httpParams.append(key, options.urlParams[key]);
-            }
-        }
-
-        // let reqOptions = new RequestOptions({
-        //     url: this.baseUrl + path,
-        //     method: options.method || 'Get',
-        //     headers: headers,
-        //     search: httpParams,
-        //     body: JSON.stringify(options.data),
-        //     withCredentials: true,
-        //     responseType: ResponseContentType.Json
-        // });
-
-        let request = new HttpRequest(options.method || 'GET', this.baseUrl + path, {
-            headers: headers,
-            params: httpParams,
+        return this.http.request(options.method || 'GET', this.baseUrl + path, {
+            params: options.urlParams,
             withCredentials: true,
             body: JSON.stringify(options.data)
-        });
-
-        return this.http.request(request)
-            // .pipe(
-            //     catchError((this.handleError(null)))
-            // )
+        })
+        .pipe(
+            catchError(this.handleError)
+        );
     }
 }

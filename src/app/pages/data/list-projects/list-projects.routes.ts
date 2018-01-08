@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { DataListProjectsComponent } from './index';
+import { DataListProjectsComponent } from './list-projects.component';
 import { AuthGuard } from '../../../shared/index';
 import { DatasetsRoutes } from '../list-datasets/list-datasets.routes';
 import { ManageDataRoutes } from '../manage-data/manage-data.routes';

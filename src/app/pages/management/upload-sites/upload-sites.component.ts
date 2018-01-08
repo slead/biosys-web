@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { APIService, APIError, Project } from '../../../shared/index';
+import { APIService, APIError, AuthService, Project } from '../../../shared/index';
 import { Message, FileUpload } from 'primeng/primeng';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -84,11 +84,12 @@ export class UploadSitesComponent implements OnInit {
         }
     }
 
-    onBeforeSend(event: any) {
+    public onBeforeSend(event: any) {
         let xhr = event.xhr;
-        const header = this.apiService.getAuthHeader();
-        if (header) {
-            xhr.setRequestHeader(header.keys()[0], header[header.keys()[0]]);
+
+        const authToken = AuthService.getAuthToken();
+        if (authToken) {
+            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
         }
     }
 

@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { EditRecordComponent } from './index';
+import { EditRecordComponent } from './edit-record.component';
 import { AuthGuard } from '../../../shared/index';
 
 export const EditRecordRoutes: Route[] = [

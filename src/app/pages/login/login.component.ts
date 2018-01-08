@@ -32,6 +32,7 @@ export class LoginComponent {
 
     login(event: any) {
         event.preventDefault();
+
         this.authService.login(this.loginForm.value.username, this.loginForm.value.password)
         .subscribe(
             () => this.router.navigate(['/']),
