@@ -327,12 +327,9 @@ export class APIService {
     }
 
     public request(path: string, options: RequestOptions): Observable<any> {
-        if (path && !path.endsWith('/')) {
-            // enforce '/' at the end
-            path += '/';
-        }
+        const url = this.baseUrl + ((path && !path.endsWith('/')) ? path + '/' : path);
 
-        return this.http.request(options.method || 'GET', this.baseUrl + path, {
+        return this.http.request(options.method || 'GET', url, {
             params: options.urlParams,
             withCredentials: true,
             body: JSON.stringify(options.data)
