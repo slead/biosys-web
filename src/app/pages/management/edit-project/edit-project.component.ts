@@ -216,7 +216,7 @@ export class EditProjectComponent implements OnInit {
                     this.projectErrors = {};
                     this.isEditing = false;
                 },
-                (errors: APIError) => this.projectErrors = errors.text,
+                (errors: APIError) => this.projectErrors = errors.msg,
             );
         } else {
             this.apiService.createProject(this.project).subscribe(
@@ -230,7 +230,7 @@ export class EditProjectComponent implements OnInit {
                     this.datasets = [];
                     this.flatSites = [];
                 },
-                (errors: APIError) => this.projectErrors = errors.text
+                (errors: APIError) => this.projectErrors = errors.msg
             );
         }
     }

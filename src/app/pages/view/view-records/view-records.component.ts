@@ -3,6 +3,7 @@ import { APIService, APIError, Project, Dataset, Record, DATASET_TYPE_MAP } from
 import { Router } from '@angular/router';
 import { SelectItem } from 'primeng/primeng';
 import { Observable } from 'rxjs/Observable'
+import 'rxjs/add/observable/forkJoin';
 
 @Component({
     moduleId: module.id,

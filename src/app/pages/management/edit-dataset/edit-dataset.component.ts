@@ -104,12 +104,12 @@ export class EditDatasetComponent implements OnInit {
         if (this.ds.id) {
             this.apiService.updateDataset(this.ds).subscribe(
                 () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
-                (errors: APIError) => this.dsErrors = errors.text
+                (errors: APIError) => this.dsErrors = errors.msg
             );
         } else {
             this.apiService.createDataset(this.ds).subscribe(
                 () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
-                (errors: APIError) => this.dsErrors = errors.text
+                (errors: APIError) => this.dsErrors = errors.msg
             );
         }
     }

@@ -1,7 +1,6 @@
 export interface APIError {
     status: number;
     statusText: string;
-    text: string;
     msg: any;
 }
 export interface RequestOptions {

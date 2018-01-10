@@ -22,54 +22,24 @@ export class APIService {
         return false;
     }
 
-    /**
-     * Handle HTTP error
-     */
-    // private handleError(res: any) {
-    //     let error: APIError = {
-    //         status: res.status,
-    //         statusText: res.statusText,
-    //         text: res.json(),
-    //         msg: ''
-    //     };
-    //     // The error message is usually in the body as 'detail' or 'non_field_errors'
-    //     let body = res.json();
-    //     if ('detail' in body) {
-    //         error.msg = body['detail'];
-    //     } else if ('non_field_errors' in body) {
-    //         error.msg = body['non_field_errors'];
-    //     } else {
-    //         error.msg = body;
-    //     }
-    //
-    //     this._receivedUnauthenticatedError = res.status === 401;
-    //
-    //     return Observable.throw(error);
-    // }
-
-    private handleError (err?: any) {
-        // this doesn't seem to be working properly
-
-        let error: APIError = {
-            status: err.status,
-            statusText: err.statusText,
-            text: err.json(),
-            msg: ''
+    private handleError (error?: any, caught: Observable<any>) {
+        let apiError: APIError = {
+            status: error.status,
+            statusText: error.statusText,
+            msg: error.message
         };
 
         // The error message is usually in the body as 'detail' or 'non_field_errors'
-        let body = err.error;
+        let body = error.error;
         if ('detail' in body) {
-            error.msg = body['detail'];
+            apiError.msg = body['detail'];
         } else if ('non_field_errors' in body) {
-            error.msg = body['non_field_errors'];
-        } else {
-            error.msg = body;
+            apiError.msg = body['non_field_errors'];
         }
 
-        this._receivedUnauthenticatedError = err.status === 401;
+        this._receivedUnauthenticatedError = error.status === 401;
 
-        return Observable.throw(error);
+        return Observable.throw(apiError);
     }
 
     /**
@@ -88,19 +58,31 @@ export class APIService {
                 username: username,
                 password: password
             }
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getUser(id: number): Observable<User> {
-        return this.request('users/' + id, {});
+        return this.request('users/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getUsers(): Observable<User[]> {
-        return this.request('users', {});
+        return this.request('users', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public whoAmI(): Observable<User> {
-        return this.request('whoami', {});
+        return this.request('whoami', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getProjects(custodians?: number[]): Observable<Project[]> {
@@ -109,102 +91,156 @@ export class APIService {
             params['urlParams'] = {custodians: custodians.toString()};
         }
 
-        return this.request('projects', params);
+        return this.request('projects', params)
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getProjectById(id: number): Observable<Project> {
-        return this.request('projects/' + id, {});
+        return this.request('projects/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createProject(project: Project): Observable<Project> {
         return this.request('projects', {
             method: 'POST',
             data: project
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateProject(project: Project): Observable<Project> {
         return this.request('projects/' + project.id, {
             method: 'Patch',
             data: project
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteProject(id: number): Observable<Project> {
         return this.request('projects/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getAllSites(): Observable<Site[]> {
-        return this.request('sites', {});
+        return this.request('sites', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getAllSitesForProjectID(id: number): Observable<Site[]> {
-        return this.request('projects/' + id + '/sites', {});
+        return this.request('projects/' + id + '/sites', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getSiteById(id: number): Observable<Site> {
-        return this.request('sites/' + id, {});
+        return this.request('sites/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createSite(site: Site): Observable<Site> {
         return this.request('sites/', {
             method: 'POST',
             data: site
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateSite(site: Site): Observable<Site> {
         return this.request('sites/' + site.id, {
             method: 'Patch',
             data: site
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteSite(id: number): Observable<Site> {
         return this.request('sites/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteSites(projectId: number, siteIds: number[]): Observable<void> {
         return this.request('projects/' + projectId + '/sites/', {
             method: 'Delete',
             data: siteIds
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getDatasets(params?: any): Observable<Dataset[]> {
-        return this.request('datasets', params ? {urlParams: params} : {});
+        return this.request('datasets', params ? {urlParams: params} : {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getAllDatasetsForProjectID(id: number): Observable<Dataset[]> {
-        return this.request('datasets', {urlParams: {project: String(id)}});
+        return this.request('datasets', {urlParams: {project: String(id)}})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getDatasetById(id: number): Observable<Dataset> {
-        return this.request('datasets/' + id, {});
+        return this.request('datasets/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createDataset(dataset: Dataset): Observable<Dataset> {
         return this.request('datasets', {
             method: 'POST',
             data: dataset
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateDataset(dataset: Dataset): Observable<Dataset> {
         return this.request('datasets/' + dataset.id, {
             method: 'Patch',
             data: dataset
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteDataset(id: number): Observable<Dataset> {
         return this.request('dataset/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getRecordsByDatasetId(id: number): Observable<any[]> {
@@ -215,15 +251,24 @@ export class APIService {
         return this.request('datasets/' + id + '/records/', {
             method: 'POST',
             data: data
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getRecords(params?: any): Observable<Record[]> {
-        return this.request('records', params ? {urlParams: params} : {});
+        return this.request('records', params ? {urlParams: params} : {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getRecordById(id: number): Observable<Record> {
-        return this.request('records/' + id, {});
+        return this.request('records/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createRecord(record: Record, strict = true): Observable<Record> {
@@ -232,7 +277,10 @@ export class APIService {
             method: 'POST',
             data: record,
             urlParams: urlParams
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateRecord(id: number, record: Record, strict = true): Observable<Record> {
@@ -241,43 +289,64 @@ export class APIService {
             method: 'Put',
             data: record,
             urlParams: urlParams
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteRecord(id: number): Observable<Record> {
         return this.request('records/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteRecords(datasetId: number, recordIds: number[]): Observable<void> {
         return this.request('datasets/' + datasetId + '/records/', {
             method: 'Delete',
             data: recordIds
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteAllRecords(datasetId: number): Observable<void> {
         return this.request('datasets/' + datasetId + '/records/', {
             method: 'Delete',
             data: 'all'
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getStatistics(): Observable<Statistic> {
-        return this.request('statistics', {});
+        return this.request('statistics', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getModelChoices(modelName: string, fieldName: string): Observable<ModelChoice[]> {
         return this.getModelMetadata(modelName).pipe(
             map((metaData) => metaData.actions['POST'][fieldName]['choices'])
+        )
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getModelMetadata(modelName: string): Observable<any> {
         return this.request(modelName, {
             'method': 'Options'
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getSpecies(search?: string): Observable<any> {
@@ -287,7 +356,10 @@ export class APIService {
         }
         return this.request('species', {
             urlParams: urlParams
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getRecordsUploadURL(datasetId: number): string {
@@ -309,7 +381,10 @@ export class APIService {
                 geometry: geometry,
                 data: data
             }
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public recordGeometryToData(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
@@ -319,11 +394,17 @@ export class APIService {
                 geometry: geometry,
                 data: data
             }
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public logout(): Observable<any> {
-        return this.request('logout', {});
+        return this.request('logout', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public request(path: string, options: RequestOptions): Observable<any> {
@@ -333,9 +414,6 @@ export class APIService {
             params: options.urlParams,
             withCredentials: true,
             body: JSON.stringify(options.data)
-        })
-        .pipe(
-            catchError(this.handleError)
-        );
+        });
     }
 }
