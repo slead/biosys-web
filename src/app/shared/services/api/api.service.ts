@@ -22,7 +22,7 @@ export class APIService {
         return false;
     }
 
-    private handleError (error?: any, caught: Observable<any>) {
+    private handleError (error: any, caught: Observable<any>) {
         let apiError: APIError = {
             status: error.status,
             statusText: error.statusText,
