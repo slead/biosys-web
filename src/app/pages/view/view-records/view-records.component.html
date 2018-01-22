@@ -55,8 +55,11 @@
                 </p>
                 <h4>Records for {{selectedDataset?.name}}</h4>
                 <div class="data-table-container">
-                    <p-dataTable [tableStyle]="getRecordsTableWidth()" [value]="records" [paginator]="true" [rows]="10"
-                                 [responsive]="true" [loading]="records == null" resizableColumns="true"
+                    <p-dataTable #recordsTable [tableStyle]="getRecordsTableWidth()" [value]="records"
+                                 [paginator]="true" [rows]="10" [loading]="records == null"
+                                 [rowsPerPageOptions]="[10, 25, 50, 100]" [totalRecords] = "totalRecords"
+                                 [loading]="flatRecords == null" [lazy]="true"
+                                 (onLazyLoad)="loadRecordsLazy($event)" resizableColumns="true"
                                  columnResizeMode="expand" [scrollable]="true"
                                  [emptyMessage]="records == null ? 'Loading records': 'No records found'">
                         <p-column *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields"

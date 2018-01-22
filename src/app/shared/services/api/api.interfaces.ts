@@ -72,6 +72,10 @@ export interface Record {
     species_name?: string;
     name_id?: number;
 }
+export interface RecordResponse {
+    count: number;
+    results?: Record[];
+}
 export interface Statistic {
     projects: any;
     datasets: any[];

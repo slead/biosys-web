@@ -12,11 +12,10 @@
             <p-fileUpload name="file" [url]="url"
                           auto="auto"
                           accept=".csv,.xlsx"
-                          (onUpload)="onUpload($event)"
+                          (onUpload)="onUpload()"
                           (onError)="onError($event)"
                           (onSelect)="onSelect($event)"
-                          (onBeforeSend)="onBeforeSend($event)"
-            >
+                          (onBeforeSend)="onBeforeSend($event)">
             </p-fileUpload>
         </div>
     </div>

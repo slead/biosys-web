@@ -10,11 +10,11 @@ Run `ng serve` for a development server. Navigate to `http://localhost:4200/`. T
 
 ## Build for UAT
 
-Run `ng build --env=uat` to build the project for UAT. The build artifacts will be stored in the `dist/` directory.
+Run `ng build --env=uat --prod --build-optimizer` to build the project for UAT. The build artifacts will be stored in the `dist/` directory.
 
 ## Build for production
 
-Run `ng build --env=prod` to build the project for production. The build artifacts will be stored in the `dist/` directory.
+Run `ng build --env=prod --prod --build-optimizer` to build the project for production. The build artifacts will be stored in the `dist/` directory.
 
 ## Running unit tests
 

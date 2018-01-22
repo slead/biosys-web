@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { APIService, APIError, Project, Dataset, Record, DATASET_TYPE_MAP } from '../../../shared/index';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { APIService, APIError, Dataset, Record, RecordResponse, DATASET_TYPE_MAP } from '../../../shared/index';
 import { Router } from '@angular/router';
-import { SelectItem } from 'primeng/primeng';
+import { SelectItem, DataTable, LazyLoadEvent } from 'primeng/primeng';
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin';
 
@@ -26,7 +26,7 @@ export class ViewRecordsComponent implements OnInit {
     public datasets: Dataset[];
     public records: Record[];
     public recordsTableColumnWidths: {[key: string]: number} = {};
-
+    public totalRecords: number = 0;
     public selectedDataset: Dataset;
 
     public projectId: number;
@@ -35,6 +35,9 @@ export class ViewRecordsComponent implements OnInit {
     public speciesName: string;
 
     public exportURL: string;
+
+    @ViewChild('recordsTable')
+    public datatable: DataTable;
 
     constructor(private apiService: APIService, private router: Router) {
     }
@@ -103,10 +106,9 @@ export class ViewRecordsComponent implements OnInit {
 
         if (this.selectedDataset) {
             recordParams['dataset__id'] = this.selectedDataset.id;
-            this.apiService.getRecords(recordParams).subscribe(
-                (records: Record[]) => this.records = records,
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
+            if (this.datatable) {
+                this.datatable.reset();
+            }
         }
 
         this.exportURL = this.apiService.getRecordExportURL() +
@@ -129,6 +131,18 @@ export class ViewRecordsComponent implements OnInit {
         this.filter();
     }
 
+    public loadRecordsLazy(event: LazyLoadEvent) {
+        this.apiService.getRecordsByDatasetId(this.selectedDataset.id, event.first, event.rows, event.sortField,
+            event.sortOrder)
+        .subscribe(
+            (data: RecordResponse) => {
+                this.records = data.results;
+                this.totalRecords = data.count;
+                this.recordsTableColumnWidths = {};
+            },
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
+    }
 
     public getRecordsTableWidth(): any {
         if (!Object.keys(this.recordsTableColumnWidths).length) {
@@ -144,7 +158,7 @@ export class ViewRecordsComponent implements OnInit {
     public getRecordsTableColumnWidth(fieldName: string): any {
         let width: number;
 
-        if (!this.records) {
+        if (!this.records || this.records.length === 0) {
             width = ViewRecordsComponent.COLUMN_WIDTH;
         } else {
             if (!(fieldName in this.recordsTableColumnWidths)) {

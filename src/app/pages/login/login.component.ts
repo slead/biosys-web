@@ -10,9 +10,9 @@ import { AuthService } from '../../shared/index';
 })
 export class LoginComponent {
     public errorMessages: string[];
-    private loginForm: FormGroup;
-    private username: AbstractControl;
-    private password: AbstractControl;
+    public loginForm: FormGroup;
+    public username: AbstractControl;
+    public password: AbstractControl;
 
     private authService: AuthService;
     private router: Router;
@@ -30,7 +30,7 @@ export class LoginComponent {
         this.password = this.loginForm.controls['password'];
     }
 
-    login(event: any) {
+    public login(event: any) {
         event.preventDefault();
 
         this.authService.login(this.loginForm.value.username, this.loginForm.value.password)

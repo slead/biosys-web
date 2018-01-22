@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
-import { APIService, APIError, AuthService, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER,
-    DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE }
-    from '../../../shared/index';
+import { APIService, APIError, AuthService, FileuploaderComponent, Project, Dataset, Record, RecordResponse,
+    DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE,
+    DEFAULT_ROW_LIMIT } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService, } from 'primeng/primeng';
+import { Message, ConfirmationService, LazyLoadEvent} from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -51,6 +51,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public dataset: Dataset = <Dataset>{};
     public recordsTableColumnWidths: {[key: string]: number} = {};
     public flatRecords: any[];
+    public totalRecords: number = 0;
     public messages: Message[] = [];
     public uploadURL: string;
     public isUploading: boolean = false;
@@ -61,7 +62,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public pageState: any = {
         mapZoom: DEFAULT_ZOOM,
         mapPosition: DEFAULT_CENTER,
-        firstRow: 0
+        rowOffset: 0,
+        rowLimit: DEFAULT_ROW_LIMIT,
     };
 
     private map: L.Map;
@@ -103,16 +105,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 }
             },
             (error: APIError) => console.log('error.msg', error.msg)
-        ).then(() => this.apiService.getRecordsByDatasetId(this.datasetId)
-            .subscribe(
-                (data: any[]) => {
-                    this.flatRecords = this.formatFlatRecords(data);
-                    if (this.dataset.type !== 'generic') {
-                        this.loadRecordMarkers();
-                    }
-                },
-                (error: APIError) => console.log('error.msg', error.msg)
-        ));
+        );
 
         this.uploadURL = this.apiService.getRecordsUploadURL(this.datasetId);
 
@@ -168,6 +161,22 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
+    public loadRecordsLazy(event: LazyLoadEvent) {
+        this.apiService.getRecordsByDatasetId(this.datasetId, event.first, event.rows, event.sortField, event.sortOrder,
+            event.globalFilter)
+        .subscribe(
+            (data: RecordResponse) => {
+                this.flatRecords = this.formatFlatRecords(data.results);
+                this.totalRecords = data.count;
+                this.recordsTableColumnWidths = {};
+                if (this.dataset.type !== 'generic') {
+                    this.loadRecordMarkers();
+                }
+            },
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
+    }
+
     private loadRecordMarkers() {
         for (let record of this.flatRecords) {
             if (record.geometry) {
@@ -201,7 +210,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public getRecordsTableColumnWidth(fieldName: string): any {
         let width: number;
 
-        if (!this.flatRecords) {
+        if (!this.flatRecords || this.flatRecords.length === 0) {
             width = ManageDataComponent.COLUMN_WIDTH;
         } else {
             if (!(fieldName in this.recordsTableColumnWidths)) {
@@ -236,7 +245,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public onPageChange(event) {
-        this.pageState.firstRow = event.first;
+        this.pageState.rowOffset = event.first;
+        this.pageState.rowLimit = event.rows;
     }
 
     public onUpload(event: any) {
@@ -246,10 +256,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         if (this.dataset.type !== 'generic') {
             this.markers.clearLayers();
         }
-        this.apiService.getRecordsByDatasetId(this.dataset.id)
+        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
             .subscribe(
-                (data: any[]) => {
-                    this.flatRecords = this.formatFlatRecords(data);
+                (data: RecordResponse) => {
+                    this.flatRecords = this.formatFlatRecords(data.results);
                     this.loadRecordMarkers();
                 },
                 (error: APIError) => console.log('error.msg', error.msg)
@@ -280,10 +290,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         if (this.dataset.type !== 'generic') {
             this.markers.clearLayers();
         }
-        this.apiService.getRecordsByDatasetId(this.dataset.id)
+        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
         .subscribe(
-            (data: any[]) => {
-                this.flatRecords = this.formatFlatRecords(data);
+            (data: RecordResponse) => {
+                this.flatRecords = this.formatFlatRecords(data.results);
                 this.loadRecordMarkers();
             },
             (error: APIError) => console.log('error.msg', error.msg)
@@ -334,10 +344,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         if (this.dataset.type !== 'generic') {
             this.markers.clearLayers();
         }
-        this.apiService.getRecordsByDatasetId(this.datasetId)
+        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
         .subscribe(
-            (data: any[]) => {
-                this.flatRecords = this.formatFlatRecords(data);
+            (data: RecordResponse) => {
+                this.flatRecords = this.formatFlatRecords(data.results);
                 this.loadRecordMarkers();
             },
             (error: APIError) => console.log('error.msg', error.msg)

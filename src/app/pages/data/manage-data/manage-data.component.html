@@ -37,10 +37,12 @@
             <h4>Records Table</h4>
             <p-dataTable [tableStyle]="getRecordsTableWidth()" [value]="flatRecords"
                          [emptyMessage]="flatRecords == null ? '' : 'No records found'"
-                         [paginator]="true" [rows]="10" [globalFilter]="recordSearch"
-                         [loading]="flatRecords == null" [first]="pageState.firstRow"
-                         (onPage)='onPageChange($event)' resizableColumns="true"
-                         columnResizeMode="expand" [scrollable]="true">
+                         [paginator]="true" [rows]="pageState.rowLimit" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                         [totalRecords] = "totalRecords" [first]="pageState.rowOffset" [globalFilter]="recordSearch"
+                         [loading]="flatRecords == null"
+                         (onPage)="onPageChange($event)" resizableColumns="true"
+                         columnResizeMode="expand" [scrollable]="true" [lazy]="true"
+                         (onLazyLoad)="loadRecordsLazy($event)">
                 <p-header>
                     <div class="ui-helper-clearfix" style="width:100%">
                         <i class="fa fa-search float-left mt-1 mr-1"></i>
