@@ -4,7 +4,7 @@ import { SharedModule } from '../../../shared/shared.module';
 import { EditDatasetComponent } from './edit-dataset.component';
 import { APIService } from '../../../shared/services/api/index';
 import { InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule,
-    ConfirmationService } from 'primeng/primeng';
+    ConfirmationService, FileUploadModule } from 'primeng/primeng';
 import { JSONEditorModule } from '../../../shared/index';
 
 @NgModule({
@@ -17,6 +17,7 @@ import { JSONEditorModule } from '../../../shared/index';
         DropdownModule,
         GrowlModule,
         ConfirmDialogModule,
+        FileUploadModule,
         JSONEditorModule,
     ],
     declarations: [EditDatasetComponent],

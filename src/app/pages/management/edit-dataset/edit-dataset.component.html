@@ -9,10 +9,12 @@
                 <h3 *ngIf="ds.id">Edit Dataset</h3>
                 <h3 *ngIf="!ds.id">Create Dataset</h3>
                 <p *ngIf="ds.id">
-                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are required.
+                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill the fields.
                 </p>
                 <p *ngIf="!ds.id">
-                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are required.
+                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill the fields.
                 </p>
                 <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Name *</label></div>
@@ -49,9 +51,22 @@
         </div>
     </div>
     <div class="row mt-3 mb-3">
+        <div class="col-md-2">
+            <label class="field-label">Infer from file</label>
+            <p class="font-italic text-muted">xlsx or CSV</p>
+        </div>
+        <div class="col-8">
+            <p-fileUpload name="file" [url]="apiService.getInferDatasetURL()" (onUpload)="onUpload($event)"
+                          (onBeforeSend)="onUploadBeforeSend($event)" (onError)="onError($event)"
+                          accept=".csv,.xlsx,.xls">
+            </p-fileUpload>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-3">
         <div class="col-4">
-            <button pButton icon="fa-trash" (click)="confirmDelete()" label="Delete"></button>
-            <button pButton icon="fa-trash" (click)="confirmDeleteRecords()" label="Delete Records"></button>
+            <button pButton icon="fa-trash" (click)="confirmDelete($event)" label="Delete"></button>
+            <button pButton icon="fa-trash" (click)="confirmDeleteRecords($event)" label="Delete Records"></button>
         </div>
         <div class="col-4">
             <button pButton icon="fa-close" label="Cancel" (click)="cancel()"></button>
