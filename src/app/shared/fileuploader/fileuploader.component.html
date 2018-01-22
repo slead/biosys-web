@@ -4,7 +4,7 @@
         <i class="fa fa-circle-o-notch fa-spin fa-2x"></i>
     </div>
     <div class="ui-fileupload-buttonbar ui-widget-header ui-corner-top">
-        <button type="button" [label]="chooseLabel" icon="fa-plus" pButton class="ui-fileupload-choose" (click)="onChooseClick($event, fileinput)" [disabled]="disabled">
+        <button type="button" [label]="chooseLabel" icon="fa-plus" pButton class="ui-fileupload-choose" (click)="onChooseClick($event, advancedfileinput)" [disabled]="disabled">
             <input #advancedfileinput type="file" (change)="onFileSelect($event)" [multiple]="multiple" [accept]="accept" [disabled]="disabled">
         </button>
         <button *ngIf="!auto" type="button" [label]="uploadLabel" icon="fa-upload" pButton (click)="upload()" [disabled]="!hasFiles()"></button>

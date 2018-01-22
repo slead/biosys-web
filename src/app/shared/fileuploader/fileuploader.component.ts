@@ -12,4 +12,9 @@ export class FileuploaderComponent extends FileUpload {
 
     @Input()
     public cancellable: boolean = true;
+
+    public onChooseClick(event, fileInput) {
+        fileInput.value = null;
+        fileInput.click();
+    }
 }
