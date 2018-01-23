@@ -215,7 +215,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         } else {
             if (!(fieldName in this.recordsTableColumnWidths)) {
                 const maxCharacterLength = Math.max(fieldName.length,
-                    this.flatRecords.map((r) => r[fieldName].length).reduce((a, b) => Math.max(a, b)));
+                    this.flatRecords.map((r) => r[fieldName] ? r[fieldName].length : 0).
+                    reduce((a, b) => Math.max(a, b)));
 
                 this.recordsTableColumnWidths[fieldName] =
                     maxCharacterLength * ManageDataComponent.CHAR_LENGTH_MULTIPLIER + ManageDataComponent.PADDING;
@@ -332,7 +333,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private formatFlatRecords(records: Record[]) {
         return records.map((r: Record) => Object.assign({
             id: r.id,
-            source_info: r.source_info ? r.source_info.file_name + ' row ' + r.source_info.row : 'Manually created',
+            file_name: r.source_info ? r.source_info.file_name : 'Manually created',
+            row: r.source_info ? r.source_info.row : '',
             created: moment(r.created).format(ManageDataComponent.DATETIME_FORMAT),
             last_modified: moment(r.last_modified).format(ManageDataComponent.DATETIME_FORMAT),
             geometry: r.geometry

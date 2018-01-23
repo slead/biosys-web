@@ -69,11 +69,9 @@
                         <span [innerHTML]="flatRecord[col.field]"></span>
                     </ng-template>
                 </p-column>
-                <p-column field="source_info" header="Original Source" [sortable]="true"
-                          [style]="getRecordsTableColumnWidth('source_info')">
-                    <ng-template let-flatRecord="rowData" pTemplate="body">
-                        <span [innerHTML]="flatRecord.source_info"></span>
-                    </ng-template>
+                <p-column field="file_name" header="Source File" [sortable]="true" [style]="getRecordsTableColumnWidth('source_file')">
+                </p-column>
+                <p-column field="row" header="Source Row" [sortable]="true" [style]="getRecordsTableColumnWidth('source_row')">
                 </p-column>
                 <p-column field="created" header="Created" [sortable]="true" [style]="getRecordsTableColumnWidth('created')">
                 </p-column>

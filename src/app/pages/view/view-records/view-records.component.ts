@@ -163,7 +163,8 @@ export class ViewRecordsComponent implements OnInit {
         } else {
             if (!(fieldName in this.recordsTableColumnWidths)) {
                 const maxCharacterLength = Math.max(fieldName.length,
-                    this.records.map((r) => r.data[fieldName].length).reduce((a, b) => Math.max(a, b)));
+                    this.records.map((r) => r.data[fieldName] ? r.data[fieldName].length : 0)
+                    .reduce((a, b) => Math.max(a, b)));
 
                 this.recordsTableColumnWidths[fieldName] =
                     maxCharacterLength * ViewRecordsComponent.CHAR_LENGTH_MULTIPLIER + ViewRecordsComponent.PADDING;
