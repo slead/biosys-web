@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions, Request, URLSearchParams, ResponseContentType } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from '../index';
-import { FetchOptions, APIError, User, Project, Dataset, Site, Record, Statistic, ModelChoice } from './api.interfaces';
+import { map, catchError } from 'rxjs/operators';
+import { RequestOptions, APIError, User, Project, Dataset, Site, Record, RecordResponse, Statistic, ModelChoice }
+    from './api.interfaces';
 import { environment } from '../../../../environments/environment';
 
 /**
@@ -22,29 +23,26 @@ export class APIService {
         return false;
     }
 
-    /**
-     * Handle HTTP error
-     */
-    private handleError(res: Response) {
-        let error: APIError = {
-            status: res.status,
-            statusText: res.statusText,
-            text: res.json(),
+    private handleError (error: any, caught: Observable<any>) {
+        let apiError: APIError = {
+            status: error.status,
+            statusText: error.statusText,
             msg: ''
         };
+
         // The error message is usually in the body as 'detail' or 'non_field_errors'
-        let body = res.json();
+        let body = error.error;
         if ('detail' in body) {
-            error.msg = body['detail'];
+            apiError.msg = body['detail'];
         } else if ('non_field_errors' in body) {
-            error.msg = body['non_field_errors'];
+            apiError.msg = body['non_field_errors'];
         } else {
-            error.msg = body;
+            apiError.msg = error.error;
         }
 
-        this._receivedUnauthenticatedError = res.status === 401;
+        this._receivedUnauthenticatedError = error.status === 401;
 
-        return Observable.throw(error);
+        return Observable.throw(apiError);
     }
 
     /**
@@ -52,209 +50,323 @@ export class APIService {
      * @param {Http} http - The injected Http.
      * @constructor
      */
-    constructor(private http: Http) {
+    constructor(private http: HttpClient) {
         this.baseUrl = environment.server + environment.apiExtension;
     }
 
-    public getAuthToken(username: string, password: string): Observable<string> {
-        return this.fetch('auth-token', {
-            method: 'Post',
+    public getAuthToken(username: string, password: string): Observable<any> {
+        return this.request('auth-token', {
+            method: 'POST',
             data: {
                 username: username,
                 password: password
-            },
-            map: (res) => res.token
-        });
+            }
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getUser(id: number): Observable<User> {
-        return this.fetch('users/' + id, {});
+        return this.request('users/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getUsers(): Observable<User[]> {
-        return this.fetch('users', {});
+        return this.request('users', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public whoAmI(): Observable<User> {
-        return this.fetch('whoami', {});
+        return this.request('whoami', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getProjects(custodians?: number[]): Observable<Project[]> {
-        let params: FetchOptions = {};
+        let params: RequestOptions = {};
         if (custodians) {
             params['urlParams'] = {custodians: custodians.toString()};
         }
 
-        return this.fetch('projects', params);
+        return this.request('projects', params)
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getProjectById(id: number): Observable<Project> {
-        return this.fetch('projects/' + id, {});
+        return this.request('projects/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createProject(project: Project): Observable<Project> {
-        return this.fetch('projects', {
-            method: 'Post',
+        return this.request('projects', {
+            method: 'POST',
             data: project
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateProject(project: Project): Observable<Project> {
-        return this.fetch('projects/' + project.id, {
+        return this.request('projects/' + project.id, {
             method: 'Patch',
             data: project
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteProject(id: number): Observable<Project> {
-        return this.fetch('projects/' + id, {
+        return this.request('projects/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getAllSites(): Observable<Site[]> {
-        return this.fetch('sites', {});
+        return this.request('sites', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getAllSitesForProjectID(id: number): Observable<Site[]> {
-        return this.fetch('projects/' + id + '/sites', {});
+        return this.request('projects/' + id + '/sites', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getSiteById(id: number): Observable<Site> {
-        return this.fetch('sites/' + id, {});
+        return this.request('sites/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createSite(site: Site): Observable<Site> {
-        return this.fetch('sites/', {
-            method: 'Post',
+        return this.request('sites/', {
+            method: 'POST',
             data: site
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateSite(site: Site): Observable<Site> {
-        return this.fetch('sites/' + site.id, {
+        return this.request('sites/' + site.id, {
             method: 'Patch',
             data: site
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteSite(id: number): Observable<Site> {
-        return this.fetch('sites/' + id, {
+        return this.request('sites/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteSites(projectId: number, siteIds: number[]): Observable<void> {
-        return this.fetch('projects/' + projectId + '/sites/', {
+        return this.request('projects/' + projectId + '/sites/', {
             method: 'Delete',
             data: siteIds
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getDatasets(params?: any): Observable<Dataset[]> {
-        return this.fetch('datasets', params ? {urlParams: params} : {});
+        return this.request('datasets', params ? {urlParams: params} : {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getAllDatasetsForProjectID(id: number): Observable<Dataset[]> {
-        return this.fetch('datasets', {urlParams: {project: String(id)}});
+        return this.request('datasets', {urlParams: {project: String(id)}})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getDatasetById(id: number): Observable<Dataset> {
-        return this.fetch('datasets/' + id, {});
+        return this.request('datasets/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createDataset(dataset: Dataset): Observable<Dataset> {
-        return this.fetch('datasets', {
-            method: 'Post',
+        return this.request('datasets', {
+            method: 'POST',
             data: dataset
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateDataset(dataset: Dataset): Observable<Dataset> {
-        return this.fetch('datasets/' + dataset.id, {
+        return this.request('datasets/' + dataset.id, {
             method: 'Patch',
             data: dataset
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteDataset(id: number): Observable<Dataset> {
-        return this.fetch('dataset/' + id, {
+        return this.request('dataset/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
-    public getRecordsByDatasetId(id: number): Observable<any[]> {
-        return this.fetch('datasets/' + id + '/records/', {});
+    public getRecordsByDatasetId(id: number, offset?: number, limit?: number, orderField?: string,
+                                 orderDirection?: number, search?: string): Observable<RecordResponse> {
+        let params: any = {};
+        if (offset !== undefined && offset > -1) {
+            params['offset'] = offset;
+        }
+        if (limit) {
+            params['limit'] = limit;
+        }
+        if (orderField) {
+            params['ordering'] = (orderDirection && orderDirection < 0) ? '-' + orderField : orderField;
+        }
+        if (search) {
+            params['search'] = search;
+        }
+
+        return this.request('datasets/' + id + '/records/', {
+            urlParams: params
+        });
     }
 
     public createRecordsForDatasetId(id: number, data: any[]) {
-        return this.fetch('datasets/' + id + '/records/', {
-            method: 'Post',
+        return this.request('datasets/' + id + '/records/', {
+            method: 'POST',
             data: data
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getRecords(params?: any): Observable<Record[]> {
-        return this.fetch('records', params ? {urlParams: params} : {});
+        return this.request('records', params ? {urlParams: params} : {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getRecordById(id: number): Observable<Record> {
-        return this.fetch('records/' + id, {});
+        return this.request('records/' + id, {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public createRecord(record: Record, strict = true): Observable<Record> {
         let urlParams = strict ? {strict: 'true'} : {};
-        return this.fetch('records', {
-            method: 'Post',
+        return this.request('records', {
+            method: 'POST',
             data: record,
             urlParams: urlParams
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public updateRecord(id: number, record: Record, strict = true): Observable<Record> {
         let urlParams = strict ? {strict: 'true'} : {};
-        return this.fetch('records/' + id, {
+        return this.request('records/' + id, {
             method: 'Put',
             data: record,
             urlParams: urlParams
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteRecord(id: number): Observable<Record> {
-        return this.fetch('records/' + id, {
+        return this.request('records/' + id, {
             method: 'Delete',
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteRecords(datasetId: number, recordIds: number[]): Observable<void> {
-        return this.fetch('datasets/' + datasetId + '/records/', {
+        return this.request('datasets/' + datasetId + '/records/', {
             method: 'Delete',
             data: recordIds
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public deleteAllRecords(datasetId: number): Observable<void> {
-        return this.fetch('datasets/' + datasetId + '/records/', {
+        return this.request('datasets/' + datasetId + '/records/', {
             method: 'Delete',
             data: 'all'
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getStatistics(): Observable<Statistic> {
-        return this.fetch('statistics', {});
+        return this.request('statistics', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getModelChoices(modelName: string, fieldName: string): Observable<ModelChoice[]> {
-        return this.getModelMetadata(modelName)
-            .map(
-                (metaData) => metaData.actions['POST'][fieldName]['choices']
-            );
+        return this.getModelMetadata(modelName).pipe(
+            map((metaData) => metaData.actions['POST'][fieldName]['choices'])
+        )
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getModelMetadata(modelName: string): Observable<any> {
-        return this.fetch(modelName, {
+        return this.request(modelName, {
             'method': 'Options'
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getSpecies(search?: string): Observable<any> {
@@ -262,9 +374,12 @@ export class APIService {
         if (search) {
             urlParams['search'] = search;
         }
-        return this.fetch('species', {
+        return this.request('species', {
             urlParams: urlParams
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public getRecordsUploadURL(datasetId: number): string {
@@ -279,78 +394,50 @@ export class APIService {
         return this.baseUrl + 'records/?output=xlsx&';
     }
 
-    public recordDataToGeometry(datasetId: number, geometry: GeoJSON.DirectGeometryObject, data: any) {
-        return this.fetch('utils/data-to-geometry/dataset/' + datasetId, {
-            method: 'Post',
+    public getInferDatasetURL(): string {
+        return this.baseUrl + 'utils/infer-dataset/';
+    }
+
+    public recordDataToGeometry(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
+        return this.request('utils/data-to-geometry/dataset/' + datasetId, {
+            method: 'POST',
             data: {
                 geometry: geometry,
                 data: data
             }
-        });
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
-    public recordGeometryToData(datasetId: number, geometry: GeoJSON.DirectGeometryObject, data: any) {
-        return this.fetch('utils/geometry-to-data/dataset/' + datasetId, {
-            method: 'Post',
+    public recordGeometryToData(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
+        return this.request('utils/geometry-to-data/dataset/' + datasetId, {
+            method: 'POST',
             data: {
                 geometry: geometry,
                 data: data
             }
-        });
-    }
-
-    /**
-     * Returns an array of [header, value] of headers necessary for authentication
-     * @returns {[string,string][]}
-     */
-    public getAuthHeaders(): [string, string][] {
-        let headers: [string, string][] = [];
-        let authToken = AuthService.getAuthToken();
-        if (authToken) {
-            headers.push(['Authorization', 'Token ' + authToken]);
-        }
-        return headers;
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
     public logout(): Observable<any> {
-        return this.fetch('logout', {});
+        return this.request('logout', {})
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
     }
 
-    public fetch(path: string, options: FetchOptions): Observable<any> {
-        if (path && !path.endsWith('/')) {
-            // enforce '/' at the end
-            path += '/';
-        }
-        let headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        for (let header of this.getAuthHeaders()) {
-            headers.append(header[0], header[1]);
-        }
-        if (options.headers) {
-            for (let key in options.headers) {
-                headers.append(key, options.headers[key]);
-            }
-        }
-        let searchParams = new URLSearchParams();
-        if (options.urlParams) {
-            for (let key in options.urlParams) {
-                searchParams.append(key, options.urlParams[key]);
-            }
-        }
-        let reqOptions = new RequestOptions({
-            url: this.baseUrl + path,
-            method: options.method || 'Get',
-            headers: headers,
-            search: searchParams,
-            body: JSON.stringify(options.data),
+    public request(path: string, options: RequestOptions): Observable<any> {
+        const url = this.baseUrl + ((path && !path.endsWith('/')) ? path + '/' : path);
+
+        return this.http.request(options.method || 'GET', url, {
+            params: options.urlParams,
             withCredentials: true,
-            responseType: ResponseContentType.Json
+            body: JSON.stringify(options.data)
         });
-        let request = new Request(reqOptions);
-        return this.http.request(request)
-            .map((res: Response) => {
-                return options.map ? options.map(res.json()) : res.json();
-            })
-            .catch((res: Response) => this.handleError(res));
     }
 }

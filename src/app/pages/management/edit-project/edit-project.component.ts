@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { APIService, APIError, User, Project, Site, Dataset, ModelChoice, FeatureMapComponent, DATASET_TYPE_MAP,
     DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -83,14 +84,16 @@ export class EditProjectComponent implements OnInit {
         }
 
         this.apiService.getModelChoices('project', 'datum')
-            .map(
-                (choices: ModelChoice[]): SelectItem[] =>
-                    choices.map((choice: ModelChoice): SelectItem => {
-                        return {
-                            label: choice.display_name,
-                            value: choice.value
-                        };
-                    })
+            .pipe(
+                map(
+                    (choices: ModelChoice[]): SelectItem[] =>
+                        choices.map((choice: ModelChoice): SelectItem => {
+                            return {
+                                label: choice.display_name,
+                                value: choice.value
+                            };
+                        })
+                )
             )
             .subscribe(
                 (choices: SelectItem[]) => this.datamTypeChoices = choices,
@@ -98,14 +101,16 @@ export class EditProjectComponent implements OnInit {
             );
 
         this.apiService.getUsers()
-            .map(
-                (users: User[]): SelectItem[] =>
-                    users.map((user: User): SelectItem => {
-                        return {
-                            label: user.first_name + ' ' + user.last_name,
-                            value: user.id
-                        };
-                    })
+            .pipe(
+                map(
+                    (users: User[]): SelectItem[] =>
+                        users.map((user: User): SelectItem => {
+                            return {
+                                label: user.first_name + ' ' + user.last_name,
+                                value: user.id
+                            };
+                        })
+                )
             )
             .subscribe(
                 (users: SelectItem[]) => this.custodianChoices = users,
@@ -211,7 +216,7 @@ export class EditProjectComponent implements OnInit {
                     this.projectErrors = {};
                     this.isEditing = false;
                 },
-                (errors: APIError) => this.projectErrors = errors.text,
+                (errors: APIError) => this.projectErrors = errors.msg,
             );
         } else {
             this.apiService.createProject(this.project).subscribe(
@@ -225,7 +230,7 @@ export class EditProjectComponent implements OnInit {
                     this.datasets = [];
                     this.flatSites = [];
                 },
-                (errors: APIError) => this.projectErrors = errors.text
+                (errors: APIError) => this.projectErrors = errors.msg
             );
         }
     }

@@ -1,13 +1,14 @@
-/* SystemJS module definition */
+import * as L from 'leaflet';
+
 declare var module: NodeModule;
 interface NodeModule {
   id: string;
 }
 
-declare namespace L {
-  namespace control {
-    function mousePosition(options?: any): L.Layer;
-  }
+declare module 'leaflet' {
+    namespace control {
+        function mousePosition(options?: any): L.Control;
+    }
 
-  function latlngGraticule(options?: any): L.Layer;
+    function latlngGraticule(options?: any): L.Layer;
 }

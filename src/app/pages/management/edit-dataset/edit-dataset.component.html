@@ -9,10 +9,12 @@
                 <h3 *ngIf="ds.id">Edit Dataset</h3>
                 <h3 *ngIf="!ds.id">Create Dataset</h3>
                 <p *ngIf="ds.id">
-                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are required.
+                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill the fields.
                 </p>
                 <p *ngIf="!ds.id">
-                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are required.
+                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill the fields.
                 </p>
                 <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Name *</label></div>
@@ -27,7 +29,6 @@
                         <textarea pInputTextarea rows="7" [(ngModel)]="ds.description"></textarea>
                     </div>
                     <div class="col-md-4 text-danger">{{dsErrors['description']}}</div>
-
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Type *</label></div>
@@ -39,19 +40,34 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Data Package *</label></div>
-                    <div class="col-md-8" style="height:500px">
-                        <biosys-json-editor id="dataPackage" [options]="editorOptions"
-                                            [(data)]="ds.data_package"></biosys-json-editor>
+                    <div class="col-md-8">
+                        <div style="height:500px">
+                            <biosys-json-editor id="dataPackage" [options]="editorOptions"
+                                                [(data)]="ds.data_package"></biosys-json-editor>
+                        </div>
+                        <div class="text-danger" [innerHTML]="dsErrors['data_package']"></div>
                     </div>
-                    <div class="col-md-4 text-danger">{{dsErrors['data_package']}}</div>
                 </div>
             </div>
         </div>
     </div>
     <div class="row mt-3 mb-3">
+        <div class="col-md-2">
+            <label class="field-label">Infer from file</label>
+            <p class="font-italic text-muted">xlsx or CSV</p>
+        </div>
+        <div class="col-8">
+            <p-fileUpload name="file" [url]="apiService.getInferDatasetURL()" (onUpload)="onUpload($event)"
+                          (onBeforeSend)="onUploadBeforeSend($event)" (onError)="onError($event)"
+                          accept=".csv,.xlsx,.xls">
+            </p-fileUpload>
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-3">
         <div class="col-4">
-            <button pButton icon="fa-trash" (click)="confirmDelete()" label="Delete"></button>
-            <button pButton icon="fa-trash" (click)="confirmDeleteRecords()" label="Delete Records"></button>
+            <button pButton icon="fa-trash" (click)="confirmDelete($event)" label="Delete"></button>
+            <button pButton icon="fa-trash" (click)="confirmDeleteRecords($event)" label="Delete Records"></button>
         </div>
         <div class="col-4">
             <button pButton icon="fa-close" label="Cancel" (click)="cancel()"></button>

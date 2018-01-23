@@ -92,7 +92,7 @@ export class EditRecordComponent implements OnInit {
         return this.dropdownItems[fieldName];
     }
 
-    public onFeatureMapGeometryChanged(geometry: GeoJSON.DirectGeometryObject) {
+    public onFeatureMapGeometryChanged(geometry: GeoJSON.GeometryObject) {
         this.apiService.recordGeometryToData(this.dataset.id, geometry, this.record.data)
         .subscribe(
             (geometryAndData: any) => {

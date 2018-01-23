@@ -26,7 +26,6 @@ export class HomeComponent implements OnInit {
     }
 
     ngOnInit() {
-
         // need to get user before projects so use Promise 'then' syntax
         this.apiService.whoAmI()
         .toPromise()

@@ -13,16 +13,10 @@
                         <div class="form-group">
                             <label for="username">Username</label>
                             <input id="username" type="text" pInputText [formControl]="username"/>
-                            <div [hidden]="loginForm.controls['username'].valid"
-                                 class="form-control-feedback has-danger">{{loginForm.controls['username'].error}}
-                            </div>
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
                             <input id="password" type="password" pInputText [formControl]="password"/>
-                            <div [hidden]="loginForm.controls['password'].valid"
-                                 class="form-control-feedback has-danger">{{loginForm.controls['password'].error}}
-                            </div>
                         </div>
                         <button pButton type="submit" label="Log in"></button>
                     </form>

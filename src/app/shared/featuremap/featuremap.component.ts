@@ -1,7 +1,7 @@
 import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
     EventEmitter, SimpleChange } from '@angular/core';
 import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers }
-    from '../../shared/index';
+    from '../../shared/utils';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';
@@ -11,7 +11,7 @@ import '../../../lib/leaflet.latlng-graticule'
     selector: 'biosys-marker'
 })
 export class MarkerDirective {
-    @Input() geometry: GeoJSON.DirectGeometryObject;
+    @Input() geometry: GeoJSON.Point;
     @Input() popupText: string;
 }
 
@@ -24,8 +24,8 @@ export class MarkerDirective {
 export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public drawFeatureTypes: [string] = [] as [string];
     @Input() public isEditing: boolean;
-    @Input() public geometry: GeoJSON.DirectGeometryObject;
-    @Output() public onGeometryChanged = new EventEmitter<GeoJSON.DirectGeometryObject>();
+    @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
+    @Output() public onGeometryChanged = new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();
     @ContentChildren(MarkerDirective)
     set markers(markers: QueryList<MarkerDirective>) {
         markers.forEach((marker: MarkerDirective) => {
@@ -146,8 +146,8 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         }
     }
 
-    public getFeatureGeometry(): GeoJSON.DirectGeometryObject {
-        let geom: GeoJSON.DirectGeometryObject = null;
+    public getFeatureGeometry(): GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon {
+        let geom: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon = null;
 
         if (this.drawnFeatures.getLayers().length > 0) {
             if (this.drawnFeatureType === 'polygon' || this.drawnFeatureType === 'rectangle') {

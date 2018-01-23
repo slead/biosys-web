@@ -93,12 +93,12 @@ export class EditSiteComponent implements OnInit {
         if (this.site.id) {
             this.apiService.updateSite(this.site).subscribe(
                 () => this.router.navigate([this.completeUrl, {'siteSaved': true}]),
-                (errors: APIError) => this.siteErrors = errors.text
+                (errors: APIError) => this.siteErrors = errors.msg
             );
         } else {
             this.apiService.createSite(this.site).subscribe(
                 () => this.router.navigate([this.completeUrl, {'siteSaved': true}]),
-                (errors: APIError) => this.siteErrors = errors.text
+                (errors: APIError) => this.siteErrors = errors.msg
             );
         }
     }

@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
-import { APIService, APIError, FileuploaderComponent, Project, Dataset, Record, DEFAULT_ZOOM, DEFAULT_CENTER,
-    DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE }
-    from '../../../shared/index';
+import { APIService, APIError, AuthService, FileuploaderComponent, Project, Dataset, Record, RecordResponse,
+    DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE,
+    DEFAULT_ROW_LIMIT } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService, } from 'primeng/primeng';
+import { Message, ConfirmationService, LazyLoadEvent} from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -17,7 +17,9 @@ import '../../../../lib/leaflet.latlng-graticule'
 })
 export class ManageDataComponent implements OnInit, OnDestroy {
     private static COLUMN_WIDTH: number = 240;
-    private static FIXED_COLUMNS_TOTAL_WIDTH = 720;
+    private static CHAR_LENGTH_MULTIPLIER: number = 8;
+    private static PADDING: number = 50;
+    private static FIXED_COLUMNS_TOTAL_WIDTH: number = 200;
     private static ACCEPTED_TYPES: string[] = [
         'text/csv',
         'text/comma-separated-values',
@@ -47,7 +49,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public projId: number;
     public datasetId: number;
     public dataset: Dataset = <Dataset>{};
+    public recordsTableColumnWidths: {[key: string]: number} = {};
     public flatRecords: any[];
+    public totalRecords: number = 0;
     public messages: Message[] = [];
     public uploadURL: string;
     public isUploading: boolean = false;
@@ -58,7 +62,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public pageState: any = {
         mapZoom: DEFAULT_ZOOM,
         mapPosition: DEFAULT_CENTER,
-        firstRow: 0
+        rowOffset: 0,
+        rowLimit: DEFAULT_ROW_LIMIT,
     };
 
     private map: L.Map;
@@ -100,16 +105,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 }
             },
             (error: APIError) => console.log('error.msg', error.msg)
-        ).then(() => this.apiService.getRecordsByDatasetId(this.datasetId)
-            .subscribe(
-                (data: any[]) => {
-                    this.flatRecords = this.formatFlatRecords(data);
-                    if (this.dataset.type !== 'generic') {
-                        this.loadRecordMarkers();
-                    }
-                },
-                (error: APIError) => console.log('error.msg', error.msg)
-        ));
+        );
 
         this.uploadURL = this.apiService.getRecordsUploadURL(this.datasetId);
 
@@ -165,6 +161,22 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
+    public loadRecordsLazy(event: LazyLoadEvent) {
+        this.apiService.getRecordsByDatasetId(this.datasetId, event.first, event.rows, event.sortField, event.sortOrder,
+            event.globalFilter)
+        .subscribe(
+            (data: RecordResponse) => {
+                this.flatRecords = this.formatFlatRecords(data.results);
+                this.totalRecords = data.count;
+                this.recordsTableColumnWidths = {};
+                if (this.dataset.type !== 'generic') {
+                    this.loadRecordMarkers();
+                }
+            },
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
+    }
+
     private loadRecordMarkers() {
         for (let record of this.flatRecords) {
             if (record.geometry) {
@@ -184,23 +196,36 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         }
     }
 
-    public getDataTableWidth(): any {
-        if (!('data_package' in this.dataset)) {
+    public getRecordsTableWidth(): any {
+        if (!Object.keys(this.recordsTableColumnWidths).length) {
             return {width: '100%'};
         }
 
-        // need to do the following to prevent linting error
-        let data_package: any = this.dataset.data_package;
-        let resources: any = data_package['resources'];
+        const width = Object.keys(this.recordsTableColumnWidths).map((key) => this.recordsTableColumnWidths[key]).
+            reduce((a, b) => a + b) + ManageDataComponent.FIXED_COLUMNS_TOTAL_WIDTH;
 
-        if (resources[0].schema.fields.length > 0) {
-            return {
-                'width': String(ManageDataComponent.FIXED_COLUMNS_TOTAL_WIDTH +
-                    (resources[0].schema.fields.length * ManageDataComponent.COLUMN_WIDTH)) + 'px'
-            };
+        return {width: width + 'px'};
+    }
+
+    public getRecordsTableColumnWidth(fieldName: string): any {
+        let width: number;
+
+        if (!this.flatRecords || this.flatRecords.length === 0) {
+            width = ManageDataComponent.COLUMN_WIDTH;
         } else {
-            return {width: '100%'};
+            if (!(fieldName in this.recordsTableColumnWidths)) {
+                const maxCharacterLength = Math.max(fieldName.length,
+                    this.flatRecords.map((r) => r[fieldName] ? r[fieldName].length : 0).
+                    reduce((a, b) => Math.max(a, b)));
+
+                this.recordsTableColumnWidths[fieldName] =
+                    maxCharacterLength * ManageDataComponent.CHAR_LENGTH_MULTIPLIER + ManageDataComponent.PADDING;
+            }
+
+            width = this.recordsTableColumnWidths[fieldName];
         }
+
+        return {width: width + 'px'};
     }
 
     public add() {
@@ -221,7 +246,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public onPageChange(event) {
-        this.pageState.firstRow = event.first;
+        this.pageState.rowOffset = event.first;
+        this.pageState.rowLimit = event.rows;
     }
 
     public onUpload(event: any) {
@@ -231,10 +257,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         if (this.dataset.type !== 'generic') {
             this.markers.clearLayers();
         }
-        this.apiService.getRecordsByDatasetId(this.dataset.id)
+        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
             .subscribe(
-                (data: any[]) => {
-                    this.flatRecords = this.formatFlatRecords(data);
+                (data: RecordResponse) => {
+                    this.flatRecords = this.formatFlatRecords(data.results);
                     this.loadRecordMarkers();
                 },
                 (error: APIError) => console.log('error.msg', error.msg)
@@ -265,10 +291,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         if (this.dataset.type !== 'generic') {
             this.markers.clearLayers();
         }
-        this.apiService.getRecordsByDatasetId(this.dataset.id)
+        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
         .subscribe(
-            (data: any[]) => {
-                this.flatRecords = this.formatFlatRecords(data);
+            (data: RecordResponse) => {
+                this.flatRecords = this.formatFlatRecords(data.results);
                 this.loadRecordMarkers();
             },
             (error: APIError) => console.log('error.msg', error.msg)
@@ -277,8 +303,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     public onUploadBeforeSend(event: any) {
         let xhr = event.xhr;
-        for (let header of this.apiService.getAuthHeaders()) {
-            xhr.setRequestHeader(header[0], header[1]);
+
+        const authToken = AuthService.getAuthToken();
+        if (authToken) {
+            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
         }
     }
 
@@ -305,7 +333,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private formatFlatRecords(records: Record[]) {
         return records.map((r: Record) => Object.assign({
             id: r.id,
-            source_info: r.source_info ? r.source_info.file_name + ' row ' + r.source_info.row : 'Manually created',
+            file_name: r.source_info ? r.source_info.file_name : 'Manually created',
+            row: r.source_info ? r.source_info.row : '',
             created: moment(r.created).format(ManageDataComponent.DATETIME_FORMAT),
             last_modified: moment(r.last_modified).format(ManageDataComponent.DATETIME_FORMAT),
             geometry: r.geometry
@@ -317,10 +346,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         if (this.dataset.type !== 'generic') {
             this.markers.clearLayers();
         }
-        this.apiService.getRecordsByDatasetId(this.datasetId)
+        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
         .subscribe(
-            (data: any[]) => {
-                this.flatRecords = this.formatFlatRecords(data);
+            (data: RecordResponse) => {
+                this.flatRecords = this.formatFlatRecords(data.results);
                 this.loadRecordMarkers();
             },
             (error: APIError) => console.log('error.msg', error.msg)

@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { EditProjectComponent } from './index';
+import { EditProjectComponent } from './edit-project.component';
 import { AuthGuard } from '../../../shared/index';
 
 export const EditProjectRoutes: Route[] = [
