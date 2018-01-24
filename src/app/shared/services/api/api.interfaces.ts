@@ -3,12 +3,6 @@ export interface APIError {
     statusText: string;
     msg: any;
 }
-export interface RequestOptions {
-    method?: string;
-    headers?: {[key: string]: string};
-    urlParams?: {[key: string]: string};
-    data?: any;
-}
 export interface User {
     id?: number;
     last_login?: string;
