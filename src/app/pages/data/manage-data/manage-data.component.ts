@@ -371,7 +371,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.apiService.updateRecordField(this.editingRowEvent.data.id, data).subscribe();
+        this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data).subscribe();
     }
 
     // Regarding next three methods - onEditComplete event doesn't recognize changing calendar date or dropdown item

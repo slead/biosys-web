@@ -216,7 +216,7 @@ export class APIService {
         );
     }
 
-    public getDatasets(params?: any): Observable<Dataset[]> {
+    public getDatasets(params = {}): Observable<Dataset[]> {
         return this.httpClient.get(this.buildAbsoluteUrl('datasets'), {
             params: params,
             withCredentials: true
@@ -288,7 +288,7 @@ export class APIService {
         );
     }
 
-    public getRecords(params?: any): Observable<Record[]> {
+    public getRecords(params = {}): Observable<Record[]> {
         return this.httpClient.get(this.buildAbsoluteUrl('records'), {
             params: params,
             withCredentials: true
@@ -308,8 +308,11 @@ export class APIService {
     }
 
     public createRecord(record: Record, strict = true): Observable<Record> {
+        // strict is evaluated to true on the server if the parameter is passed with any value
+        const params = strict ? {strict: 'true'} : {};
+
         return this.httpClient.post(this.buildAbsoluteUrl('records'), record, {
-            params: {strict: strict.toString()},
+            params: params,
             withCredentials: true
         })
         .pipe(
@@ -318,8 +321,11 @@ export class APIService {
     }
 
     public updateRecord(id: number, record: Record, strict = true): Observable<Record> {
+        // strict is evaluated to true on the server if the parameter is passed with any value
+        const params = strict ? {strict: 'true'} : {};
+
         return this.httpClient.put(this.buildAbsoluteUrl('records/' + id), record, {
-            params: {strict: strict.toString()},
+            params: params,
             withCredentials: true
         })
         .pipe(
@@ -327,9 +333,12 @@ export class APIService {
         );
     }
 
-    public updateRecordField(id: number, data: any, strict = true): Observable<Record> {
+    public updateRecordDataField(id: number, data: any, strict = false): Observable<Record> {
+        // strict is evaluated to true on the server if the parameter is passed with any value
+        const params = strict ? {strict: 'true'} : {};
+
         return this.httpClient.patch(this.buildAbsoluteUrl('records/' + id), {data: data}, {
-            params: {strict: strict.toString()},
+            params: params,
             withCredentials: true
         })
         .pipe(
@@ -361,7 +370,7 @@ export class APIService {
         // httpClient.delete method doesn't accept a body argument, so use request as a work-around
         return this.httpClient.request('DELETE', this.buildAbsoluteUrl('datasets/' + datasetId + '/records/'), {
             withCredentials: true,
-            body:  JSON.stringify('all')
+            body: JSON.stringify('all')
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
