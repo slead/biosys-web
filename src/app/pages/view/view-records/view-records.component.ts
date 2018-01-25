@@ -132,8 +132,19 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
-        this.apiService.getRecordsByDatasetId(this.selectedDataset.id, event.first, event.rows, event.sortField,
-            event.sortOrder)
+        let params: any = {};
+
+        if (event.first !== undefined && event.first > -1) {
+            params['offset'] = event.first;
+        }
+        if (event.rows) {
+            params['limit'] = event.rows;
+        }
+        if (event.sortField) {
+            params['ordering'] = (event.sortOrder && event.sortOrder < 0) ? '-' + event.sortField : event.sortField;
+        }
+
+        this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params)
         .subscribe(
             (data: RecordResponse) => {
                 this.records = data.results;

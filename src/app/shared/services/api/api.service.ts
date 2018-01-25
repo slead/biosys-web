@@ -246,22 +246,7 @@ export class APIService {
         );
     }
 
-    public getRecordsByDatasetId(id: number, offset?: number, limit?: number, orderField?: string,
-                                 orderDirection?: number, search?: string): Observable<RecordResponse> {
-        let params: any = {};
-        if (offset !== undefined && offset > -1) {
-            params['offset'] = offset;
-        }
-        if (limit) {
-            params['limit'] = limit;
-        }
-        if (orderField) {
-            params['ordering'] = (orderDirection && orderDirection < 0) ? '-' + orderField : orderField;
-        }
-        if (search) {
-            params['search'] = search;
-        }
-
+    public getRecordsByDatasetId(id: number, params = {}): Observable<any> {
         return this.request('datasets/' + id + '/records/', {
             urlParams: params
         });

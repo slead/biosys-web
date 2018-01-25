@@ -3,7 +3,7 @@ import { APIService, APIError, AuthService, FileuploaderComponent, Project, Data
     DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE,
     DEFAULT_ROW_LIMIT, AMBIGOUS_DATE_PATTERN, pyDateFormatToMomentDateFormat } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService, LazyLoadEvent, SelectItem} from 'primeng/primeng';
+import { Message, ConfirmationService, LazyLoadEvent, SelectItem, DataTable } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -34,6 +34,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     @ViewChild(FileuploaderComponent)
     public uploader: FileuploaderComponent;
+
+    @ViewChild(DataTable)
+    public recordsDatatable: DataTable;
 
     @Input()
     set selectAllRecords(selected: boolean) {
@@ -108,7 +111,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 }
             },
             (error: APIError) => console.log('error.msg', error.msg)
-        );
+        ).then(() => this.loadRecordMarkers());
 
         this.uploadURL = this.apiService.getRecordsUploadURL(this.datasetId);
 
@@ -173,38 +176,61 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
-        this.apiService.getRecordsByDatasetId(this.datasetId, event.first, event.rows, event.sortField, event.sortOrder,
-            event.globalFilter)
+        let params: any = {};
+
+        if (event.first !== undefined && event.first > -1) {
+            params['offset'] = event.first;
+        }
+        if (event.rows) {
+            params['limit'] = event.rows;
+        }
+        if (event.sortField) {
+            params['ordering'] = (event.sortOrder && event.sortOrder < 0) ? '-' + event.sortField : event.sortField;
+        }
+        if (event.globalFilter) {
+            params['search'] = event.globalFilter;
+        }
+
+        this.apiService.getRecordsByDatasetId(this.datasetId, params)
         .subscribe(
             (data: RecordResponse) => {
                 this.flatRecords = this.formatFlatRecords(data.results);
                 this.totalRecords = data.count;
                 this.recordsTableColumnWidths = {};
-                if (this.dataset.type !== 'generic') {
-                    this.loadRecordMarkers();
-                }
             },
             (error: APIError) => console.log('error.msg', error.msg)
         );
     }
 
     private loadRecordMarkers() {
-        for (let record of this.flatRecords) {
-            if (record.geometry) {
-                let coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
-                let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
-                    {icon: DEFAULT_MARKER_ICON});
-                let popupContent: string = '<p class="m-0">Record ID: <strong>' + record.id + '</strong></p>' +
-                    '<p class="mt-1"><a href="#/data/projects/' + this.projId + '/datasets/' + this.datasetId +
-                    '/record/' + record.id + '">Edit Record</a></p>';
-
-                marker.bindPopup(popupContent);
-                marker.on('mouseover', function () {
-                    this.openPopup();
-                });
-                this.markers.addLayer(marker);
-            }
+        if (this.dataset.type === 'generic') {
+            return;
         }
+
+        this.apiService.getRecordsByDatasetId(this.datasetId, {fields: ['id', 'geometry']})
+        .subscribe(
+            (records: Record[]) => {
+                this.markers.clearLayers();
+
+                for (let record of records) {
+                    if (record.geometry) {
+                        let coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
+                        let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                            {icon: DEFAULT_MARKER_ICON});
+                        let popupContent: string = '<p class="m-0">Record ID: <strong>' + record.id + '</strong></p>' +
+                            '<p class="mt-1"><a href="#/data/projects/' + this.projId + '/datasets/' + this.datasetId +
+                            '/record/' + record.id + '">Edit Record</a></p>';
+
+                        marker.bindPopup(popupContent);
+                        marker.on('mouseover', function () {
+                            this.openPopup();
+                        });
+                        this.markers.addLayer(marker);
+                    }
+                }
+            },
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
     }
 
     public getRecordsTableWidth(): any {
@@ -264,18 +290,11 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public onUpload(event: any) {
         this.parseAndDisplayResponse(event.xhr.response);
         this.isUploading = false;
-        this.flatRecords = null;
-        if (this.dataset.type !== 'generic') {
-            this.markers.clearLayers();
-        }
-        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
-            .subscribe(
-                (data: RecordResponse) => {
-                    this.flatRecords = this.formatFlatRecords(data.results);
-                    this.loadRecordMarkers();
-                },
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
+
+        // reload table page without resetting pagination/ordering/search params unlike reset()
+        this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+
+        this.loadRecordMarkers();
     }
 
     public onBeforeUpload(event: any) {
@@ -298,18 +317,11 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             });
         }
         this.isUploading = false;
-        this.flatRecords = null;
-        if (this.dataset.type !== 'generic') {
-            this.markers.clearLayers();
-        }
-        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
-        .subscribe(
-            (data: RecordResponse) => {
-                this.flatRecords = this.formatFlatRecords(data.results);
-                this.loadRecordMarkers();
-            },
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+
+        // reload table page without resetting pagination/ordering/search params unlike reset()
+        this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+
+        this.loadRecordMarkers();
     }
 
     public onUploadBeforeSend(event: any) {
@@ -410,18 +422,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     private onDeleteRecordsSuccess() {
-        this.flatRecords = null;
-        if (this.dataset.type !== 'generic') {
-            this.markers.clearLayers();
-        }
-        this.apiService.getRecordsByDatasetId(this.datasetId, this.pageState.rowOffset, this.pageState.rowLimit)
-        .subscribe(
-            (data: RecordResponse) => {
-                this.flatRecords = this.formatFlatRecords(data.results);
-                this.loadRecordMarkers();
-            },
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+        // reload table page without resetting pagination/ordering/search params unlike reset()
+        this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+
+        this.loadRecordMarkers();
 
         this.messages.push({
             severity: 'success',
