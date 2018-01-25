@@ -12,4 +12,4 @@ export let DEFAULT_PRIME_DATE_FORMAT: string = 'dd/mm/yy';
 
 export let DEFAULT_MOMENT_DATE_FORMAT: string = 'DD/MM/YYYY';
 
-export let AMBIGOUS_DATE_PATTERN: RegExp = /^(\d{1,2}).(\d{1,2}).(\d{4})$/;
+export let AMBIGUOUS_DATE_PATTERN: RegExp = /^(\d{1,2})[-,\/](\d{1,2})[-,\/](\d{4})$/;
