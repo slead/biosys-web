@@ -39,8 +39,8 @@
                          [emptyMessage]="flatRecords == null ? '' : 'No records found'"
                          [paginator]="true" [rows]="pageState.rowLimit" [rowsPerPageOptions]="[10, 25, 50, 100]"
                          [totalRecords] = "totalRecords" [first]="pageState.rowOffset" [globalFilter]="recordSearch"
-                         [loading]="flatRecords == null"
-                         (onPage)="onPageChange($event)" resizableColumns="true"
+                         [loading]="flatRecords == null" [editable]="true" (onEditComplete)="onRowEditComplete($event)"
+                         (onPage)="onPageChange($event)" resizableColumns="true" (onEditInit)="onRowEditInit($event)"
                          columnResizeMode="expand" [scrollable]="true" [lazy]="true"
                          (onLazyLoad)="loadRecordsLazy($event)">
                 <p-header>
@@ -63,10 +63,23 @@
                            [routerLink]="'/data/projects/' + projId + '/datasets/' + datasetId + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
                     </ng-template>
                 </p-column>
-                <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
-                          [field]="field.name" [header]="field.name" [sortable]="true" [style]="getRecordsTableColumnWidth(field.name)">
-                    <ng-template let-flatRecord="rowData" let-col pTemplate="body">
-                        <span [innerHTML]="flatRecord[col.field]"></span>
+                <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields" [field]="field.name"
+                          [header]="field.name" [sortable]="true" [editable]="true"
+                          [style]="getRecordsTableColumnWidth(field.name)">
+                    <ng-template *ngIf="field.type == 'date'" let-col let-flatRecord="rowData" pTemplate="body">
+                        {{ flatRecord[col.field] | date:(field.format | pyDateFormatToAngularDateFormat) }}
+                    </ng-template>
+                    <ng-template *ngIf="field.type == 'date'" let-flatRecord="rowData" let-col pTemplate="editor">
+                        <p-calendar *ngIf="field.type == 'date'" dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+                                    [(ngModel)]="flatRecord[col.field]" appendTo="body" (onSelect)="onRecordDateSelect()">
+                        </p-calendar>
+                    </ng-template>
+                    <ng-template *ngIf="field.constraints?.enum" let-flatRecord="rowData" let-col pTemplate="editor">
+                        <p-dropdown [placeholder]="'Select a ' + field.name.toLowerCase()"
+                                    [options]="getDropdownOptions(field.name, field.constraints.enum)"
+                                    [(ngModel)]="flatRecord[col.field]" [style]="{'width':'100%'}" appendTo="body"
+                                    (onChange)="onRecordDropdownSelect()">
+                        </p-dropdown>
                     </ng-template>
                 </p-column>
                 <p-column field="file_name" header="Source File" [sortable]="true" [style]="getRecordsTableColumnWidth('source_file')">
