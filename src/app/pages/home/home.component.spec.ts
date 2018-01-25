@@ -1,12 +1,25 @@
-import { Component } from '@angular/core';
-
-export function main() {
-  describe('Home component', () => {
-  });
-}
-
-@Component({
-  selector: 'biosys-cmp',
-  template: '<home></home>'
-})
-class HomeComponent { }
+// import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+//
+// import { HomeComponent } from './home.component';
+//
+// describe('HomeComponent', () => {
+//     let component: HomeComponent;
+//     let fixture: ComponentFixture<HomeComponent>;
+//
+//     beforeEach(async(() => {
+//         TestBed.configureTestingModule({
+//             declarations: [ HomeComponent ]
+//         }).compileComponents();
+//     }));
+//
+//     beforeEach(() => {
+//         fixture = TestBed.createComponent(HomeComponent);
+//         component = fixture.componentInstance;
+//         fixture.detectChanges();
+//     });
+//
+//     it('should create', () => {
+//         expect(component).toBeTruthy();
+//     });
+// });
+//
