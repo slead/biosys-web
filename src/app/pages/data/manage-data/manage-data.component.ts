@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { APIService, APIError, AuthService, FileuploaderComponent, Project, Dataset, Record, RecordResponse,
     DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE,
-    DEFAULT_ROW_LIMIT, AMBIGOUS_DATE_PATTERN, pyDateFormatToMomentDateFormat } from '../../../shared/index';
+    DEFAULT_ROW_LIMIT, AMBIGUOUS_DATE_PATTERN, pyDateFormatToMomentDateFormat } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Message, ConfirmationService, LazyLoadEvent, SelectItem, DataTable } from 'primeng/primeng';
 import * as moment from 'moment/moment';
@@ -409,7 +409,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                     // use '-' rather than '_' in case '_' is used as the separator
                     dateString = dateString.replace(/_/g, '-');
 
-                    let regexGroup: string[] = dateString.match(AMBIGOUS_DATE_PATTERN);
+                    let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
                     if (regexGroup) {
                         dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
                     }
