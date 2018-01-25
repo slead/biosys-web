@@ -18,8 +18,9 @@ import '../../../../lib/leaflet.latlng-graticule'
 export class ManageDataComponent implements OnInit, OnDestroy {
     private static COLUMN_WIDTH: number = 240;
     private static CHAR_LENGTH_MULTIPLIER: number = 8;
+    private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
     private static PADDING: number = 50;
-    private static FIXED_COLUMNS_TOTAL_WIDTH: number = 200;
+    private static FIXED_COLUMNS_TOTAL_WIDTH: number = 240;
     private static ACCEPTED_TYPES: string[] = [
         'text/csv',
         'text/comma-separated-values',
@@ -252,8 +253,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         } else {
             if (!(fieldName in this.recordsTableColumnWidths)) {
                 const maxCharacterLength = Math.max(fieldName.length,
-                    this.flatRecords.map((r) => r[fieldName] ? r[fieldName].length : 0).
-                    reduce((a, b) => Math.max(a, b)));
+                    this.flatRecords.map((r) => r[fieldName] ? (r[fieldName] instanceof Date ?
+                    ManageDataComponent.DATE_FIELD_FIXED_CHARACTER_COUNT : r[fieldName].length) : 0).
+                    reduce((a, b) => Math.max(a , b)));
 
                 this.recordsTableColumnWidths[fieldName] =
                     maxCharacterLength * ManageDataComponent.CHAR_LENGTH_MULTIPLIER + ManageDataComponent.PADDING;

@@ -49,7 +49,7 @@
                         <input #recordSearch type="text" class="float-left" pInputText placeholder="Search">
                     </div>
                 </p-header>
-                <p-column styleClass="col-button" [style]="{'width': '100px'}">
+                <p-column styleClass="col-button" [style]="{'width': '120px'}">
                     <ng-template pTemplate="header">
                         <p-checkbox label="Select All" [(ngModel)]="selectAllRecords" binary="true"></p-checkbox>
                     </ng-template>
@@ -57,7 +57,7 @@
                         <p-checkbox [value]="flatRecord.id" [(ngModel)]="selectedRecords"></p-checkbox>
                     </ng-template>
                 </p-column>
-                <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width': '100px'}">
+                <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width': '120px'}">
                     <ng-template let-flatRecord="rowData" pTemplate="body">
                         <a class="table-link"
                            [routerLink]="'/data/projects/' + projId + '/datasets/' + datasetId + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
