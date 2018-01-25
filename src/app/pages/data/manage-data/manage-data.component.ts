@@ -428,7 +428,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
             this.recordsTableColumnWidths = {};
         } else {
-            setTimeout(this.formatFlatRecords(), ManageDataComponent.FORMAT_DATES_TIMEOUT);
+            setTimeout(this.formatFlatRecordDates, ManageDataComponent.FORMAT_DATES_TIMEOUT);
         }
     }
 
