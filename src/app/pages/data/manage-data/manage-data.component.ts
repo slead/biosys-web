@@ -21,6 +21,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
     private static PADDING: number = 50;
     private static FIXED_COLUMNS_TOTAL_WIDTH: number = 240;
+    private static FORMAT_DATES_TIMEOUT = 500;
     private static ACCEPTED_TYPES: string[] = [
         'text/csv',
         'text/comma-separated-values',
@@ -195,7 +196,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.apiService.getRecordsByDatasetId(this.datasetId, params)
         .subscribe(
             (data: RecordResponse) => {
-                this.flatRecords = this.formatFlatRecords(data.results);
+                this.formatFlatRecords(data.results);
                 this.totalRecords = data.count;
                 this.recordsTableColumnWidths = {};
             },
@@ -392,7 +393,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     private formatFlatRecords(records: Record[]) {
-        let flatRecords = records.map((r: Record) => Object.assign({
+        this.flatRecords = records.map((r: Record) => Object.assign({
             id: r.id,
             file_name: r.source_info ? r.source_info.file_name : 'Manually created',
             row: r.source_info ? r.source_info.row : '',
@@ -401,26 +402,34 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             geometry: r.geometry
         }, r.data));
 
-        for (let field of this.dataset.data_package.resources[0].schema.fields) {
-            if (field.type === 'date') {
-                for (let record of flatRecords) {
-                    // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
-                    // and IE expect this when creating Date from a string
-                    let dateString: string = record[field.name];
+        this.formatFlatRecordDates();
+    }
 
-                    // use '-' rather than '_' in case '_' is used as the separator
-                    dateString = dateString.replace(/_/g, '-');
+    private formatFlatRecordDates() {
+        if (this.dataset) {
+            for (let field of this.dataset.data_package.resources[0].schema.fields) {
+                if (field.type === 'date') {
+                    for (let record of this.flatRecords) {
+                        // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
+                        // and IE expect this when creating Date from a string
+                        let dateString: string = record[field.name];
 
-                    let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
-                    if (regexGroup) {
-                        dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
+                        // use '-' rather than '_' in case '_' is used as the separator
+                        dateString = dateString.replace(/_/g, '-');
+
+                        let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
+                        if (regexGroup) {
+                            dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
+                        }
+                        record[field.name] = new Date(dateString);
                     }
-                    record[field.name] = new Date(dateString);
                 }
             }
-        }
 
-        return flatRecords;
+            this.recordsTableColumnWidths = {};
+        } else {
+            setTimeout(this.formatFlatRecords(), ManageDataComponent.FORMAT_DATES_TIMEOUT);
+        }
     }
 
     private onDeleteRecordsSuccess() {

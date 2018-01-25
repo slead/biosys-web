@@ -318,7 +318,7 @@ export class APIService {
     }
 
     public updateRecord(id: number, record: Record, strict = true): Observable<Record> {
-        return this.httpClient.put(this.buildAbsoluteUrl('records'), record, {
+        return this.httpClient.put(this.buildAbsoluteUrl('records/' + id), record, {
             params: {strict: strict.toString()},
             withCredentials: true
         })
@@ -328,11 +328,9 @@ export class APIService {
     }
 
     public updateRecordField(id: number, data: any, strict = true): Observable<Record> {
-        let urlParams: any = strict ? {strict: 'true'} : {};
-        return this.request('records/' + id, {
-            method: 'Patch',
-            data: {data: data},
-            urlParams: urlParams
+        return this.httpClient.patch(this.buildAbsoluteUrl('records/' + id), {data: data}, {
+            params: {strict: strict.toString()},
+            withCredentials: true
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
