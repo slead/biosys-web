@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
 import { APIService, APIError, AuthService, FileuploaderComponent, Project, Dataset, Record, RecordResponse,
     DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE,
-    DEFAULT_ROW_LIMIT } from '../../../shared/index';
+    DEFAULT_ROW_LIMIT, AMBIGOUS_DATE_PATTERN, pyDateFormatToMomentDateFormat } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService, LazyLoadEvent} from 'primeng/primeng';
+import { Message, ConfirmationService, LazyLoadEvent, SelectItem} from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -49,6 +49,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public projId: number;
     public datasetId: number;
     public dataset: Dataset = <Dataset>{};
+    public dropdownItems: any = {};
     public recordsTableColumnWidths: {[key: string]: number} = {};
     public flatRecords: any[];
     public totalRecords: number = 0;
@@ -70,6 +71,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private markers: L.MarkerClusterGroup;
 
     private isAllRecordsSelected: boolean = false;
+
+    private editingRowEvent: any;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
                 private confirmationService: ConfirmationService) {
@@ -159,6 +162,14 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         L.latlngGraticule().addTo(this.map);
 
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
+    }
+
+    public getDropdownOptions(fieldName: string, options: string[]): SelectItem[] {
+        if (!(fieldName in this.dropdownItems)) {
+            this.dropdownItems[fieldName] = options.map(option => ({'label': option, 'value': option}));
+        }
+
+        return this.dropdownItems[fieldName];
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
@@ -330,8 +341,44 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         }
     }
 
+    public onRowEditComplete(event: any) {
+        let data: any = JSON.parse(JSON.stringify(this.editingRowEvent.data));
+
+        for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row']) {
+            delete data[key];
+        }
+
+        // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
+        for (let field of this.dataset.data_package.resources[0].schema.fields) {
+            if (field.type === 'date' && data[field.name]) {
+                data[field.name] = moment(data[field.name]).
+                format(pyDateFormatToMomentDateFormat(field.format));
+            }
+        }
+
+        this.apiService.updateRecordField(this.editingRowEvent.data.id, data).subscribe();
+    }
+
+    // Regarding next three methods - onEditComplete event doesn't recognize changing calendar date or dropdown item
+    // change but does recognize starting to edit these fields, so need to keep a reference to the event, in this case
+    // 'editingRowEvent'. This event contains a reference to the data of the row (i.e. the record) and will have the
+    // latest (post-edited) data, which can be used to update the record by manually calling onRowEditComplete when the
+    // calendar or dropdown have changed, as in onRecordDateSelect and onRecordDropdownSelect methods.
+
+    public onRowEditInit(event: any) {
+        this.editingRowEvent = event;
+    }
+
+    public onRecordDateSelect() {
+        this.onRowEditComplete(null);
+    }
+
+    public onRecordDropdownSelect() {
+        this.onRowEditComplete(null);
+    }
+
     private formatFlatRecords(records: Record[]) {
-        return records.map((r: Record) => Object.assign({
+        let flatRecords = records.map((r: Record) => Object.assign({
             id: r.id,
             file_name: r.source_info ? r.source_info.file_name : 'Manually created',
             row: r.source_info ? r.source_info.row : '',
@@ -339,6 +386,27 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             last_modified: moment(r.last_modified).format(ManageDataComponent.DATETIME_FORMAT),
             geometry: r.geometry
         }, r.data));
+
+        for (let field of this.dataset.data_package.resources[0].schema.fields) {
+            if (field.type === 'date') {
+                for (let record of flatRecords) {
+                    // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
+                    // and IE expect this when creating Date from a string
+                    let dateString: string = record[field.name];
+
+                    // use '-' rather than '_' in case '_' is used as the separator
+                    dateString = dateString.replace(/_/g, '-');
+
+                    let regexGroup: string[] = dateString.match(AMBIGOUS_DATE_PATTERN);
+                    if (regexGroup) {
+                        dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
+                    }
+                    record[field.name] = new Date(dateString);
+                }
+            }
+        }
+
+        return flatRecords;
     }
 
     private onDeleteRecordsSuccess() {

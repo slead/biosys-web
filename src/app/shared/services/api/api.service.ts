@@ -315,6 +315,18 @@ export class APIService {
         );
     }
 
+    public updateRecordField(id: number, data: any, strict = true): Observable<Record> {
+        let urlParams: any = strict ? {strict: 'true'} : {};
+        return this.request('records/' + id, {
+            method: 'Patch',
+            data: {data: data},
+            urlParams: urlParams
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
+    }
+
     public deleteRecord(id: number): Observable<Record> {
         return this.request('records/' + id, {
             method: 'Delete',

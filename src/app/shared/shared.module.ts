@@ -7,7 +7,7 @@ import { NavbarComponent } from './navbar/index';
 import { BreadcrumbsComponent } from './breadcrumbs/index';
 import { FeatureMapComponent, MarkerDirective } from './featuremap/index';
 import { TruncatePipe } from './pipes/index';
-import { PyToPrimeDateFormatConversionPipe } from './pipes/date-conversion.pipe';
+import { PyToAngularDateFormatConversionPipe, PyToPrimeDateFormatConversionPipe } from './pipes/date-conversion.pipe';
 import { APIService } from './services/api/index';
 import { ButtonModule, MenubarModule, BreadcrumbModule, MessagesModule, ProgressBarModule } from 'primeng/primeng';
 import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
@@ -22,10 +22,11 @@ import { ExpandableMessagesComponent } from './expandablemessages/expandablemess
     imports: [CommonModule, RouterModule, MenubarModule, BreadcrumbModule, ButtonModule, MessagesModule,
         ProgressBarModule, PrimeSharedModule],
     declarations: [HeaderComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent, FileuploaderComponent,
-        MarkerDirective, TruncatePipe, PyToPrimeDateFormatConversionPipe, ExpandableMessagesComponent],
+        MarkerDirective, TruncatePipe, PyToAngularDateFormatConversionPipe, PyToPrimeDateFormatConversionPipe,
+        ExpandableMessagesComponent],
     exports: [CommonModule, FormsModule, RouterModule, HeaderComponent, NavbarComponent, BreadcrumbsComponent,
         ExpandableMessagesComponent, FeatureMapComponent, FileuploaderComponent, MarkerDirective, TruncatePipe,
-        PyToPrimeDateFormatConversionPipe
+        PyToAngularDateFormatConversionPipe, PyToPrimeDateFormatConversionPipe
     ]
 })
 export class SharedModule {
