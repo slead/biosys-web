@@ -62,7 +62,7 @@ export interface Record {
     created?: string;
     data?: {[key: string]: any} | null;
     datetime?: string;
-    geometry?: GeoJSON.GeometryObject | null;
+    geometry?: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
     species_name?: string;
     name_id?: number;
 }

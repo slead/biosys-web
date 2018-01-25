@@ -272,22 +272,7 @@ export class APIService {
         );
     }
 
-    public getRecordsByDatasetId(id: number, offset?: number, limit?: number, orderField?: string,
-                                 orderDirection?: number, search?: string): Observable<any> {
-        let params: any = {};
-        if (offset !== undefined && offset > -1) {
-            params['offset'] = offset;
-        }
-        if (limit) {
-            params['limit'] = limit;
-        }
-        if (orderField) {
-            params['ordering'] = (orderDirection && orderDirection < 0) ? '-' + orderField : orderField;
-        }
-        if (search) {
-            params['search'] = search;
-        }
-
+    public getRecordsByDatasetId(id: number, params = {}): Observable<any> {
         return this.httpClient.get(this.buildAbsoluteUrl('datasets/' + id + '/records/'), {
             params: params,
             withCredentials: true
@@ -342,6 +327,18 @@ export class APIService {
         );
     }
 
+    public updateRecordField(id: number, data: any, strict = true): Observable<Record> {
+        let urlParams: any = strict ? {strict: 'true'} : {};
+        return this.request('records/' + id, {
+            method: 'Patch',
+            data: {data: data},
+            urlParams: urlParams
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
+    }
+
     public deleteRecord(id: number): Observable<Record> {
         return this.httpClient.delete(this.buildAbsoluteUrl('records/' + id), {
             withCredentials: true
@@ -357,7 +354,6 @@ export class APIService {
             body: recordIds,
             withCredentials: true
         })
-
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
