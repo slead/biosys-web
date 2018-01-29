@@ -425,11 +425,11 @@ export class APIService {
     }
 
     public getRecordExportURL(): string {
-        return this.buildAbsoluteUrl(this.baseUrl + 'records/?output=xlsx&', false);
+        return this.buildAbsoluteUrl('records/?output=xlsx&', false);
     }
 
     public getInferDatasetURL(): string {
-        return this.buildAbsoluteUrl(this.baseUrl + 'utils/infer-dataset/');
+        return this.buildAbsoluteUrl('utils/infer-dataset/');
     }
 
     public recordDataToGeometry(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
