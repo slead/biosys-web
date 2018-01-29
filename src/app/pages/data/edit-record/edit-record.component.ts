@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DEFAULT_GROWL_LIFE } from '../../../shared/index';
+import { DEFAULT_GROWL_LIFE, AMBIGUOUS_DATE_PATTERN, pyDateFormatToMomentDateFormat } from '../../../shared/index';
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
-import { pyDateFormatToMomentDateFormat } from '../../../shared/utils/functions';
 
 @Component({
     moduleId: module.id,
@@ -14,8 +13,6 @@ import { pyDateFormatToMomentDateFormat } from '../../../shared/utils/functions'
 })
 
 export class EditRecordComponent implements OnInit {
-    private static AMBIGOUS_DATE_PATTERN: RegExp = /^(\d{1,2}).(\d{1,2}).(\d{4})$/;
-
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];
@@ -201,7 +198,7 @@ export class EditRecordComponent implements OnInit {
                 // use '-' rather than '_' in case '_' is used as the separator
                 dateString = dateString.replace(/_/g, '-');
 
-                let regexGroup: string[] = dateString.match(EditRecordComponent.AMBIGOUS_DATE_PATTERN);
+                let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
                 if (regexGroup) {
                     dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
                 }

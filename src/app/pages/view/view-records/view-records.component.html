@@ -55,19 +55,23 @@
                 </p>
                 <h4>Records for {{selectedDataset?.name}}</h4>
                 <div class="data-table-container">
-                    <p-dataTable [tableStyle]="getDataTableWidth()" [value]="records" [paginator]="true" [rows]="10"
-                                 [responsive]="true" [loading]="records == null" resizableColumns="true"
-                                 columnResizeMode="expand"
+                    <p-dataTable #recordsTable [tableStyle]="getRecordsTableWidth()" [value]="records"
+                                 [paginator]="true" [rows]="10" [loading]="records == null"
+                                 [rowsPerPageOptions]="[10, 25, 50, 100]" [totalRecords] = "totalRecords"
+                                 [loading]="flatRecords == null" [lazy]="true"
+                                 (onLazyLoad)="loadRecordsLazy($event)" resizableColumns="true"
+                                 columnResizeMode="expand" [scrollable]="true"
                                  [emptyMessage]="records == null ? 'Loading records': 'No records found'">
                         <p-column *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields"
-                                  [field]="field.name" [header]="field.name" [sortable]="true">
+                                  [field]="field.name" [header]="field.name" [sortable]="true"
+                                  [style]="getRecordsTableColumnWidth(field.name)">
                             <ng-template let-record="rowData" let-col pTemplate="body">
-                                <span [innerHTML]="record.data[col.field] | truncate:25"></span>
+                                <span [innerHTML]="record.data[col.field]"></span>
                             </ng-template>
                         </p-column>
                     </p-dataTable>
                 </div>
-                <a class="mt-3 mb-3" [href]="exportURL" style="float:right">
+                <a class="mt-3 mb-3 float-right" [href]="exportURL">
                     <button pButton type="button" label="Export"></button>
                 </a>
             </div>

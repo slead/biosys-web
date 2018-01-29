@@ -1,4 +1,24 @@
-import { DEFAULT_PRIME_DATE_FORMAT, DEFAULT_MOMENT_DATE_FORMAT } from './consts';
+import { DEFAULT_ANGULAR_DATE_FORMAT, DEFAULT_PRIME_DATE_FORMAT, DEFAULT_MOMENT_DATE_FORMAT } from './consts';
+
+export function pyDateFormatToAngularDateFormat(pythonDateFormat: string): string {
+    let ngDateFormat = pythonDateFormat;
+
+    if (!ngDateFormat || ngDateFormat === 'any') {
+        return DEFAULT_ANGULAR_DATE_FORMAT;
+    }
+
+    ngDateFormat = ngDateFormat.replace(/fmt:/, '');
+    ngDateFormat = ngDateFormat.replace(/%a/, 'EEE');
+    ngDateFormat = ngDateFormat.replace(/%A/, 'EEEE');
+    ngDateFormat = ngDateFormat.replace(/%d/, 'dd');
+    ngDateFormat = ngDateFormat.replace(/%b/, 'MMM');
+    ngDateFormat = ngDateFormat.replace(/%B/, 'MMMM');
+    ngDateFormat = ngDateFormat.replace(/%m/, 'MM');
+    ngDateFormat = ngDateFormat.replace(/%y/, 'yy');
+    ngDateFormat = ngDateFormat.replace(/%Y/, 'yyyy');
+
+    return ngDateFormat;
+}
 
 export function pyDateFormatToPrimeDateFormat(pythonDateFormat: string): string {
     let primeDateFormat = pythonDateFormat;

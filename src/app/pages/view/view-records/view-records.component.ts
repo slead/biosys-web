@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { APIService, APIError, Project, Dataset, Record, DATASET_TYPE_MAP } from '../../../shared/index';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { APIService, APIError, Dataset, Record, RecordResponse, DATASET_TYPE_MAP } from '../../../shared/index';
 import { Router } from '@angular/router';
-import { SelectItem } from 'primeng/primeng';
+import { SelectItem, DataTable, LazyLoadEvent } from 'primeng/primeng';
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin';
 
@@ -14,6 +14,8 @@ import 'rxjs/add/observable/forkJoin';
 
 export class ViewRecordsComponent implements OnInit {
     private static COLUMN_WIDTH: number = 240;
+    private static CHAR_LENGTH_MULTIPLIER: number = 8;
+    private static PADDING: number = 50;
 
     public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
     public breadcrumbItems: any = [];
@@ -23,7 +25,8 @@ export class ViewRecordsComponent implements OnInit {
 
     public datasets: Dataset[];
     public records: Record[];
-
+    public recordsTableColumnWidths: {[key: string]: number} = {};
+    public totalRecords: number = 0;
     public selectedDataset: Dataset;
 
     public projectId: number;
@@ -32,6 +35,9 @@ export class ViewRecordsComponent implements OnInit {
     public speciesName: string;
 
     public exportURL: string;
+
+    @ViewChild('recordsTable')
+    public datatable: DataTable;
 
     constructor(private apiService: APIService, private router: Router) {
     }
@@ -100,10 +106,9 @@ export class ViewRecordsComponent implements OnInit {
 
         if (this.selectedDataset) {
             recordParams['dataset__id'] = this.selectedDataset.id;
-            this.apiService.getRecords(recordParams).subscribe(
-                (records: Record[]) => this.records = records,
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
+            if (this.datatable) {
+                this.datatable.reset();
+            }
         }
 
         this.exportURL = this.apiService.getRecordExportURL() +
@@ -126,20 +131,60 @@ export class ViewRecordsComponent implements OnInit {
         this.filter();
     }
 
-    public getDataTableWidth(): any {
-        if (!this.selectedDataset) {
-            return { width: '100%'};
+    public loadRecordsLazy(event: LazyLoadEvent) {
+        let params: any = {};
+
+        if (event.first !== undefined && event.first > -1) {
+            params['offset'] = event.first;
+        }
+        if (event.rows) {
+            params['limit'] = event.rows;
+        }
+        if (event.sortField) {
+            params['ordering'] = (event.sortOrder && event.sortOrder < 0) ? '-' + event.sortField : event.sortField;
         }
 
-        // need to do the following to prevent linting error
-        let data_package: any = this.selectedDataset.data_package;
-        let resources: any = data_package['resources'];
+        this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params)
+        .subscribe(
+            (data: RecordResponse) => {
+                this.records = data.results;
+                this.totalRecords = data.count;
+                this.recordsTableColumnWidths = {};
+            },
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
+    }
 
-        if (resources[0].schema.fields.length > 3) {
-            return {'width': String(resources[0].schema.fields.length * ViewRecordsComponent.COLUMN_WIDTH) + 'px'};
+    public getRecordsTableWidth(): any {
+        if (!Object.keys(this.recordsTableColumnWidths).length) {
+            return {width: '100%'};
+        }
+
+        const width = Object.keys(this.recordsTableColumnWidths).map((key) => this.recordsTableColumnWidths[key]).
+            reduce((a, b) => a + b);
+
+        return {width: width + 'px'};
+    }
+
+    public getRecordsTableColumnWidth(fieldName: string): any {
+        let width: number;
+
+        if (!this.records || this.records.length === 0) {
+            width = ViewRecordsComponent.COLUMN_WIDTH;
         } else {
-            return { width: '100%'};
+            if (!(fieldName in this.recordsTableColumnWidths)) {
+                const maxCharacterLength = Math.max(fieldName.length,
+                    this.records.map((r) => r.data[fieldName] ? r.data[fieldName].length : 0)
+                    .reduce((a, b) => Math.max(a, b)));
+
+                this.recordsTableColumnWidths[fieldName] =
+                    maxCharacterLength * ViewRecordsComponent.CHAR_LENGTH_MULTIPLIER + ViewRecordsComponent.PADDING;
+            }
+
+            width = this.recordsTableColumnWidths[fieldName];
         }
+
+        return {width: width + 'px'};
     }
 
     private addProjectNameToDatasets(): void {

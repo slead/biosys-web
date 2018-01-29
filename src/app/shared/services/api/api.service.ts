@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { RequestOptions, APIError, User, Project, Dataset, Site, Record, Statistic, ModelChoice } from './api.interfaces';
+import { RequestOptions, APIError, User, Project, Dataset, Site, Record, RecordResponse, Statistic, ModelChoice }
+    from './api.interfaces';
 import { environment } from '../../../../environments/environment';
 
 /**
@@ -26,7 +27,7 @@ export class APIService {
         let apiError: APIError = {
             status: error.status,
             statusText: error.statusText,
-            msg: error.message
+            msg: ''
         };
 
         // The error message is usually in the body as 'detail' or 'non_field_errors'
@@ -35,6 +36,8 @@ export class APIService {
             apiError.msg = body['detail'];
         } else if ('non_field_errors' in body) {
             apiError.msg = body['non_field_errors'];
+        } else {
+            apiError.msg = error.error;
         }
 
         this._receivedUnauthenticatedError = error.status === 401;
@@ -243,8 +246,10 @@ export class APIService {
         );
     }
 
-    public getRecordsByDatasetId(id: number): Observable<any[]> {
-        return this.request('datasets/' + id + '/records/', {});
+    public getRecordsByDatasetId(id: number, params = {}): Observable<any> {
+        return this.request('datasets/' + id + '/records/', {
+            urlParams: params
+        });
     }
 
     public createRecordsForDatasetId(id: number, data: any[]) {
@@ -288,6 +293,18 @@ export class APIService {
         return this.request('records/' + id, {
             method: 'Put',
             data: record,
+            urlParams: urlParams
+        })
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
+    }
+
+    public updateRecordField(id: number, data: any, strict = true): Observable<Record> {
+        let urlParams: any = strict ? {strict: 'true'} : {};
+        return this.request('records/' + id, {
+            method: 'Patch',
+            data: {data: data},
             urlParams: urlParams
         })
         .pipe(
@@ -372,6 +389,10 @@ export class APIService {
 
     public getRecordExportURL(): string {
         return this.baseUrl + 'records/?output=xlsx&';
+    }
+
+    public getInferDatasetURL(): string {
+        return this.baseUrl + 'utils/infer-dataset/';
     }
 
     public recordDataToGeometry(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {

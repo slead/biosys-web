@@ -1,10 +1,10 @@
 import * as L from 'leaflet';
 
-export let DEFAULT_ZOOM: number = 4;
+export const DEFAULT_ZOOM: number = 4;
 
-export let DEFAULT_CENTER: L.LatLng = L.latLng([-27, 121]);
+export const DEFAULT_CENTER: L.LatLng = L.latLng([-27, 121]);
 
-export let DEFAULT_MARKER_ICON: L.Icon = L.icon({
+export const DEFAULT_MARKER_ICON: L.Icon = L.icon({
   iconRetinaUrl: 'css/images/marker-icon-2x.png',
   iconUrl: 'css/images/marker-icon.png',
   shadowUrl: 'css/images/marker-shadow.png',
@@ -13,6 +13,8 @@ export let DEFAULT_MARKER_ICON: L.Icon = L.icon({
   popupAnchor: [1, -34],
   shadowSize:  [41, 41]
 });
+
+export const DEFAULT_ROW_LIMIT = 10;
 
 export function getDefaultBaseLayer(): L.TileLayer {
     return L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

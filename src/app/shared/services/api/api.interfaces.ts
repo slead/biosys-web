@@ -63,14 +63,18 @@ export interface Record {
     id?: number;
     dataset?: number;
     site?: number | null;
-    source_info: any;
+    source_info: {[key: string]: string | number};
     last_modified?: string;
     created?: string;
     data?: {[key: string]: any} | null;
     datetime?: string;
-    geometry?: GeoJSON.GeometryObject | null;
+    geometry?: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
     species_name?: string;
     name_id?: number;
+}
+export interface RecordResponse {
+    count: number;
+    results?: Record[];
 }
 export interface Statistic {
     projects: any;

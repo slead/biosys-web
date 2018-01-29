@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { APIService, APIError, Project, Dataset, JsonEditorComponent, JsonEditorOptions, DEFAULT_GROWL_LIFE }
+import { APIService, APIError, AuthService, Project, Dataset, JsonEditorComponent, JsonEditorOptions, DEFAULT_GROWL_LIFE }
     from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
+import { FileUpload, ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import { ModelChoice } from '../../../shared/services/api/api.interfaces';
 
 @Component({
@@ -21,6 +21,9 @@ export class EditDatasetComponent implements OnInit {
     @ViewChild(JsonEditorComponent)
     public editor: JsonEditorComponent;
 
+    @ViewChild(FileUpload)
+    public fileUpload: FileUpload;
+
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];
@@ -33,7 +36,7 @@ export class EditDatasetComponent implements OnInit {
 
     private completeUrl: string;
 
-    constructor(private apiService: APIService,
+    constructor(public apiService: APIService,
                 private router: Router,
                 private route: ActivatedRoute,
                 private confirmationService: ConfirmationService) {
@@ -100,16 +103,47 @@ export class EditDatasetComponent implements OnInit {
         this.completeUrl = '/management/projects/edit-project/' + projId;
     }
 
+    public onUpload(event: any) {
+        const response: any = JSON.parse(event.xhr.response);
+        this.ds.name = response.name;
+        this.ds.type = response.type;
+        this.ds.data_package = response.data_package;
+
+        this.editor.set(<JSON>this.ds.data_package);
+    }
+
+    public onUploadBeforeSend(event: any) {
+        let xhr = event.xhr;
+
+        const authToken = AuthService.getAuthToken();
+        if (authToken) {
+            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
+        }
+    }
+
+    public onError(event: any) {
+        let response = JSON.parse(event.xhr.response);
+
+        if ('errors' in response) {
+            for (let error of response.errors) {
+                this.fileUpload.msgs.push({
+                    severity: 'error',
+                    summary: error
+                })
+            }
+        }
+    }
+
     public save() {
         if (this.ds.id) {
             this.apiService.updateDataset(this.ds).subscribe(
                 () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
-                (errors: APIError) => this.dsErrors = errors.msg
+                (error: APIError) => this.dsErrors = error.msg
             );
         } else {
             this.apiService.createDataset(this.ds).subscribe(
                 () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
-                (errors: APIError) => this.dsErrors = errors.msg
+                (error: APIError) => this.dsErrors = error.msg
             );
         }
     }

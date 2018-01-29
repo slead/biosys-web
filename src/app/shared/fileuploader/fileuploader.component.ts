@@ -9,7 +9,4 @@ import { FileUpload, DomHandler } from 'primeng/primeng';
 export class FileuploaderComponent extends FileUpload {
     @Input()
     public loading: boolean;
-
-    @Input()
-    public cancellable: boolean = true;
 }
