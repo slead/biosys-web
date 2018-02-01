@@ -1,10 +1,13 @@
-import { DEFAULT_ANGULAR_DATE_FORMAT, DEFAULT_PRIME_DATE_FORMAT, DEFAULT_MOMENT_DATE_FORMAT } from './consts';
+import { ANY_ANGULAR_DATE_FORMAT, ANY_PRIME_DATE_FORMAT, ANY_MOMENT_DATE_FORMAT, ISO_ANGULAR_DATE_FORMAT,
+    ISO_MOMENT_DATE_FORMAT, ISO_PRIME_DATE_FORMAT } from './consts';
 
 export function pyDateFormatToAngularDateFormat(pythonDateFormat: string): string {
     let ngDateFormat = pythonDateFormat;
 
     if (!ngDateFormat || ngDateFormat === 'any') {
-        return DEFAULT_ANGULAR_DATE_FORMAT;
+            return ANY_ANGULAR_DATE_FORMAT
+    } else if (ngDateFormat === 'default') {
+            return ISO_ANGULAR_DATE_FORMAT;
     }
 
     ngDateFormat = ngDateFormat.replace(/fmt:/, '');
@@ -24,7 +27,9 @@ export function pyDateFormatToPrimeDateFormat(pythonDateFormat: string): string 
     let primeDateFormat = pythonDateFormat;
 
     if (!primeDateFormat || primeDateFormat === 'any') {
-        return DEFAULT_PRIME_DATE_FORMAT;
+        return ANY_PRIME_DATE_FORMAT;
+    } else if (primeDateFormat === 'default') {
+        return ISO_PRIME_DATE_FORMAT;
     }
 
     primeDateFormat = primeDateFormat.replace(/fmt:/, '');
@@ -44,7 +49,9 @@ export function pyDateFormatToMomentDateFormat(pythonDateFormat: string): string
     let momentDateFormat = pythonDateFormat;
 
     if (!momentDateFormat || momentDateFormat === 'any') {
-        return DEFAULT_MOMENT_DATE_FORMAT;
+        return ANY_MOMENT_DATE_FORMAT;
+    } else if (momentDateFormat === 'default') {
+        return ISO_MOMENT_DATE_FORMAT;
     }
 
     momentDateFormat = momentDateFormat.replace(/fmt:/, '');
