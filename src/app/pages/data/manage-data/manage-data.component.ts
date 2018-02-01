@@ -21,7 +21,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
     private static PADDING: number = 50;
     private static FIXED_COLUMNS_TOTAL_WIDTH: number = 240;
-    private static FORMAT_DATES_TIMEOUT = 500;
     private static ACCEPTED_TYPES: string[] = [
         'text/csv',
         'text/comma-separated-values',
@@ -53,7 +52,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public breadcrumbItems: any = [];
     public projId: number;
     public datasetId: number;
-    public dataset: Dataset = <Dataset>{};
+    public dataset: Dataset;
     public dropdownItems: any = {};
     public recordsTableColumnWidths: {[key: string]: number} = {};
     public flatRecords: any[];
@@ -107,6 +106,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         .then(
             (dataset: Dataset) => {
                 this.dataset = dataset;
+
+                // force initial lazy load
+                this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+
                 this.breadcrumbItems.push({label: this.dataset.name});
                 if (dataset.type !== 'generic') {
                     this.initMap();
@@ -196,7 +199,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.apiService.getRecordsByDatasetId(this.datasetId, params)
         .subscribe(
             (data: RecordResponse) => {
-                this.formatFlatRecords(data.results);
+                this.flatRecords = this.formatFlatRecords(data.results);
                 this.totalRecords = data.count;
                 this.recordsTableColumnWidths = {};
             },
@@ -393,7 +396,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     private formatFlatRecords(records: Record[]) {
-        this.flatRecords = records.map((r: Record) => Object.assign({
+        let flatRecords = records.map((r: Record) => Object.assign({
             id: r.id,
             file_name: r.source_info ? r.source_info.file_name : 'Manually created',
             row: r.source_info ? r.source_info.row : '',
@@ -402,34 +405,26 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             geometry: r.geometry
         }, r.data));
 
-        this.formatFlatRecordDates();
-    }
+        for (let field of this.dataset.data_package.resources[0].schema.fields) {
+            if (field.type === 'date') {
+                for (let record of flatRecords) {
+                    // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
+                    // and IE expect this when creating Date from a string
+                    let dateString: string = record[field.name];
 
-    private formatFlatRecordDates() {
-        if (this.dataset) {
-            for (let field of this.dataset.data_package.resources[0].schema.fields) {
-                if (field.type === 'date') {
-                    for (let record of this.flatRecords) {
-                        // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
-                        // and IE expect this when creating Date from a string
-                        let dateString: string = record[field.name];
+                    // use '-' rather than '_' in case '_' is used as the separator
+                    dateString = dateString.replace(/_/g, '-');
 
-                        // use '-' rather than '_' in case '_' is used as the separator
-                        dateString = dateString.replace(/_/g, '-');
-
-                        let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
-                        if (regexGroup) {
-                            dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
-                        }
-                        record[field.name] = new Date(dateString);
+                    let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
+                    if (regexGroup) {
+                        dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
                     }
+                    record[field.name] = new Date(dateString);
                 }
             }
-
-            this.recordsTableColumnWidths = {};
-        } else {
-            setTimeout(this.formatFlatRecordDates, ManageDataComponent.FORMAT_DATES_TIMEOUT);
         }
+
+        return flatRecords;
     }
 
     private onDeleteRecordsSuccess() {
