@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { RequestOptions, APIError, User, Project, Dataset, Site, Record, RecordResponse, Statistic, ModelChoice }
+import { APIError, User, Project, Dataset, Site, Record, Statistic, ModelChoice }
     from './api.interfaces';
 import { environment } from '../../../../environments/environment';
 
@@ -45,243 +45,226 @@ export class APIService {
         return Observable.throw(apiError);
     }
 
+    private buildAbsoluteUrl(path: string, appendEndSlash: boolean = true) {
+        return this.baseUrl + ((path && !path.endsWith('/')) && appendEndSlash ? path + '/' : path);
+    }
+
     /**
      * Creates a new APIService with the injected Http.
-     * @param {Http} http - The injected Http.
+     * @param {Http} httpClient - The injected Http.
      * @constructor
      */
-    constructor(private http: HttpClient) {
+    constructor(private httpClient: HttpClient) {
         this.baseUrl = environment.server + environment.apiExtension;
     }
 
     public getAuthToken(username: string, password: string): Observable<any> {
-        return this.request('auth-token', {
-            method: 'POST',
-            data: {
+        return this.httpClient.post(this.buildAbsoluteUrl('auth-token'), {
                 username: username,
                 password: password
             }
-        })
+        )
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getUser(id: number): Observable<User> {
-        return this.request('users/' + id, {})
+        return this.httpClient.get(this.buildAbsoluteUrl('users/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getUsers(): Observable<User[]> {
-        return this.request('users', {})
+        return this.httpClient.get(this.buildAbsoluteUrl('users'))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public whoAmI(): Observable<User> {
-        return this.request('whoami', {})
+        return this.httpClient.get(this.buildAbsoluteUrl('whoami'))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getProjects(custodians?: number[]): Observable<Project[]> {
-        let params: RequestOptions = {};
+        let params: any = {};
         if (custodians) {
-            params['urlParams'] = {custodians: custodians.toString()};
+            params['custodians'] = custodians.toString();
         }
 
-        return this.request('projects', params)
+        return this.httpClient.get(this.buildAbsoluteUrl('projects'), {
+            params: params
+        })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getProjectById(id: number): Observable<Project> {
-        return this.request('projects/' + id, {})
+        return this.httpClient.get(this.buildAbsoluteUrl('projects/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public createProject(project: Project): Observable<Project> {
-        return this.request('projects', {
-            method: 'POST',
-            data: project
-        })
+        return this.httpClient.post(this.buildAbsoluteUrl('projects'), project)
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public updateProject(project: Project): Observable<Project> {
-        return this.request('projects/' + project.id, {
-            method: 'Patch',
-            data: project
-        })
+        return this.httpClient.patch(this.buildAbsoluteUrl('projects/' + project.id), project)
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public deleteProject(id: number): Observable<Project> {
-        return this.request('projects/' + id, {
-            method: 'Delete',
-        })
+        return this.httpClient.delete(this.buildAbsoluteUrl('projects/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getAllSites(): Observable<Site[]> {
-        return this.request('sites', {})
+        return this.httpClient.get(this.buildAbsoluteUrl('sites'))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getAllSitesForProjectID(id: number): Observable<Site[]> {
-        return this.request('projects/' + id + '/sites', {})
+        return this.httpClient.get(this.buildAbsoluteUrl('projects/' + id + '/sites'))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getSiteById(id: number): Observable<Site> {
-        return this.request('sites/' + id, {})
+        return this.httpClient.get(this.buildAbsoluteUrl('sites/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public createSite(site: Site): Observable<Site> {
-        return this.request('sites/', {
-            method: 'POST',
-            data: site
-        })
+        return this.httpClient.post(this.buildAbsoluteUrl('sites/'), site)
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public updateSite(site: Site): Observable<Site> {
-        return this.request('sites/' + site.id, {
-            method: 'Patch',
-            data: site
-        })
+        return this.httpClient.patch(this.buildAbsoluteUrl('sites/' + site.id), site)
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public deleteSite(id: number): Observable<Site> {
-        return this.request('sites/' + id, {
-            method: 'Delete',
-        })
+        return this.httpClient.delete(this.buildAbsoluteUrl('sites/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public deleteSites(projectId: number, siteIds: number[]): Observable<void> {
-        return this.request('projects/' + projectId + '/sites/', {
-            method: 'Delete',
-            data: siteIds
+        // httpClient.delete method doesn't accept a body argument, so use request as a work-around
+        return this.httpClient.request('DELETE', this.buildAbsoluteUrl('projects/' + projectId + '/sites/'), {
+            body: siteIds
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
-    public getDatasets(params?: any): Observable<Dataset[]> {
-        return this.request('datasets', params ? {urlParams: params} : {})
+    public getDatasets(params = {}): Observable<Dataset[]> {
+        return this.httpClient.get(this.buildAbsoluteUrl('datasets'), {
+            params: params
+        })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getAllDatasetsForProjectID(id: number): Observable<Dataset[]> {
-        return this.request('datasets', {urlParams: {project: String(id)}})
+        return this.httpClient.get(this.buildAbsoluteUrl('datasets'), {
+            params: {project: String(id)}
+        })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getDatasetById(id: number): Observable<Dataset> {
-        return this.request('datasets/' + id, {})
+        return this.httpClient.get(this.buildAbsoluteUrl('datasets/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public createDataset(dataset: Dataset): Observable<Dataset> {
-        return this.request('datasets', {
-            method: 'POST',
-            data: dataset
-        })
+        return this.httpClient.post(this.buildAbsoluteUrl('datasets'), dataset)
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public updateDataset(dataset: Dataset): Observable<Dataset> {
-        return this.request('datasets/' + dataset.id, {
-            method: 'Patch',
-            data: dataset
-        })
+        return this.httpClient.patch(this.buildAbsoluteUrl('datasets/' + dataset.id), dataset)
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public deleteDataset(id: number): Observable<Dataset> {
-        return this.request('dataset/' + id, {
-            method: 'Delete',
-        })
+        return this.httpClient.delete(this.buildAbsoluteUrl('dataset/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getRecordsByDatasetId(id: number, params = {}): Observable<any> {
-        return this.request('datasets/' + id + '/records/', {
-            urlParams: params
+        return this.httpClient.get(this.buildAbsoluteUrl('datasets/' + id + '/records/'), {
+            params: params
         });
     }
 
     public createRecordsForDatasetId(id: number, data: any[]) {
-        return this.request('datasets/' + id + '/records/', {
-            method: 'POST',
-            data: data
+        return this.httpClient.post(this.buildAbsoluteUrl('datasets/' + id + '/records/'), data)
+        .pipe(
+            catchError((err, caught) => this.handleError(err, caught))
+        );
+    }
+
+    public getRecords(params = {}): Observable<Record[]> {
+        return this.httpClient.get(this.buildAbsoluteUrl('records'), {
+            params: params
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
-    public getRecords(params?: any): Observable<Record[]> {
-        return this.request('records', params ? {urlParams: params} : {})
-        .pipe(
-            catchError((err, caught) => this.handleError(err, caught))
-        );
-    }
-
     public getRecordById(id: number): Observable<Record> {
-        return this.request('records/' + id, {})
+        return this.httpClient.get(this.buildAbsoluteUrl('records/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public createRecord(record: Record, strict = true): Observable<Record> {
-        let urlParams = strict ? {strict: 'true'} : {};
-        return this.request('records', {
-            method: 'POST',
-            data: record,
-            urlParams: urlParams
+        // strict is evaluated to true on the server if the parameter is passed with any value
+        const params = strict ? {strict: 'true'} : {};
+
+        return this.httpClient.post(this.buildAbsoluteUrl('records'), record, {
+            params: params
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
@@ -289,23 +272,23 @@ export class APIService {
     }
 
     public updateRecord(id: number, record: Record, strict = true): Observable<Record> {
-        let urlParams = strict ? {strict: 'true'} : {};
-        return this.request('records/' + id, {
-            method: 'Put',
-            data: record,
-            urlParams: urlParams
+        // strict is evaluated to true on the server if the parameter is passed with any value
+        const params = strict ? {strict: 'true'} : {};
+
+        return this.httpClient.put(this.buildAbsoluteUrl('records/' + id), record, {
+            params: params
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
-    public updateRecordField(id: number, data: any, strict = true): Observable<Record> {
-        let urlParams: any = strict ? {strict: 'true'} : {};
-        return this.request('records/' + id, {
-            method: 'Patch',
-            data: {data: data},
-            urlParams: urlParams
+    public updateRecordDataField(id: number, data: any, strict = false): Observable<Record> {
+        // strict is evaluated to true on the server if the parameter is passed with any value
+        const params = strict ? {strict: 'true'} : {};
+
+        return this.httpClient.patch(this.buildAbsoluteUrl('records/' + id), {data: data}, {
+            params: params
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
@@ -313,18 +296,16 @@ export class APIService {
     }
 
     public deleteRecord(id: number): Observable<Record> {
-        return this.request('records/' + id, {
-            method: 'Delete',
-        })
+        return this.httpClient.delete(this.buildAbsoluteUrl('records/' + id))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public deleteRecords(datasetId: number, recordIds: number[]): Observable<void> {
-        return this.request('datasets/' + datasetId + '/records/', {
-            method: 'Delete',
-            data: recordIds
+        // httpClient.delete method doesn't accept a body argument, so use request as a work-around
+        return this.httpClient.request('DELETE', this.buildAbsoluteUrl('datasets/' + datasetId + '/records/'), {
+            body: recordIds
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
@@ -332,9 +313,9 @@ export class APIService {
     }
 
     public deleteAllRecords(datasetId: number): Observable<void> {
-        return this.request('datasets/' + datasetId + '/records/', {
-            method: 'Delete',
-            data: 'all'
+        // httpClient.delete method doesn't accept a body argument, so use request as a work-around
+        return this.httpClient.request('DELETE', this.buildAbsoluteUrl('datasets/' + datasetId + '/records/'), {
+            body: JSON.stringify('all')
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
@@ -342,7 +323,7 @@ export class APIService {
     }
 
     public getStatistics(): Observable<Statistic> {
-        return this.request('statistics', {})
+        return this.httpClient.get(this.buildAbsoluteUrl('statistics'), {})
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
@@ -358,21 +339,19 @@ export class APIService {
     }
 
     public getModelMetadata(modelName: string): Observable<any> {
-        return this.request(modelName, {
-            'method': 'Options'
-        })
+        return this.httpClient.options(this.buildAbsoluteUrl(modelName))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public getSpecies(search?: string): Observable<any> {
-        let urlParams: any = {};
+        let params: any = {};
         if (search) {
-            urlParams['search'] = search;
+            params['search'] = search;
         }
-        return this.request('species', {
-            urlParams: urlParams
+        return this.httpClient.get(this.buildAbsoluteUrl('species'), {
+            params: params
         })
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
@@ -380,61 +359,47 @@ export class APIService {
     }
 
     public getRecordsUploadURL(datasetId: number): string {
-        return this.baseUrl + 'datasets/' + datasetId + '/upload-records/';
+        return this.buildAbsoluteUrl('datasets/' + datasetId + '/upload-records/');
     }
 
     public getProjectSiteUploadURL(projectId: number): string {
-        return this.baseUrl + 'projects/' + projectId + '/upload-sites/';
+        return this.buildAbsoluteUrl('projects/' + projectId + '/upload-sites/');
     }
 
     public getRecordExportURL(): string {
-        return this.baseUrl + 'records/?output=xlsx&';
+        return this.buildAbsoluteUrl('records/?output=xlsx&', false);
     }
 
     public getInferDatasetURL(): string {
-        return this.baseUrl + 'utils/infer-dataset/';
+        return this.buildAbsoluteUrl('utils/infer-dataset/');
     }
 
     public recordDataToGeometry(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
-        return this.request('utils/data-to-geometry/dataset/' + datasetId, {
-            method: 'POST',
-            data: {
+        return this.httpClient.post(this.buildAbsoluteUrl('utils/data-to-geometry/dataset/' + datasetId), {
                 geometry: geometry,
                 data: data
             }
-        })
+        )
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public recordGeometryToData(datasetId: number, geometry: GeoJSON.GeometryObject, data: any) {
-        return this.request('utils/geometry-to-data/dataset/' + datasetId, {
-            method: 'POST',
-            data: {
+        return this.httpClient.post(this.buildAbsoluteUrl('utils/geometry-to-data/dataset/' + datasetId), {
                 geometry: geometry,
                 data: data
             }
-        })
+        )
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
     }
 
     public logout(): Observable<any> {
-        return this.request('logout', {})
+        return this.httpClient.get(this.buildAbsoluteUrl('logout'))
         .pipe(
             catchError((err, caught) => this.handleError(err, caught))
         );
-    }
-
-    public request(path: string, options: RequestOptions): Observable<any> {
-        const url = this.baseUrl + ((path && !path.endsWith('/')) ? path + '/' : path);
-
-        return this.http.request(options.method || 'GET', url, {
-            params: options.urlParams,
-            withCredentials: true,
-            body: JSON.stringify(options.data)
-        });
     }
 }

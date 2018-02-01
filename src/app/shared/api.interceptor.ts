@@ -10,7 +10,10 @@ export class ApiInterceptor implements HttpInterceptor {
 
         let authToken = AuthService.getAuthToken();
         if (authToken) {
-            req = req.clone({headers: req.headers.set('Authorization', 'Token ' + authToken)});
+            req = req.clone({
+                headers: req.headers.set('Authorization', 'Token ' + authToken),
+                withCredentials: true
+            });
         }
 
         return next.handle(req);

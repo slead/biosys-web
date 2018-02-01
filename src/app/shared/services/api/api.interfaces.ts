@@ -3,12 +3,6 @@ export interface APIError {
     statusText: string;
     msg: any;
 }
-export interface RequestOptions {
-    method?: string;
-    headers?: {[key: string]: string};
-    urlParams?: {[key: string]: string};
-    data?: any;
-}
 export interface User {
     id?: number;
     last_login?: string;
@@ -45,8 +39,8 @@ export interface Site {
     name?: string;
     parent_site?: number | null;
     project?: number;
-    geometry?: GeoJSON.GeometryObject | null;
-    centroid?: GeoJSON.GeometryObject | null;
+    geometry?: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon | null;
+    centroid?: GeoJSON.Point | null;
     description?: string;
     attributes?: {[key: string]: string} | null;
 }
@@ -80,7 +74,6 @@ export interface Statistic {
     projects: any;
     datasets: any[];
     records: any[];
-    // sites: number;
 }
 export interface ModelChoice {
     display_name: string;
