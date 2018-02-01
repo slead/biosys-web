@@ -52,7 +52,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public breadcrumbItems: any = [];
     public projId: number;
     public datasetId: number;
-    public dataset: Dataset = <Dataset>{};
+    public dataset: Dataset;
     public dropdownItems: any = {};
     public recordsTableColumnWidths: {[key: string]: number} = {};
     public flatRecords: any[];
@@ -106,6 +106,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         .then(
             (dataset: Dataset) => {
                 this.dataset = dataset;
+
+                // force initial lazy load
+                this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+
                 this.breadcrumbItems.push({label: this.dataset.name});
                 if (dataset.type !== 'generic') {
                     this.initMap();
@@ -370,7 +374,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.apiService.updateRecordField(this.editingRowEvent.data.id, data).subscribe();
+        this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data).subscribe();
     }
 
     // Regarding next three methods - onEditComplete event doesn't recognize changing calendar date or dropdown item

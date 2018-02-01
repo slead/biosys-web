@@ -9,8 +9,8 @@
         </div>
     </div>
     <div class="row mt-1">
-        <div class="{{ dataset.type === 'generic' ? 'col-md-12' : 'col-md-4' }} ">
-            <p *ngIf="dataset.type !== 'generic';else noGeometry">
+        <div class="{{ !dataset || dataset.type === 'generic' ? 'col-md-12' : 'col-md-4' }} ">
+            <p *ngIf="dataset?.type !== 'generic';else noGeometry">
                 All records for the current dataset can be accessed through the interactive map or by searching the
                 records table below. For the interactive map, you may need to zoom to the appropriate level by clicking
                 on the group marker to access the individual markers. You can also select a particular record to edit
@@ -27,7 +27,7 @@
                 To upload numerous records, use the upload tool at the bottom of the page.
             </p>
         </div>
-        <div class="col-md-8" *ngIf="dataset.type !== 'generic'">
+        <div class="col-md-8" *ngIf="dataset?.type !== 'generic'">
             <div id="map">
             </div>
         </div>
@@ -41,7 +41,7 @@
                          [totalRecords] = "totalRecords" [first]="pageState.rowOffset" [globalFilter]="recordSearch"
                          [loading]="flatRecords == null" [editable]="true" (onEditComplete)="onRowEditComplete($event)"
                          (onPage)="onPageChange($event)" resizableColumns="true" (onEditInit)="onRowEditInit($event)"
-                         columnResizeMode="expand" [scrollable]="true" [lazy]="true"
+                         columnResizeMode="expand" [scrollable]="true" [lazy]="dataset !== undefined"
                          (onLazyLoad)="loadRecordsLazy($event)">
                 <p-header>
                     <div class="ui-helper-clearfix" style="width:100%">
@@ -104,7 +104,7 @@
     <div class="row mt-3 mb-3">
         <div class="col-md">
             <h4>Upload records</h4>
-            <p>Select one or more Excel (xlxs) or CSV files to upload records for the {{ dataset.name }} dataset</p>
+            <p>Select one or more Excel (xlxs) or CSV files to upload records for the {{ dataset ? dataset.name + ' ' : ''}}dataset</p>
             <biosys-expandablemessages [value]="uploadErrorMessages" [maxItems]="5"></biosys-expandablemessages>
             <biosys-expandablemessages [value]="uploadWarningMessages" [maxItems]="5"></biosys-expandablemessages>
             <biosys-fileuploader name="file" [url]="uploadURL" accept=".csv,.xlsx"
