@@ -277,13 +277,26 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     public confirmDeleteSelectedRecords() {
         this.confirmationService.confirm({
-            message: 'Are you sure that you want to delete all selected records?',
+            message: 'Are you sure that you want to delete selected records?',
             accept: () => {
                 this.apiService.deleteRecords(this.datasetId, this.selectedRecords)
                 .subscribe(
                     () => this.onDeleteRecordsSuccess(),
                     (error: APIError) => this.onDeleteRecordError(error)
                 );
+            }
+        });
+    }
+
+    public confirmDeleteAllRecords() {
+        this.confirmationService.confirm({
+            message: 'Are you sure that you want to delete all records for this dataset?',
+            accept: () => {
+                this.apiService.deleteAllRecords(this.datasetId)
+                    .subscribe(
+                        () => this.onDeleteRecordsSuccess(),
+                        (error: APIError) => this.onDeleteRecordError(error)
+                    );
             }
         });
     }
