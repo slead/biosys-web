@@ -92,8 +92,10 @@
                           [style]="getRecordsTableColumnWidth('last_modified')"></p-column>
                 <p-footer>
                     <div class="ui-helper-clearfix" style="width:100%">
-                        <button type="button" pButton icon="fa-trash" style="float:left" label="Delete"
+                        <button type="button" pButton icon="fa-trash" style="float:left" label="Delete Selected"
                                 (click)="confirmDeleteSelectedRecords()" [disabled]="selectedRecords.length === 0"></button>
+                        <button type="button" pButton icon="fa-trash" style="float:left" label="Delete All"
+                                (click)="confirmDeleteAllRecords()"></button>
                         <button type="button" pButton icon="fa-plus" style="float:right" label="Add"
                                 (click)="add()"></button>
                     </div>
