@@ -1,5 +1,6 @@
 import { ANY_ANGULAR_DATE_FORMAT, ANY_PRIME_DATE_FORMAT, ANY_MOMENT_DATE_FORMAT, ISO_ANGULAR_DATE_FORMAT,
     ISO_MOMENT_DATE_FORMAT, ISO_PRIME_DATE_FORMAT } from './consts';
+import {APIError} from '../index';
 
 export function pyDateFormatToAngularDateFormat(pythonDateFormat: string): string {
     let ngDateFormat = pythonDateFormat;
@@ -65,4 +66,17 @@ export function pyDateFormatToMomentDateFormat(pythonDateFormat: string): string
     momentDateFormat = momentDateFormat.replace(/%Y/, 'YYYY');
 
     return momentDateFormat;
+}
+
+export function formatAPIError(error: APIError): object {
+    let err_obj = error.msg || {};
+    // normally should be an object with field name as keys {field1: [messages], field2: [messages]}
+    // if it is an error not related to a field it would have the key 'non_field_errors'.
+    // use this key as a catch all error.
+    if (Array.isArray(err_obj)) {
+        err_obj = {non_field_errors: err_obj}
+    } else if (typeof err_obj === 'string') {
+        err_obj = {non_field_errors: [err_obj]}
+    }
+    return err_obj;
 }

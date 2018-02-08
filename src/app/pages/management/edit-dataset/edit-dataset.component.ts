@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { FileUpload, ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import { ModelChoice } from '../../../shared/services/api/api.interfaces';
+import { formatAPIError} from '../../../shared/utils';
 
 @Component({
     moduleId: module.id,
@@ -35,19 +36,6 @@ export class EditDatasetComponent implements OnInit {
     public dsErrors: any = {};
 
     private completeUrl: string;
-
-    static formatAPIError(error: APIError): object {
-        let err_obj = error.msg || {};
-        // normally should be an object with field name as keys {field1: [messages], field2: [messages]}
-        // if it is an error not related to a field it would have the key 'non_field_errors'.
-        // use this key as a catch all error.
-        if (Array.isArray(err_obj)) {
-            err_obj = {non_field_errors: err_obj}
-        } else if (typeof err_obj === 'string') {
-            err_obj = {non_field_errors: [err_obj]}
-        }
-        return err_obj;
-    }
 
     constructor(public apiService: APIService,
                 private router: Router,
@@ -205,7 +193,7 @@ export class EditDatasetComponent implements OnInit {
     }
 
     private onSaveError(error: APIError) {
-        let err_obj = EditDatasetComponent.formatAPIError(error);
+        let err_obj = formatAPIError(error);
         // special case:
         // uniqueness error for the dataset name: {"non_field_errors":["The fields project, name must make a unique set."]}
         // add a cleaner error for the field name
@@ -221,7 +209,7 @@ export class EditDatasetComponent implements OnInit {
     }
 
     private onDeleteError(error: APIError) {
-        this.dsErrors = EditDatasetComponent.formatAPIError(error);
+        this.dsErrors = formatAPIError(error);
         this.messages.push({
             severity: 'error',
             summary: 'Dataset delete error',
