@@ -193,19 +193,7 @@ export class EditDatasetComponent implements OnInit {
     }
 
     private onSaveError(error: APIError) {
-        let err_obj = formatAPIError(error);
-        // special case:
-        // uniqueness error for the dataset name: {"non_field_errors":["The fields project, name must make a unique set."]}
-        // add a cleaner error for the field name
-        if (err_obj.hasOwnProperty('non_field_errors')) {
-            for (let msg of err_obj['non_field_errors']) {
-                if (msg.match(/\sname\s.*unique/)) {
-                    err_obj['name'] = 'A dataset with this name already exists in the project.'
-                }
-            }
-        }
-        // set the errors for the form UI
-        this.dsErrors = err_obj;
+        this.dsErrors = formatAPIError(error);
     }
 
     private onDeleteError(error: APIError) {
