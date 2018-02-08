@@ -29,15 +29,12 @@ export class APIService {
             statusText: error.statusText,
             msg: ''
         };
-
-        // The error message is usually in the body as 'detail' or 'non_field_errors'
         let body = error.error;
+        // the error message is either the body itself or in a 'detail' property
         if ('detail' in body) {
             apiError.msg = body['detail'];
-        } else if ('non_field_errors' in body) {
-            apiError.msg = body['non_field_errors'];
         } else {
-            apiError.msg = error.error;
+            apiError.msg = body;
         }
 
         this._receivedUnauthenticatedError = error.status === 401;

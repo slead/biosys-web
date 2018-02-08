@@ -36,6 +36,19 @@ export class EditDatasetComponent implements OnInit {
 
     private completeUrl: string;
 
+    static formatAPIError(error: APIError): object {
+        let err_obj = error.msg || {};
+        // normally should be an object with field name as keys {field1: [messages], field2: [messages]}
+        // if it is an error not related to a field it would have the key 'non_field_errors'.
+        // use this key as a catch all error.
+        if (Array.isArray(err_obj)) {
+            err_obj = {non_field_errors: err_obj}
+        } else if (typeof err_obj === 'string') {
+            err_obj = {non_field_errors: [err_obj]}
+        }
+        return err_obj;
+    }
+
     constructor(public apiService: APIService,
                 private router: Router,
                 private route: ActivatedRoute,
@@ -143,7 +156,7 @@ export class EditDatasetComponent implements OnInit {
         } else {
             this.apiService.createDataset(this.ds).subscribe(
                 () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
-                (error: APIError) => this.dsErrors = error.msg
+                (error: APIError) => this.onSaveError(error)
             );
         }
     }
@@ -155,7 +168,7 @@ export class EditDatasetComponent implements OnInit {
     public confirmDelete(event: any) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this dataset?',
-            accept: () =>  this.apiService.deleteDataset(this.ds.id).subscribe(
+            accept: () => this.apiService.deleteDataset(this.ds.id).subscribe(
                 (ds: Dataset) => this.onDeleteSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
@@ -168,7 +181,7 @@ export class EditDatasetComponent implements OnInit {
     public confirmDeleteRecords(event: any) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all records for this dataset?',
-            accept: () =>  this.apiService.deleteAllRecords(this.ds.id).subscribe(
+            accept: () => this.apiService.deleteAllRecords(this.ds.id).subscribe(
                 () => this.onDeleteRecordsSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
@@ -191,26 +204,24 @@ export class EditDatasetComponent implements OnInit {
         }
     }
 
-    private showError(error: APIError) {
-        let addErrorMessage = (detail: any) => {
-            this.messages.push({
-                severity: 'error',
-                summary: 'Error',
-                detail: detail.toString()
-            });
-        };
-        if (typeof error.msg === 'object') {
-            for (let field in error.msg) {
-                if (error.msg.hasOwnProperty(field)) {
-                    addErrorMessage(field + ': ' + error.msg[field].join(';'));
+    private onSaveError(error: APIError) {
+        let err_obj = EditDatasetComponent.formatAPIError(error);
+        // special case:
+        // uniqueness error for the dataset name: {"non_field_errors":["The fields project, name must make a unique set."]}
+        // add a cleaner error for the field name
+        if (err_obj.hasOwnProperty('non_field_errors')) {
+            for (let msg of err_obj['non_field_errors']) {
+                if (msg.match(/\sname\s.*unique/)) {
+                    err_obj['name'] = 'A dataset with this name already exists in the project.'
                 }
             }
-        } else {
-            addErrorMessage(error.msg);
         }
+        // set the errors for the form UI
+        this.dsErrors = err_obj;
     }
 
-    private onDeleteError(error: any) {
+    private onDeleteError(error: APIError) {
+        this.dsErrors = EditDatasetComponent.formatAPIError(error);
         this.messages.push({
             severity: 'error',
             summary: 'Dataset delete error',
