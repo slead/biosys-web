@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { FileUpload, ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import { ModelChoice } from '../../../shared/services/api/api.interfaces';
+import { formatAPIError} from '../../../shared/utils';
 
 @Component({
     moduleId: module.id,
@@ -143,7 +144,7 @@ export class EditDatasetComponent implements OnInit {
         } else {
             this.apiService.createDataset(this.ds).subscribe(
                 () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
-                (error: APIError) => this.dsErrors = error.msg
+                (error: APIError) => this.onSaveError(error)
             );
         }
     }
@@ -155,7 +156,7 @@ export class EditDatasetComponent implements OnInit {
     public confirmDelete(event: any) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this dataset?',
-            accept: () =>  this.apiService.deleteDataset(this.ds.id).subscribe(
+            accept: () => this.apiService.deleteDataset(this.ds.id).subscribe(
                 (ds: Dataset) => this.onDeleteSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
@@ -168,7 +169,7 @@ export class EditDatasetComponent implements OnInit {
     public confirmDeleteRecords(event: any) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all records for this dataset?',
-            accept: () =>  this.apiService.deleteAllRecords(this.ds.id).subscribe(
+            accept: () => this.apiService.deleteAllRecords(this.ds.id).subscribe(
                 () => this.onDeleteRecordsSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
@@ -191,26 +192,12 @@ export class EditDatasetComponent implements OnInit {
         }
     }
 
-    private showError(error: APIError) {
-        let addErrorMessage = (detail: any) => {
-            this.messages.push({
-                severity: 'error',
-                summary: 'Error',
-                detail: detail.toString()
-            });
-        };
-        if (typeof error.msg === 'object') {
-            for (let field in error.msg) {
-                if (error.msg.hasOwnProperty(field)) {
-                    addErrorMessage(field + ': ' + error.msg[field].join(';'));
-                }
-            }
-        } else {
-            addErrorMessage(error.msg);
-        }
+    private onSaveError(error: APIError) {
+        this.dsErrors = formatAPIError(error);
     }
 
-    private onDeleteError(error: any) {
+    private onDeleteError(error: APIError) {
+        this.dsErrors = formatAPIError(error);
         this.messages.push({
             severity: 'error',
             summary: 'Dataset delete error',

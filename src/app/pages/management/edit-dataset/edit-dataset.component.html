@@ -61,6 +61,7 @@
                           (onBeforeSend)="onUploadBeforeSend($event)" (onError)="onError($event)"
                           accept=".csv,.xlsx,.xls">
             </p-fileUpload>
+            <div class="text-danger" [innerHTML]="dsErrors['non_field_errors']"></div>
         </div>
     </div>
 
