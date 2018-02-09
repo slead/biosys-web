@@ -69,14 +69,14 @@ export function pyDateFormatToMomentDateFormat(pythonDateFormat: string): string
 }
 
 export function formatAPIError(error: APIError): object {
-    let err_obj = error.msg || {};
+    let errObj = error.msg || {};
     // normally should be an object with field name as keys {field1: [messages], field2: [messages]}
     // if it is an error not related to a field it would have the key 'non_field_errors'.
     // use this key as a catch all error.
-    if (Array.isArray(err_obj)) {
-        err_obj = {non_field_errors: err_obj}
-    } else if (typeof err_obj === 'string') {
-        err_obj = {non_field_errors: [err_obj]}
+    if (Array.isArray(errObj)) {
+        errObj = {non_field_errors: errObj}
+    } else if (typeof errObj === 'string') {
+        errObj = {non_field_errors: [errObj]}
     }
-    return err_obj;
+    return errObj;
 }
