@@ -12,7 +12,7 @@ import { formatAPIError} from '../../../shared/utils';
     moduleId: module.id,
     selector: 'biosys-edit-dataset',
     templateUrl: 'edit-dataset.component.html',
-    styleUrls: [],
+    styleUrls: ['edit-dataset.component.css'],
 })
 
 export class EditDatasetComponent implements OnInit {
@@ -34,6 +34,8 @@ export class EditDatasetComponent implements OnInit {
     public editorOptions: JsonEditorOptions;
 
     public dsErrors: any = {};
+
+    public displayHelp = false;
 
     private completeUrl: string;
 
