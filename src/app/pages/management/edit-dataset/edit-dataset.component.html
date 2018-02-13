@@ -9,12 +9,16 @@
                 <h3 *ngIf="ds.id">Edit Dataset</h3>
                 <h3 *ngIf="!ds.id">Create Dataset</h3>
                 <p *ngIf="ds.id">
-                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are required. You can also directly upload a file
-                    containing headings and data in columns and the dataset will be inferred from that data and prefill the fields.
+                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are
+                    required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill
+                    the fields.
                 </p>
                 <p *ngIf="!ds.id">
-                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are required. You can also directly upload a file
-                    containing headings and data in columns and the dataset will be inferred from that data and prefill the fields.
+                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are
+                    required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill
+                    the fields.
                 </p>
                 <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Name *</label></div>
@@ -58,6 +62,7 @@
             </div>
         </div>
     </div>
+    <hr>
     <div class="row mt-3 mb-3">
         <div class="col-md-2">
             <label class="field-label">Infer from file</label>
@@ -70,8 +75,11 @@
             </p-fileUpload>
             <div class="text-danger" [innerHTML]="dsErrors['non_field_errors']"></div>
         </div>
+        <div class="col-2">
+            <button pButton label="Help" icon="fa-question-circle" (click)="displayHelp = true"></button>
+        </div>
     </div>
-
+    <hr>
     <div class="row mt-3 mb-3">
         <div class="col-4">
             <button pButton icon="fa-trash" (click)="confirmDelete($event)" label="Delete"></button>
@@ -84,3 +92,50 @@
     </div>
 </div>
 <p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+<p-dialog header="Inferring Schemas" [(visible)]="displayHelp" modal="modal" width="1000" dismissableMask="true">
+    <h4>Inferring a schema from your data</h4>
+    <p>
+        BioSys needs a "schema" to define your dataset. The schema provides BioSys the detailed information it needs to
+        understand your data structure, and any rules for validating data, creating look-ups, etc. A schema can be
+        written to accept any dataset, so it's highly flexible. But we don't expect users to write their own schema
+        (though the specs are <a href="https://frictionlessdata.io/specs/table-schema/" target="_blank">here</a>
+        if you're interested)! In future versions, we'll make it much easier to define your data. In the meantime, we're
+        providing the following help.
+    </p>
+    <p>
+        For simple datasets, BioSys can create the schema for you. More complicated datasets will require assistance
+        from the <a href="mailto: paul.gioia@dbca.wa.gov.au">BioSys administrator</a>. Please don't hesitate to ask
+        for help. We really want you to lodge your data here.
+    </p>
+    <p>
+        To infer a dataset schema, click the Choose button to select either an Excel or CSV data file. Then click the
+        Upload button. If you run into any problems, contact the <a href="mailto: paul.gioia@dbca.wa.gov.au"> BioSys
+        administrator</a>. Note that this process only creates the schema. To load data you need to select the Data menu
+        option, select your project and dataset, and upload records.
+    </p>
+    <h5>Generic datasets</h5>
+    <p>
+        A generic dataset is one in which we make no assumptions about what's in your data. BioSys will try to
+        understand your columns and create a schema for you.
+    </p>
+    <h5>Observation datasets</h5>
+    <p>
+        An observation dataset is one containing, at the very least, location. The advantage of creating an observation
+        dataset is that you can see your data in a map, which makes it easy to spot and correct spatial outliers.
+    </p>
+    <p>
+        As long as your location fields are called Latitude and Longitude, or Northing, Easting and Zone, BioSys will
+        recognise them. An observation can also have a date. If your date field is called Observation Date, BioSys will
+        recognise it.
+    </p>
+    <h5>Species observation datasets</h5>
+    <p>
+        A species observation dataset is one that extends an observation dataset by recognising species names. If your
+        species name is stored in a single field called Species Name, BioSys will recognise it. If it’s split into
+        fields called Genus, Species, Infraspecific Rank and Infraspecific Name, BioSys will also recognised it.
+    </p>
+    <p>
+        If you require more detailed definitions, please contact the <a href="mailto: paul.gioia@dbca.wa.gov.au">
+        BioSys administrator</a>.
+    </p>
+</p-dialog>
