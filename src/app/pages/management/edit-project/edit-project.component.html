@@ -133,6 +133,11 @@
                                 <a [routerLink]="'/management/projects/edit-project/' + project.id + '/edit-dataset/' + dataset.id">{{dataset.name}}</a>
                             </ng-template>
                         </p-column>
+                        <p-column field="code" header="Code" [sortable]="true">
+                            <ng-template let-dataset="rowData" pTemplate="body">
+                                <span [innerHTML]="dataset.code"></span>
+                            </ng-template>
+                        </p-column>
                         <p-column field="type" header="Type">
                             <ng-template let-dataset="rowData" pTemplate="body">
                                 {{DATASET_TYPE_MAP[dataset.type]}}
