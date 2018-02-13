@@ -47,6 +47,7 @@ export interface Site {
 export interface Dataset {
     id?: number;
     name?: string;
+    code?: string;
     type?: string;
     project?: number;
     data_package?: any;

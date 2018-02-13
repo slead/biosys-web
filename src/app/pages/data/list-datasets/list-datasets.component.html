@@ -20,13 +20,18 @@
                         <a [routerLink]="'/data/projects/' + project?.id + '/datasets/' + dataset.id">{{dataset.name}}</a>
                     </ng-template>
                 </p-column>
+                <p-column field="code" header="Code" [sortable]="true" [style]="{'width':'60px'}">
+                    <ng-template let-dataset="rowData" pTemplate="body">
+                        <span [innerHTML]="dataset.code"></span>
+                    </ng-template>
+                </p-column>
                 <p-column field="type" header="Type" [sortable]="true" [style]="{'width':'120px'}">
                     <ng-template let-dataset="rowData" pTemplate="body">
                         {{DATASET_TYPE_MAP[dataset.type]}}
                     </ng-template>
                 </p-column>
-                <p-column field="record_count" header="Records" [sortable]="true" [style]="{'width':'120px'}"></p-column>
-                <p-column field="description" header="Description" [style]="{'width':'300px'}">
+                <p-column field="record_count" header="Records" [sortable]="true" [style]="{'width':'80px'}"></p-column>
+                <p-column field="description" header="Description" [style]="{'width':'280px'}">
                     <ng-template let-dataset="rowData" let-col pTemplate="body">
                         <span [innerHTML]="dataset.description | truncate:60"></span>
                     </ng-template>
