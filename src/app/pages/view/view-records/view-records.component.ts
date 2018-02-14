@@ -35,7 +35,7 @@ export class ViewRecordsComponent implements OnInit {
 
     public exportURL: string;
 
-    private recordParams: object;
+    private recordParams: any = {};
 
     @ViewChild('recordsTable')
     public datatable: DataTable;
