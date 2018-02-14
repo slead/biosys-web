@@ -228,16 +228,8 @@ export class APIService {
     }
 
     public getRecordsByDatasetId(id: number, params = {}): Observable<any> {
-        return this.httpClient.get(this.buildAbsoluteUrl('datasets/' + id + '/records/'), {
-            params: params
-        });
-    }
-
-    public createRecordsForDatasetId(id: number, data: any[]) {
-        return this.httpClient.post(this.buildAbsoluteUrl('datasets/' + id + '/records/'), data)
-        .pipe(
-            catchError((err, caught) => this.handleError(err, caught))
-        );
+        params['dataset__id'] = id;
+        return this.getRecords(params);
     }
 
     public getRecords(params = {}): Observable<Record[]> {
