@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { APIService, APIError, Dataset, Record, RecordResponse, DATASET_TYPE_MAP } from '../../../shared/index';
-import { Router } from '@angular/router';
 import { SelectItem, DataTable, LazyLoadEvent } from 'primeng/primeng';
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin';
@@ -36,10 +35,12 @@ export class ViewRecordsComponent implements OnInit {
 
     public exportURL: string;
 
+    private recordParams: object;
+
     @ViewChild('recordsTable')
     public datatable: DataTable;
 
-    constructor(private apiService: APIService, private router: Router) {
+    constructor(private apiService: APIService) {
     }
 
     ngOnInit() {
@@ -78,22 +79,23 @@ export class ViewRecordsComponent implements OnInit {
         this.records = null;
 
         let datasetParams: any = {};
-        let recordParams: any = {};
+
+        this.recordParams = {};
 
         if (this.projectId) {
             datasetParams['project'] = this.projectId;
         }
 
         if (this.dateStart) {
-            datasetParams['record__datetime__start'] = recordParams['datetime__start'] = this.dateStart.toISOString();
+            datasetParams['record__datetime__start'] = this.recordParams['datetime__start'] = this.dateStart.toISOString();
         }
 
         if (this.dateEnd) {
-            datasetParams['record__datetime__end'] = recordParams['datetime__end'] = this.dateEnd.toISOString();
+            datasetParams['record__datetime__end'] = this.recordParams['datetime__end'] = this.dateEnd.toISOString();
         }
 
         if (this.speciesName) {
-            datasetParams['record__species_name'] = recordParams['species_name'] = this.speciesName;
+            datasetParams['record__species_name'] = this.recordParams['species_name'] = this.speciesName;
         }
 
         this.apiService.getDatasets(datasetParams).subscribe(
@@ -105,15 +107,15 @@ export class ViewRecordsComponent implements OnInit {
         );
 
         if (this.selectedDataset) {
-            recordParams['dataset__id'] = this.selectedDataset.id;
+            this.recordParams['dataset__id'] = this.selectedDataset.id;
             if (this.datatable) {
                 this.datatable.reset();
             }
         }
 
         this.exportURL = this.apiService.getRecordExportURL() +
-            Object.keys(recordParams).reduce(function(left, right) {
-                left.push(right + '=' + encodeURIComponent(recordParams[right]));
+            Object.keys(this.recordParams).reduce((left, right) => {
+                left.push(right + '=' + encodeURIComponent(this.recordParams[right]));
                 return left;
             }, []).join('&');
     }
@@ -132,7 +134,7 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
-        let params: any = {};
+        let params = JSON.parse(JSON.stringify(this.recordParams));
 
         if (event.first !== undefined && event.first > -1) {
             params['offset'] = event.first;
