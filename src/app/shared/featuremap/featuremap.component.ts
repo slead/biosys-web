@@ -25,7 +25,9 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public drawFeatureTypes: [string] = [] as [string];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
-    @Output() public onGeometryChanged = new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();
+    @Output() public onGeometryChanged =
+        new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();
+
     @ContentChildren(MarkerDirective)
     set markers(markers: QueryList<MarkerDirective>) {
         markers.forEach((marker: MarkerDirective) => {
