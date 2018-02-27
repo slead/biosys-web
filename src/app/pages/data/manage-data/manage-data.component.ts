@@ -73,6 +73,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     private map: L.Map;
     private markers: L.MarkerClusterGroup;
+    private markersByRecordId: object;
+    private previousRowData: any;
+
 
     private isAllRecordsSelected: boolean = false;
 
@@ -207,6 +210,15 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         );
     }
 
+    private recordToLatLng(record: Record) {
+        let result;
+        if (record.geometry) {
+            let coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
+            result = L.GeoJSON.coordsToLatLng([coord[0], coord[1]]);
+        }
+        return result;
+    }
+
     private loadRecordMarkers() {
         if (this.dataset.type === 'generic') {
             return;
@@ -216,11 +228,11 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         .subscribe(
             (records: Record[]) => {
                 this.markers.clearLayers();
+                this.markersByRecordId = {};
 
                 for (let record of records) {
                     if (record.geometry) {
-                        let coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
-                        let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                        let marker: L.Marker = L.marker(this.recordToLatLng(record),
                             {icon: DEFAULT_MARKER_ICON});
                         let popupContent: string = '<p class="m-0">Record ID: <strong>' + record.id + '</strong></p>' +
                             '<p class="mt-1"><a href="#/data/projects/' + this.projId + '/datasets/' + this.datasetId +
@@ -231,6 +243,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                             this.openPopup();
                         });
                         this.markers.addLayer(marker);
+                        this.markersByRecordId[record.id] = marker;
                     }
                 }
             },
@@ -374,7 +387,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     public onRowEditComplete(event: any) {
         let data: any = JSON.parse(JSON.stringify(this.editingRowEvent.data));
-
         for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row']) {
             delete data[key];
         }
@@ -387,7 +399,25 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             }
         }
 
-        this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data).subscribe();
+        this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data, true).subscribe(
+            (record: Record) => {
+                let marker = this.markersByRecordId[record.id];
+                marker.setLatLng(this.recordToLatLng(record));
+                this.markers.refreshClusters([marker]);
+            },
+            (error: APIError) => {
+                this.showUpdateError(error);
+                // revert data
+                if (this.previousRowData) {
+                    let flatRecord = this.flatRecords[event.index];
+                    for (let prop in this.previousRowData) {
+                        if (this.previousRowData.hasOwnProperty(prop)) {
+                            flatRecord[prop] = this.previousRowData[prop];
+                        }
+                    }
+                }
+            }
+        );
     }
 
     // Regarding next three methods - onEditComplete event doesn't recognize changing calendar date or dropdown item
@@ -398,6 +428,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     public onRowEditInit(event: any) {
         this.editingRowEvent = event;
+        this.previousRowData = JSON.parse(JSON.stringify(event.data));
     }
 
     public onRecordDateSelect() {
@@ -504,12 +535,24 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 detail: 'The records were accepted but there were ' + totalWarnings + ' warning(s). See details below.'
             });
         } else {
-            console.log('success');
             this.messages.push({
                 severity: 'success',
                 summary: 'Upload successful',
                 detail: '' + totalRecords + ' records were successfully uploaded'
             });
         }
+    }
+
+    private showUpdateError(error: APIError) {
+        this.messages = [];
+        error.msg.data.forEach((err: string) => {
+            let field, message;
+            [field, message] = err.split('::');
+            this.messages.push({
+                severity: 'error',
+                summary: 'Error on ' + field,
+                detail: message
+            });
+        });
     }
 }
