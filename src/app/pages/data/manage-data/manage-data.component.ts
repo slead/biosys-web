@@ -210,7 +210,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         );
     }
 
-    private recordToLatLng(record: Record) {
+    private recordToLatLng(record: Record): L.LatLng {
         let result;
         if (record.geometry) {
             let coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
