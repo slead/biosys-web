@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { SharedModule } from '../../../shared/shared.module';
 import { EditRecordComponent } from './edit-record.component';
-import { APIService } from '../../../shared/index';
 import { ConfirmationService, DataTableModule, DialogModule, ButtonModule, GrowlModule, MessagesModule, InputTextModule,
     ConfirmDialogModule, CalendarModule, DropdownModule, FileUploadModule, CheckboxModule } from 'primeng/primeng';
 
@@ -11,7 +11,7 @@ import { ConfirmationService, DataTableModule, DialogModule, ButtonModule, Growl
         ConfirmDialogModule, CalendarModule, DropdownModule, FileUploadModule, CheckboxModule, InputTextModule],
     declarations: [EditRecordComponent],
     exports: [EditRecordComponent],
-    providers: [APIService, ConfirmationService]
+    providers: [ConfirmationService]
 })
 export class EditRecordModule {
 }

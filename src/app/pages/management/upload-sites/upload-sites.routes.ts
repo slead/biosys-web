@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { UploadSitesComponent } from './upload-sites.component';
-import { AuthGuard } from '../../../shared/index';
+import { AuthGuard } from '../../../biosys-core/services/auth.guard';
 
 export const UploadSitesRoutes: Route[] = [
     {

@@ -1,13 +1,23 @@
 import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
-import { APIService, APIError, AuthService, FileuploaderComponent, Project, Dataset, Record, RecordResponse,
-    DEFAULT_ZOOM, DEFAULT_CENTER, DEFAULT_MARKER_ICON, getDefaultBaseLayer, getOverlayLayers, DEFAULT_GROWL_LIFE,
-    DEFAULT_ROW_LIMIT, AMBIGUOUS_DATE_PATTERN, pyDateFormatToMomentDateFormat } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Message, ConfirmationService, LazyLoadEvent, SelectItem, DataTable } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import '../../../../lib/leaflet.latlng-graticule'
+
+import { APIService } from '../../../biosys-core/services/api.service';
+import { AuthService } from '../../../biosys-core/services/auth.service';
+import { APIError, Project, Dataset, Record, RecordResponse } from '../../../biosys-core/interfaces/api.interfaces';
+import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
+
+import { FileuploaderComponent } from '../../../shared/fileuploader/fileuploader.component';
+import {
+    DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ROW_LIMIT, DEFAULT_ZOOM, getDefaultBaseLayer,
+    getOverlayLayers
+} from '../../../shared/utils/maputils';
+import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
+import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
 
 @Component({
     moduleId: module.id,
@@ -81,8 +91,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     private editingRowEvent: any;
 
-    constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
-                private confirmationService: ConfirmationService) {
+    constructor(private apiService: APIService, private  authService: AuthService, private router: Router,
+                private route: ActivatedRoute, private confirmationService: ConfirmationService) {
     }
 
     public ngOnInit() {
@@ -359,7 +369,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public onUploadBeforeSend(event: any) {
         let xhr = event.xhr;
 
-        const authToken = AuthService.getAuthToken();
+        const authToken = this.authService.getAuthToken();
         if (authToken) {
             xhr.setRequestHeader('Authorization', 'Token ' + authToken);
         }

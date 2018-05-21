@@ -1,10 +1,10 @@
 import { Route } from '@angular/router';
 import { ManagementListProjectsComponent } from './list-projects.component';
-import { AuthGuard } from '../../../shared/index';
-import { EditProjectRoutes } from '../edit-project/index';
-import { EditSiteRoutes } from '../edit-site/index';
-import { EditDatasetRoutes } from '../edit-dataset/index';
-import { UploadSitesRoutes } from '../upload-sites/index';
+import { AuthGuard } from '../../../biosys-core/services/auth.guard';
+import { EditProjectRoutes } from '../edit-project/edit-project.routes';
+import { EditSiteRoutes } from '../edit-site/edit-site.routes';
+import { EditDatasetRoutes } from '../edit-dataset/edit-dataset.routes';
+import { UploadSitesRoutes } from '../upload-sites/upload-sites.routes';
 
 export const ManagementListProjectsRoutes: Route[] = [
     {

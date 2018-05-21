@@ -1,12 +1,19 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { APIService, APIError, AuthService, Project, Dataset, JsonEditorComponent, JsonEditorOptions, DEFAULT_GROWL_LIFE }
-    from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
+import { map } from 'rxjs/operators';
+
+import { APIError, Project, Dataset, ModelChoice } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../biosys-core/services/api.service';
+import { formatAPIError } from '../../../biosys-core/utils/functions';
+
+import { AuthService } from '../../../biosys-core/services/auth.service';
+
+import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
 import { FileUpload, ConfirmationService, SelectItem, Message } from 'primeng/primeng';
-import { ModelChoice } from '../../../shared/services/api/api.interfaces';
-import { formatAPIError} from '../../../shared/utils';
+
+import { JsonEditorComponent } from '../../../shared/jsoneditor/jsoneditor.component';
+import { JsonEditorOptions } from '../../../shared/jsoneditor/jsoneditor.options';
 
 @Component({
     moduleId: module.id,
@@ -39,7 +46,8 @@ export class EditDatasetComponent implements OnInit {
 
     private completeUrl: string;
 
-    constructor(public apiService: APIService,
+    constructor(private apiService: APIService,
+                private authService: AuthService,
                 private router: Router,
                 private route: ActivatedRoute,
                 private confirmationService: ConfirmationService) {
@@ -118,7 +126,7 @@ export class EditDatasetComponent implements OnInit {
     public onUploadBeforeSend(event: any) {
         let xhr = event.xhr;
 
-        const authToken = AuthService.getAuthToken();
+        const authToken = this.authService.getAuthToken();
         if (authToken) {
             xhr.setRequestHeader('Authorization', 'Token ' + authToken);
         }

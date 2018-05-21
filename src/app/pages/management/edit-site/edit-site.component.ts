@@ -1,7 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { APIService, APIError, Project, Site, FeatureMapComponent, DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, Message } from 'primeng/primeng';
+
+import { APIError, Project, Site } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../biosys-core/services/api.service';
+import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
+
+import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
 
 @Component({
     moduleId: module.id,

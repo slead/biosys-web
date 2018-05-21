@@ -1,7 +1,7 @@
 import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
     EventEmitter, SimpleChange } from '@angular/core';
 import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers }
-    from '../../shared/utils';
+    from '../../shared/utils/maputils';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';

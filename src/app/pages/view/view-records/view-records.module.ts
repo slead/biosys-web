@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { ViewRecordsComponent } from './view-records.component';
-import { APIService } from '../../../shared/services/api/index';
+import { APIService } from '../../../biosys-core/services/api.service';
 import { DataTableModule, DialogModule, ButtonModule, DropdownModule, CalendarModule }
     from 'primeng/primeng';
 

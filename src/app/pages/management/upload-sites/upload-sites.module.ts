@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { UploadSitesComponent } from './upload-sites.component';
-import { APIService } from '../../../shared/services/api/index';
+import { APIService } from '../../../biosys-core/services/api.service';
 import * as primeng from 'primeng/primeng';
 
 @NgModule({

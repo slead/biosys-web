@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { DataListProjectsComponent } from './list-projects.component';
-import { AuthGuard } from '../../../shared/index';
+import { AuthGuard } from '../../../biosys-core/services/auth.guard';
 import { DatasetsRoutes } from '../list-datasets/list-datasets.routes';
 import { ManageDataRoutes } from '../manage-data/manage-data.routes';
 import { EditRecordRoutes } from '../edit-record/edit-record.routes';

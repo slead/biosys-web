@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { APIService, APIError, AuthService, Project } from '../../../shared/index';
+import { APIError, Project } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../biosys-core/services/api.service';
+import { AuthService } from '../../../biosys-core/services/auth.service';
 import { Message, FileUpload } from 'primeng/primeng';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -29,6 +31,7 @@ export class UploadSitesComponent implements OnInit {
     uploader: FileUpload;
 
     constructor(private apiService: APIService,
+                private authService: AuthService,
                 private router: Router,
                 private route: ActivatedRoute) {
     }
@@ -87,7 +90,7 @@ export class UploadSitesComponent implements OnInit {
     public onBeforeSend(event: any) {
         let xhr = event.xhr;
 
-        const authToken = AuthService.getAuthToken();
+        const authToken = this.authService.getAuthToken();
         if (authToken) {
             xhr.setRequestHeader('Authorization', 'Token ' + authToken);
         }

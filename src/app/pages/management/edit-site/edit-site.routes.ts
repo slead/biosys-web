@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { EditSiteComponent } from './edit-site.component';
-import { AuthGuard } from '../../../shared/index';
+import { AuthGuard } from '../../../biosys-core/services/auth.guard';
 
 export const EditSiteRoutes: Route[] = [
     {

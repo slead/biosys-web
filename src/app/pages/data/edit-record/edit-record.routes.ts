@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { EditRecordComponent } from './edit-record.component';
-import { AuthGuard } from '../../../shared/index';
+import { AuthGuard } from '../../../biosys-core/services/auth.guard';
 
 export const EditRecordRoutes: Route[] = [
     {
