@@ -56,9 +56,8 @@
                 <h4>Records for {{selectedDataset?.name}}</h4>
                 <div class="data-table-container">
                     <p-dataTable #recordsTable [tableStyle]="getRecordsTableWidth()" [value]="records"
-                                 [paginator]="true" [rows]="10" [loading]="records == null"
-                                 [rowsPerPageOptions]="[10, 25, 50, 100]" [totalRecords] = "totalRecords"
-                                 [loading]="flatRecords == null" [lazy]="true"
+                                 [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                                 [totalRecords] = "totalRecords" [loading]="flatRecords == null" [lazy]="true"
                                  (onLazyLoad)="loadRecordsLazy($event)" resizableColumns="true"
                                  columnResizeMode="expand" [scrollable]="true"
                                  [emptyMessage]="records == null ? 'Loading records': 'No records found'">

@@ -46,7 +46,7 @@ export class EditDatasetComponent implements OnInit {
 
     private completeUrl: string;
 
-    constructor(private apiService: APIService,
+    constructor(public apiService: APIService,
                 private authService: AuthService,
                 private router: Router,
                 private route: ActivatedRoute,

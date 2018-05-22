@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { pyDateFormatToPrimeDateFormat } from '../../shared/utils/functions';
+import { pyDateFormatToPrimeDateFormat } from '../utils/functions';
 
 @Pipe({name: 'pyDateFormatToPrimeDateFormat'})
 export class PyToPrimeDateFormatConversionPipe implements PipeTransform {
