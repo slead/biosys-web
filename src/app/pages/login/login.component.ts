@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-import { AuthService } from '../../shared/index';
+import { AuthService } from '../../biosys-core/services/auth.service';
 
 @Component({
     moduleId: module.id,

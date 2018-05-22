@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { APIService, APIError, Project, User } from '../../../shared/index';
+import { APIError, Project, User } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../biosys-core/services/api.service';
 import { Router } from '@angular/router';
 
 @Component({

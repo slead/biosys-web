@@ -1,9 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { APIService, APIError, Project, Dataset, Record } from '../../../shared/index';
+
 import { Router, ActivatedRoute } from '@angular/router';
-import { DEFAULT_GROWL_LIFE, AMBIGUOUS_DATE_PATTERN, pyDateFormatToMomentDateFormat } from '../../../shared/index';
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
+
+import { APIError, Project, Dataset, Record } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../biosys-core/services/api.service';
+import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
+import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
+
+import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
+
 
 @Component({
     moduleId: module.id,

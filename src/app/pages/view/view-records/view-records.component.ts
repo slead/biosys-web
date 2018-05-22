@@ -1,5 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { APIService, APIError, Dataset, Record, RecordResponse, DATASET_TYPE_MAP } from '../../../shared/index';
+import { APIError, Dataset, Record, RecordResponse } from
+    '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../biosys-core/services/api.service';
+import { DATASET_TYPE_MAP } from '../../../biosys-core/utils/consts';
 import { SelectItem, DataTable, LazyLoadEvent } from 'primeng/primeng';
 import { Observable } from 'rxjs/Observable'
 import 'rxjs/add/observable/forkJoin';

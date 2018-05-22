@@ -1,10 +1,17 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { APIService, APIError, User, Project, Site, Dataset, ModelChoice, FeatureMapComponent, DATASET_TYPE_MAP,
-    DEFAULT_GROWL_LIFE } from '../../../shared/index';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
+
+import { map } from 'rxjs/operators';
+
+import { APIError, User, Project, Site, Dataset, ModelChoice } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../biosys-core/services/api.service';
+import { DATASET_TYPE_MAP } from '../../../biosys-core/utils/consts';
+import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
+
 import { environment } from '../../../../environments/environment';
+
+import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
 
 @Component({
     moduleId: module.id,

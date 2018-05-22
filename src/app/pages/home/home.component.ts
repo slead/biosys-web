@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { APIService, APIError, Project, Statistic, User, DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM,
-    getDefaultBaseLayer, getOverlayLayers } from '../../shared/index';
+
+import { APIService } from '../../biosys-core/services/api.service';
+
+import { APIError, Project, Statistic, User } from '../../biosys-core/interfaces/api.interfaces';
+
+import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers }
+    from '../../shared/utils/maputils';
+
 import * as L from 'leaflet';
 import 'leaflet-mouse-position';
 import '../../../lib/leaflet.latlng-graticule'

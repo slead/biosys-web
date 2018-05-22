@@ -2,10 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../../shared/shared.module';
 import { EditSiteComponent } from './edit-site.component';
-import { APIService } from '../../../shared/services/api/index';
 import { InputTextModule, InputTextareaModule, DialogModule, ButtonModule, GrowlModule, ConfirmDialogModule,
     ConfirmationService } from 'primeng/primeng';
-import { JSONEditorModule } from '../../../shared/index';
+import { JSONEditorModule } from '../../../shared/jsoneditor/jsoneditor.module';
 
 @NgModule({
     imports: [
@@ -21,7 +20,7 @@ import { JSONEditorModule } from '../../../shared/index';
     ],
     declarations: [EditSiteComponent],
     exports: [EditSiteComponent],
-    providers: [APIService, ConfirmationService]
+    providers: [ConfirmationService]
 })
 export class EditSiteModule {
 }

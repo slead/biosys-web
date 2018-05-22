@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { EditDatasetComponent } from './edit-dataset.component';
-import { AuthGuard } from '../../../shared/index';
+import { AuthGuard } from '../../../biosys-core/services/auth.guard';
 
 export const EditDatasetRoutes: Route[] = [
     {

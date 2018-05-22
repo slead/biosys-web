@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { ManageDataComponent } from './manage-data.component';
-import { AuthGuard } from '../../../shared/index';
+import { AuthGuard } from '../../../biosys-core/services/auth.guard';
 
 export const ManageDataRoutes: Route[] = [
     {
