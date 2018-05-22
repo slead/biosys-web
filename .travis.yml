@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - "8.11.2"
+
+branches:
+  only:
+    - master
+
+before_script:
+  - npm install -g @angular/cli
+  - npm install
+
+script:
+  - ng build --env=staging --prod --build-optimizer
+
+after_success:
+  - scp -prq dist/. ubuntu@staging-biosys.gaiaresources.com.au:/srv/sites/biosys/biosys-web/
