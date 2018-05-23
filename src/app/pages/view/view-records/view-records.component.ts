@@ -1,4 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+
+import * as moment from 'moment/moment';
+import { saveAs } from 'file-saver';
+
 import { APIError, Dataset, Record, RecordResponse } from
     '../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../biosys-core/services/api.service';
@@ -35,8 +39,7 @@ export class ViewRecordsComponent implements OnInit {
     public dateStart: Date;
     public dateEnd: Date;
     public speciesName: string;
-
-    public exportURL: string;
+    public fileType: string = 'csv';
 
     private recordParams: any = {};
 
@@ -83,22 +86,20 @@ export class ViewRecordsComponent implements OnInit {
 
         let datasetParams: any = {};
 
-        this.recordParams = {};
-
         if (this.projectId) {
             datasetParams['project'] = this.projectId;
         }
 
         if (this.dateStart) {
-            datasetParams['record__datetime__start'] = this.recordParams['datetime__start'] = this.dateStart.toISOString();
+            datasetParams['record__datetime__start'] = this.dateStart.toISOString();
         }
 
         if (this.dateEnd) {
-            datasetParams['record__datetime__end'] = this.recordParams['datetime__end'] = this.dateEnd.toISOString();
+            datasetParams['record__datetime__end'] = this.dateEnd.toISOString();
         }
 
         if (this.speciesName) {
-            datasetParams['record__species_name'] = this.recordParams['species_name'] = this.speciesName;
+            datasetParams['record__species_name'] = this.speciesName;
         }
 
         this.apiService.getDatasets(datasetParams).subscribe(
@@ -115,12 +116,6 @@ export class ViewRecordsComponent implements OnInit {
                 this.datatable.reset();
             }
         }
-
-        this.exportURL = this.apiService.getRecordExportURL() +
-            Object.keys(this.recordParams).reduce((left, right) => {
-                left.push(right + '=' + encodeURIComponent(this.recordParams[right]));
-                return left;
-            }, []).join('&');
     }
 
     public selectDataset(event: any) {
@@ -155,6 +150,20 @@ export class ViewRecordsComponent implements OnInit {
                 this.records = data.results;
                 this.totalRecords = data.count;
                 this.recordsTableColumnWidths = {};
+            },
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
+    }
+
+    public export() {
+        this.apiService.exportRecords(this.dateStart, this.dateEnd, this.speciesName, this.selectedDataset.id,
+            this.fileType).
+        subscribe(
+            resp => {
+                const timeStamp = moment().format('YYYY-MM-DD-HHmmss');
+                const extension = this.fileType;
+                const fileName = `export_${timeStamp}.${extension}`;
+                saveAs(resp, fileName);
             },
             (error: APIError) => console.log('error.msg', error.msg)
         );
