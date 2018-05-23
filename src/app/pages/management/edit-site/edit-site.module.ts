@@ -4,7 +4,6 @@ import { SharedModule } from '../../../shared/shared.module';
 import { EditSiteComponent } from './edit-site.component';
 import { InputTextModule, InputTextareaModule, DialogModule, ButtonModule, GrowlModule, ConfirmDialogModule,
     ConfirmationService } from 'primeng/primeng';
-import { JSONEditorModule } from '../../../shared/jsoneditor/jsoneditor.module';
 
 @NgModule({
     imports: [
@@ -15,8 +14,7 @@ import { JSONEditorModule } from '../../../shared/jsoneditor/jsoneditor.module';
         DialogModule,
         ButtonModule,
         GrowlModule,
-        ConfirmDialogModule,
-        JSONEditorModule,
+        ConfirmDialogModule
     ],
     declarations: [EditSiteComponent],
     exports: [EditSiteComponent],

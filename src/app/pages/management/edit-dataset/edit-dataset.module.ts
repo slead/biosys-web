@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SharedModule } from '../../../shared/shared.module';
-import { EditDatasetComponent } from './edit-dataset.component';
+
 import { InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule,
     ConfirmationService, FileUploadModule, DialogModule } from 'primeng/primeng';
-import { JSONEditorModule } from '../../../shared/jsoneditor/jsoneditor.module';
+
+import { SharedModule } from '../../../shared/shared.module';
+import { EditDatasetComponent } from './edit-dataset.component';
 
 @NgModule({
     imports: [
@@ -17,8 +18,7 @@ import { JSONEditorModule } from '../../../shared/jsoneditor/jsoneditor.module';
         GrowlModule,
         ConfirmDialogModule,
         FileUploadModule,
-        DialogModule,
-        JSONEditorModule,
+        DialogModule
     ],
     declarations: [EditDatasetComponent],
     exports: [EditDatasetComponent],
