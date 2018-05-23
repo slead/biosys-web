@@ -13,8 +13,7 @@ import { PanelModule, MessagesModule, InputTextModule, ButtonModule } from 'prim
         MessagesModule,
         InputTextModule,
         ButtonModule],
-    declarations: [LoginComponent],
-    exports: [LoginComponent]
+    declarations: [LoginComponent]
 })
 export class LoginModule {
 }

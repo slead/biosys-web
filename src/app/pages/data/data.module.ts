@@ -20,7 +20,6 @@ import { EditRecordComponent } from './edit-record/edit-record.component';
         MessagesModule, ConfirmDialogModule, CalendarModule, DropdownModule, FileUploadModule, CheckboxModule,
         InputTextModule, TooltipModule],
     declarations: [DataListProjectsComponent, ListDatasetsComponent, ManageDataComponent, EditRecordComponent],
-    // exports: [EditRecordComponent],
     providers: [ConfirmationService]
 })
 export class DataModule {

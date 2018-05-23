@@ -32,7 +32,6 @@ import { UploadSitesComponent } from './upload-sites/upload-sites.component';
         MessageModule
     ],
     declarations: [ManagementListProjectsComponent, EditProjectComponent, EditDatasetComponent, EditSiteComponent, UploadSitesComponent],
-    // exports: [EditDatasetComponent],
     providers: [ConfirmationService]
 })
 export class ManagementModule {
