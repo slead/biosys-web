@@ -56,9 +56,8 @@
                 <h4>Records for {{selectedDataset?.name}}</h4>
                 <div class="data-table-container">
                     <p-dataTable #recordsTable [tableStyle]="getRecordsTableWidth()" [value]="records"
-                                 [paginator]="true" [rows]="10" [loading]="records == null"
-                                 [rowsPerPageOptions]="[10, 25, 50, 100]" [totalRecords] = "totalRecords"
-                                 [loading]="flatRecords == null" [lazy]="true"
+                                 [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                                 [totalRecords] = "totalRecords" [loading]="records == null" [lazy]="true"
                                  (onLazyLoad)="loadRecordsLazy($event)" resizableColumns="true"
                                  columnResizeMode="expand" [scrollable]="true"
                                  [emptyMessage]="records == null ? 'Loading records': 'No records found'">
@@ -71,9 +70,16 @@
                         </p-column>
                     </p-dataTable>
                 </div>
-                <a class="mt-3 mb-3 float-right" [href]="exportURL">
-                    <button pButton type="button" label="Export"></button>
-                </a>
+                <div class="row mt-3 mb-3">
+                    <div class="col-3 offset-8">
+                        <label>File Type:</label>
+                        <p-radioButton name="filetype" label="csv" value="csv" [(ngModel)]="fileType"></p-radioButton>
+                        <p-radioButton name="filetype" label="xlsx" value="xlsx" [(ngModel)]="fileType"></p-radioButton>
+                    </div>
+                    <div class="col-1">
+                        <button pButton class="float-right" type="button" label="Export" (click)="export()"></button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

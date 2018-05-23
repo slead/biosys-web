@@ -220,7 +220,7 @@ L.LatLngGraticule = L.Layer.extend({
 
     __calcInterval: function() {
         var zoom = this._map.getZoom();
-        if (this._currZoom != zoom) {
+        if (this._currZoom !== zoom) {
             this._currLngInterval = 0;
             this._currLatInterval = 0;
             this._currZoom = zoom;
@@ -266,7 +266,7 @@ L.LatLngGraticule = L.Layer.extend({
     __draw: function(label) {
         function _parse_px_to_int(txt) {
             if (txt.length > 2) {
-                if (txt.charAt(txt.length-2) == 'p') {
+                if (txt.charAt(txt.length-2) === 'p') {
                     txt = txt.substr(0, txt.length-2);
                 }
             }
@@ -350,7 +350,7 @@ L.LatLngGraticule = L.Layer.extend({
                 txtWidth = ctx.measureText(latstr).width;
 
                 if (curvedLat) {
-                    if (typeof(curvedLat) == 'number') {
+                    if (typeof(curvedLat) === 'number') {
                         _lon_delta = curvedLat;
                     }
 
@@ -376,7 +376,7 @@ L.LatLngGraticule = L.Layer.extend({
                         rr = map.latLngToContainerPoint(L.latLng(lat_tick, j));
                         ctx.lineTo(rr.x, rr.y);
 
-                        if (self.options.showLabel && label && _prev_p != null) {
+                        if (self.options.showLabel && label && _prev_p !== null) {
                             if (_prev_p.x < 0 && rr.x >= 0) {
                                 var _s = (rr.x - 0) / (rr.x - _prev_p.x);
                                 var _y = rr.y - ((rr.y - _prev_p.y) * _s);
@@ -437,7 +437,7 @@ L.LatLngGraticule = L.Layer.extend({
                 var bb = map.latLngToContainerPoint(L.latLng(_lat_b, lon_tick));
 
                 if (curvedLon) {
-                    if (typeof(curvedLon) == 'number') {
+                    if (typeof(curvedLon) === 'number') {
                         _lat_delta = curvedLon;
                     }
 
@@ -448,7 +448,7 @@ L.LatLngGraticule = L.Layer.extend({
                         var tt = map.latLngToContainerPoint(L.latLng(j, lon_tick));
                         ctx.lineTo(tt.x, tt.y);
 
-                        if (self.options.showLabel && label && _prev_p != null) {
+                        if (self.options.showLabel && label && _prev_p !== null) {
                             if (_prev_p.y > 8 && tt.y <= 8) {
                                 ctx.fillText(lngstr, tt.x - (txtWidth/2), txtHeight);
                             }
