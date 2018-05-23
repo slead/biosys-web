@@ -6,6 +6,9 @@ branches:
   only:
     - master
 
+before_install:
+  - git submodule update --init --recursive
+
 before_script:
   - npm install -g @angular/cli
 
