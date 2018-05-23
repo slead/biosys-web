@@ -2,11 +2,16 @@ language: node_js
 node_js:
   - "8.11.2"
 
+addons:
+  ssh_known_hosts: staging-biosys.gaiaresources.com.au
+
 branches:
   only:
     - master
 
 before_script:
+  - eval $(ssh-agent -s)
+  - ssh-add <(echo "${PEM_STAGING_BIOSYS}")
   - npm install -g @angular/cli
 
 script:
