@@ -5,7 +5,7 @@
 
 export const environment = {
     production: false,
-    server: 'http://172.25.13.140:8000',
+    server: 'http://localhost:8000',
     apiExtension: '/api/',
     logoutUrl: '/#/login/',
     cookieAuthToken: 'auth_token'

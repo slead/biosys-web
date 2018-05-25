@@ -22,9 +22,9 @@ import {BiosysCoreModule} from '../biosys-core/biosys-core.module';
         ProgressBarModule, CheckboxModule, DropdownModule, DataTableModule, CalendarModule, PrimeSharedModule, BiosysCoreModule],
     declarations: [HeaderComponent, JsonEditorComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent, FileuploaderComponent,
         MarkerDirective, PyToPrimeDateFormatConversionPipe, ExpandableMessagesComponent, EditRecordsTableComponent],
-    exports: [CommonModule, RouterModule, HeaderComponent, JsonEditorComponent, NavbarComponent, BreadcrumbsComponent,
-        EditRecordsTableComponent, ExpandableMessagesComponent, FeatureMapComponent, FileuploaderComponent, MarkerDirective,
-        PyToPrimeDateFormatConversionPipe
+    exports: [CommonModule, FormsModule, RouterModule, BiosysCoreModule, HeaderComponent, JsonEditorComponent, NavbarComponent,
+        BreadcrumbsComponent, EditRecordsTableComponent, ExpandableMessagesComponent, FeatureMapComponent, FileuploaderComponent,
+        MarkerDirective, PyToPrimeDateFormatConversionPipe
     ]
 })
 export class SharedModule {}

@@ -1,10 +1,10 @@
 <p-dataTable [tableStyle]="getRecordsTableWidth()" [value]="flatRecords"
-             [emptyMessage]="flatRecords == null ? '' : 'No records found'"
+             [emptyMessage]="!flatRecords ? '' : 'No records found'"
              [paginator]="true" [rows]="pageState.rowLimit" [rowsPerPageOptions]="[10, 25, 50, 100]"
              [totalRecords] = "totalRecords" [first]="pageState.rowOffset" [globalFilter]="recordSearch"
-             [loading]="flatRecords == null" [editable]="true" (onEditComplete)="onRowEditComplete($event)"
+             [loading]="!flatRecords" [editable]="true" (onEditComplete)="onRowEditComplete($event)"
              (onPage)="onPageChange($event)" resizableColumns="true" (onEditInit)="onRowEditInit($event)"
-             columnResizeMode="expand" [scrollable]="true" [lazy]="dataset !== undefined"
+             columnResizeMode="expand" [scrollable]="true" [lazy]="!!dataset"
              (onLazyLoad)="loadRecordsLazy($event)">
     <p-header>
         <div class="ui-helper-clearfix" style="width:100%">
@@ -23,7 +23,7 @@
     <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width': '120px'}">
         <ng-template let-flatRecord="rowData" pTemplate="body">
             <a class="table-link"
-               [routerLink]="'/data/projects/' + projId + '/datasets/' + datasetId + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
+               [routerLink]="'/data/projects/' + dataset.project + '/datasets/' + dataset.id + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
         </ng-template>
     </p-column>
     <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields" [field]="field.name"
