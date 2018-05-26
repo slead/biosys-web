@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditrecordtableComponent } from './editrecordtable.component';
+import { EditRecordsTableComponent } from './edit-records-table.component';
 
 describe('EditrecordtableComponent', () => {
-  let component: EditrecordtableComponent;
-  let fixture: ComponentFixture<EditrecordtableComponent>;
+  let component: EditRecordsTableComponent;
+  let fixture: ComponentFixture<EditRecordsTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditrecordtableComponent ]
+      declarations: [ EditRecordsTableComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditrecordtableComponent);
+    fixture = TestBed.createComponent(EditRecordsTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -35,7 +35,10 @@
     <div class="row mt-3">
         <div class="col-md">
             <h4>Records Table</h4>
-            <biosys-edit-records-table [dataset]="dataset" [pageState]="pageState"></biosys-edit-records-table>
+            <biosys-edit-records-table [dataset]="dataset" [(pageState)]="pageState"
+                                       recordsDeleted)="onRecordsDeleted()"
+                                       (recordChanged)="onRecordChanged($event)">
+            </biosys-edit-records-table>
             <!--<p-dataTable [tableStyle]="getRecordsTableWidth()" [value]="flatRecords"-->
                          <!--[emptyMessage]="flatRecords == null ? '' : 'No records found'"-->
                          <!--[paginator]="true" [rows]="pageState.rowLimit" [rowsPerPageOptions]="[10, 25, 50, 100]"-->

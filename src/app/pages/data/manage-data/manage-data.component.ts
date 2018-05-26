@@ -192,8 +192,18 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         );
     }
 
-    public add() {
-        this.router.navigate(['/data/projects/' + this.projId + '/datasets/' + this.datasetId + '/create-record/']);
+    // public add() {
+    //     this.router.navigate(['/data/projects/' + this.projId + '/datasets/' + this.datasetId + '/create-record/']);
+    // }
+
+    public onRecordChanged(record: Record) {
+        let marker = this.markersByRecordId[record.id];
+        marker.setLatLng(this.recordToLatLng(record));
+        this.markers.refreshClusters([marker]);
+    }
+
+    public onRecordsDeleted() {
+        this.loadRecordMarkers();
     }
 
     public onUpload(event: any) {

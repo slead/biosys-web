@@ -1,4 +1,5 @@
-import { Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
 import * as moment from 'moment/moment';
 
@@ -60,6 +61,12 @@ export class EditRecordsTableComponent implements OnDestroy {
         return this.isAllRecordsSelected;
     }
 
+    @Output()
+    recordChanged = new EventEmitter<Record>();
+
+    @Output()
+    recordsDeleted = new EventEmitter();
+
     @ViewChild(DataTable)
     public recordsDatatable: DataTable;
 
@@ -68,7 +75,7 @@ export class EditRecordsTableComponent implements OnDestroy {
     private editingRowEvent: any;
     private previousRowData: any;
 
-    constructor(private apiService: APIService, private confirmationService: ConfirmationService) {
+    constructor(private apiService: APIService, private router: Router, private confirmationService: ConfirmationService) {
     }
 
     public ngOnDestroy() {
@@ -143,6 +150,7 @@ export class EditRecordsTableComponent implements OnDestroy {
 
         this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data, true).subscribe(
             (record: Record) => {
+                this.recordChanged.emit(record);
                 // TODO: Notify parent of marker change
                 // let marker = this.markersByRecordId[record.id];
                 // marker.setLatLng(this.recordToLatLng(record));
@@ -169,6 +177,10 @@ export class EditRecordsTableComponent implements OnDestroy {
         }
 
         return this.dropdownItems[fieldName];
+    }
+
+    public add() {
+        this.router.navigate(['/data/projects/' + this.dataset.project + '/datasets/' + this.dataset.id + '/create-record/']);
     }
 
     public confirmDeleteSelectedRecords() {
@@ -267,6 +279,7 @@ export class EditRecordsTableComponent implements OnDestroy {
         this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
 
         // TODO: Notify parent to reload the markers
+        this.recordsDeleted.emit();
         // this.loadRecordMarkers();
 
         this.messages.push({
