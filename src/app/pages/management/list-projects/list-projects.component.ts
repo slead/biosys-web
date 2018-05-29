@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { APIError, Project, User } from '../../../biosys-core/interfaces/api.interfaces';
-import { APIService } from '../../../biosys-core/services/api.service';
+import { APIError, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { Router } from '@angular/router';
 import { ConfirmationService, Message } from 'primeng/primeng';

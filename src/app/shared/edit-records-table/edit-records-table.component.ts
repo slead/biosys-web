@@ -1,20 +1,20 @@
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 import * as moment from 'moment/moment';
 
-import { APIError, Dataset, Record, RecordResponse } from '../../biosys-core/interfaces/api.interfaces';
-import { pyDateFormatToMomentDateFormat } from '../../biosys-core/utils/functions';
-import { APIService } from '../../biosys-core/services/api.service';
+import { APIError, Dataset, Record, RecordResponse } from '../../../biosys-core/interfaces/api.interfaces';
+import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
+import { APIService } from '../../../biosys-core/services/api.service';
 import { ConfirmationService, DataTable, LazyLoadEvent, Message, SelectItem } from 'primeng/primeng';
-import { AMBIGUOUS_DATE_PATTERN } from '../../biosys-core/utils/consts';
+import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
 
 @Component({
     selector: 'biosys-edit-records-table',
     templateUrl: './edit-records-table.component.html',
     styleUrls: ['./edit-records-table.component.css']
 })
-export class EditRecordsTableComponent implements OnDestroy {
+export class EditRecordsTableComponent {
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
     private static FIXED_COLUMNS_TOTAL_WIDTH: number = 240;
     private static COLUMN_WIDTH: number = 240;
@@ -29,7 +29,6 @@ export class EditRecordsTableComponent implements OnDestroy {
     public dropdownItems: any = {};
     public messages: Message[] = [];
 
-    // TODO: this should be an output as well
     @Input()
     public pageState: any;
 
@@ -52,13 +51,13 @@ export class EditRecordsTableComponent implements OnDestroy {
     }
 
     @Input()
+    get selectAllRecords(): boolean {
+        return this.isAllRecordsSelected;
+    }
+
     set selectAllRecords(selected: boolean) {
         this.isAllRecordsSelected = selected;
         this.selectedRecords = selected ? this.flatRecords.map((record: Record) => record.id) : [];
-    }
-
-    get selectAllRecords(): boolean {
-        return this.isAllRecordsSelected;
     }
 
     @Output()
@@ -66,6 +65,9 @@ export class EditRecordsTableComponent implements OnDestroy {
 
     @Output()
     recordsDeleted = new EventEmitter();
+
+    @Output()
+    pageStateChange = new EventEmitter<any>();
 
     @ViewChild(DataTable)
     public recordsDatatable: DataTable;
@@ -78,10 +80,9 @@ export class EditRecordsTableComponent implements OnDestroy {
     constructor(private apiService: APIService, private router: Router, private confirmationService: ConfirmationService) {
     }
 
-    public ngOnDestroy() {
-        if (this._dataset) {
-            sessionStorage.setItem('pageState' + this._dataset.id, JSON.stringify(this.pageState));
-        }
+    public reloadRecords() {
+        // reload table page without resetting pagination/ordering/search params unlike reset()
+        this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
@@ -114,6 +115,8 @@ export class EditRecordsTableComponent implements OnDestroy {
     public onPageChange(event) {
         this.pageState.rowOffset = event.first;
         this.pageState.rowLimit = event.rows;
+
+        this.pageStateChange.emit(this.pageState);
     }
 
     // Regarding next three methods - onEditComplete event doesn't recognize changing calendar date or dropdown item
@@ -151,13 +154,8 @@ export class EditRecordsTableComponent implements OnDestroy {
         this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data, true).subscribe(
             (record: Record) => {
                 this.recordChanged.emit(record);
-                // TODO: Notify parent of marker change
-                // let marker = this.markersByRecordId[record.id];
-                // marker.setLatLng(this.recordToLatLng(record));
-                // this.markers.refreshClusters([marker]);
             },
             (error: APIError) => {
-                // this.showUpdateError(error);
                 // revert data
                 if (this.previousRowData) {
                     let flatRecord = this.flatRecords[event.index];
@@ -278,9 +276,7 @@ export class EditRecordsTableComponent implements OnDestroy {
         // reload table page without resetting pagination/ordering/search params unlike reset()
         this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
 
-        // TODO: Notify parent to reload the markers
         this.recordsDeleted.emit();
-        // this.loadRecordMarkers();
 
         this.messages.push({
             severity: 'success',

@@ -14,7 +14,7 @@ import { PyToPrimeDateFormatConversionPipe } from './pipes/date-conversion.pipe'
 import { ButtonModule, MenubarModule, BreadcrumbModule, MessagesModule, ProgressBarModule, CheckboxModule, DropdownModule, DataTableModule,
     CalendarModule } from 'primeng/primeng';
 import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
-import {BiosysCoreModule} from '../biosys-core/biosys-core.module';
+import {BiosysCoreModule} from '../../biosys-core/biosys-core.module';
 
 
 @NgModule({

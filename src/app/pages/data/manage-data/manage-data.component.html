@@ -36,7 +36,7 @@
         <div class="col-md">
             <h4>Records Table</h4>
             <biosys-edit-records-table [dataset]="dataset" [(pageState)]="pageState"
-                                       recordsDeleted)="onRecordsDeleted()"
+                                       (recordsDeleted)="onRecordsDeleted()"
                                        (recordChanged)="onRecordChanged($event)">
             </biosys-edit-records-table>
             <!--<p-dataTable [tableStyle]="getRecordsTableWidth()" [value]="flatRecords"-->

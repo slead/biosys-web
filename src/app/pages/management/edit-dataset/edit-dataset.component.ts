@@ -1,16 +1,16 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 
-import { APIError, Project, Dataset, ModelChoice } from '../../../biosys-core/interfaces/api.interfaces';
-import { APIService } from '../../../biosys-core/services/api.service';
-import { formatAPIError } from '../../../biosys-core/utils/functions';
+import { APIError, Dataset, ModelChoice, Project } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
+import { formatAPIError } from '../../../../biosys-core/utils/functions';
 
-import { AuthService } from '../../../biosys-core/services/auth.service';
+import { AuthService } from '../../../../biosys-core/services/auth.service';
 
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
-import { FileUpload, ConfirmationService, SelectItem, Message } from 'primeng/primeng';
+import { ConfirmationService, FileUpload, Message, SelectItem } from 'primeng/primeng';
 
 import { JsonEditorComponent } from '../../../shared/jsoneditor/jsoneditor.component';
 import { JsonEditorOptions } from '../../../shared/jsoneditor/jsoneditor.options';

@@ -5,11 +5,10 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
-import { BiosysCoreModule } from './biosys-core/biosys-core.module';
-import { APIService } from './biosys-core/services/api.service';
-import { AuthService } from './biosys-core/services/auth.service';
-import { AuthGuard } from './biosys-core/services/auth.guard';
-import { ApiInterceptor } from './biosys-core/services/api.interceptor';
+import { BiosysCoreModule } from '../biosys-core/biosys-core.module';
+import { APIService } from '../biosys-core/services/api.service';
+import { AuthService } from '../biosys-core/services/auth.service';
+import { ApiInterceptor } from '../biosys-core/services/api.interceptor';
 
 import { SharedModule } from './shared/shared.module';
 
@@ -48,10 +47,7 @@ import { ViewModule } from './pages/view/view.module';
             provide: AuthService,
             useClass: SSOAuthService
         },
-        {
-            provide: AuthGuard,
-            useClass: SSOAuthGuard
-        },
+        SSOAuthGuard,
         {
             provide: LocationStrategy,
             useClass: HashLocationStrategy

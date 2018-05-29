@@ -1,18 +1,18 @@
 import { Route } from '@angular/router';
 import { EditDatasetComponent } from './edit-dataset.component';
-import { AuthGuard } from '../../../biosys-core/services/auth.guard';
+import { SSOAuthGuard } from '../../../shared/services/sso-auth.guard';
 
 export const EditDatasetRoutes: Route[] = [
     {
         path: 'management/projects/edit-project/:projId/create-dataset',
         component: EditDatasetComponent,
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard]
+        canActivate: [SSOAuthGuard],
+        canActivateChild: [SSOAuthGuard]
     },
     {
         path: 'management/projects/edit-project/:projId/edit-dataset/:id',
         component: EditDatasetComponent,
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard]
+        canActivate: [SSOAuthGuard],
+        canActivateChild: [SSOAuthGuard]
     }
 ];

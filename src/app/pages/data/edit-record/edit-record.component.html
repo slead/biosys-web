@@ -72,5 +72,14 @@
             </div>
         </div>
     </div>
+    <div *ngIf="hasSubRecords">
+        <hr>
+        <h4>
+            Sub-Records
+        </h4>
+        <!--<biosys-edit-records-table>-->
+
+        <!--</biosys-edit-records-table>-->
+    </div>
 </div>
 <p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>

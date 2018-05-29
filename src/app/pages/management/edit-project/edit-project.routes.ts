@@ -1,18 +1,18 @@
 import { Route } from '@angular/router';
 import { EditProjectComponent } from './edit-project.component';
-import { AuthGuard } from '../../../biosys-core/services/auth.guard';
+import { SSOAuthGuard } from '../../../shared/services/sso-auth.guard';
 
 export const EditProjectRoutes: Route[] = [
     {
         path: 'management/projects/create-project',
         component: EditProjectComponent,
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard]
+        canActivate: [SSOAuthGuard],
+        canActivateChild: [SSOAuthGuard]
     },
     {
         path: 'management/projects/edit-project/:id',
         component: EditProjectComponent,
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard]
+        canActivate: [SSOAuthGuard],
+        canActivateChild: [SSOAuthGuard]
     }
 ];

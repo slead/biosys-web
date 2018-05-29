@@ -5,9 +5,9 @@ import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import '../../../../lib/leaflet.latlng-graticule'
 
-import { APIService } from '../../../biosys-core/services/api.service';
-import { AuthService } from '../../../biosys-core/services/auth.service';
-import { APIError, Project, Dataset, Record } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
+import { AuthService } from '../../../../biosys-core/services/auth.service';
+import { APIError, Project, Dataset, Record } from '../../../../biosys-core/interfaces/api.interfaces';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
 import { FileuploaderComponent } from '../../../shared/fileuploader/fileuploader.component';
@@ -15,6 +15,7 @@ import {
     DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ROW_LIMIT, DEFAULT_ZOOM, getDefaultBaseLayer,
     getOverlayLayers
 } from '../../../shared/utils/maputils';
+import { EditRecordsTableComponent } from '../../../shared/edit-records-table/edit-records-table.component';
 
 @Component({
     moduleId: module.id,
@@ -34,6 +35,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
 
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
+
+    @ViewChild(EditRecordsTableComponent)
+    public editRecordsTableComponent: EditRecordsTableComponent;
 
     @ViewChild(FileuploaderComponent)
     public uploader: FileuploaderComponent;
@@ -85,9 +89,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         .then(
             (dataset: Dataset) => {
                 this.dataset = dataset;
-
-                // force initial lazy load
-                // this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
 
                 this.breadcrumbItems.push({label: this.dataset.name});
                 if (dataset.type !== 'generic') {
@@ -192,10 +193,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         );
     }
 
-    // public add() {
-    //     this.router.navigate(['/data/projects/' + this.projId + '/datasets/' + this.datasetId + '/create-record/']);
-    // }
-
     public onRecordChanged(record: Record) {
         let marker = this.markersByRecordId[record.id];
         marker.setLatLng(this.recordToLatLng(record));
@@ -210,9 +207,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.parseAndDisplayResponse(event.xhr.response);
         this.isUploading = false;
 
-        // reload table page without resetting pagination/ordering/search params unlike reset()
-        // TODO: make sure edit-records-table component reloads
-        // this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+        this.editRecordsTableComponent.reloadRecords();
 
         this.loadRecordMarkers();
     }
@@ -238,9 +233,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         }
         this.isUploading = false;
 
-        // reload table page without resetting pagination/ordering/search params unlike reset()
-        // TODO: make sure edit-records-table component reloads
-        // this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+        this.editRecordsTableComponent.reloadRecords();
 
         this.loadRecordMarkers();
     }

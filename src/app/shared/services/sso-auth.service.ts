@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { APIService } from '../../biosys-core/services/api.service';
+import { APIService } from '../../../biosys-core/services/api.service';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 import { environment } from '../../../environments/environment';
-import { AuthService } from '../../biosys-core/services/auth.service';
+import { AuthService } from '../../../biosys-core/services/auth.service';
 import { Router } from '@angular/router';
 
 @Injectable()

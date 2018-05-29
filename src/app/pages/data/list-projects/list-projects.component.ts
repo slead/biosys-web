@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { APIError, Project, User } from '../../../biosys-core/interfaces/api.interfaces';
-import { APIService } from '../../../biosys-core/services/api.service';
+import { APIError, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
     templateUrl: 'list-projects.component.html',
     styleUrls: [],
 })
-
 export class DataListProjectsComponent implements OnInit {
     public breadcrumbItems: any = [];
     public projects: Project[] = [];
