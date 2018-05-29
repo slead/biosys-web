@@ -12,7 +12,7 @@
     },
     "private": true,
     "dependencies": {
-        "biosys-core": "src/app/biosys-core",
+        "biosys-core": "./src/biosys-core",
         "@angular/animations": "^5.2.11",
         "@angular/common": "^5.2.11",
         "@angular/compiler": "^5.2.11",
