@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
-import { Package, DataPackage, Field } from 'datapackage';
 import * as moment from 'moment/moment';
-import { map } from 'rxjs/operators';
 
 import { APIError, Project, Dataset, Record } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
@@ -12,7 +10,6 @@ import { pyDateFormatToMomentDateFormat } from '../../../../biosys-core/utils/fu
 import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
 
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
-import { fromPromise } from 'rxjs/observable/fromPromise';
 
 
 @Component({
@@ -62,13 +59,6 @@ export class EditRecordComponent implements OnInit {
                     label: dataset.name,
                     routerLink: ['/data/projects/' + projId + '/datasets/' + datasetId]
                 });
-
-                fromPromise(Package.load(dataset.data_package)).pipe(
-                    map((dataPackage: DataPackage) => {
-                        console.log(dataPackage);
-                        this.hasSubRecords = !!dataPackage.resources[0].schema.primaryKey;
-                    })
-                ).subscribe();
 
                 if ('recordId' in params) {
                     this.apiService.getRecordById(Number(params['recordId'])).subscribe(
