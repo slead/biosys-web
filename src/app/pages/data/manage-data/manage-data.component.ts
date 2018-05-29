@@ -1,14 +1,13 @@
-import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService, LazyLoadEvent, SelectItem, DataTable } from 'primeng/primeng';
-import * as moment from 'moment/moment';
+import { Message, ConfirmationService } from 'primeng/primeng';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import '../../../../lib/leaflet.latlng-graticule'
 
-import { APIService } from '../../../biosys-core/services/api.service';
-import { AuthService } from '../../../biosys-core/services/auth.service';
-import { APIError, Project, Dataset, Record, RecordResponse } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
+import { AuthService } from '../../../../biosys-core/services/auth.service';
+import { APIError, Project, Dataset, Record } from '../../../../biosys-core/interfaces/api.interfaces';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
 import { FileuploaderComponent } from '../../../shared/fileuploader/fileuploader.component';
@@ -16,8 +15,7 @@ import {
     DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ROW_LIMIT, DEFAULT_ZOOM, getDefaultBaseLayer,
     getOverlayLayers
 } from '../../../shared/utils/maputils';
-import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
-import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
+import { EditRecordsTableComponent } from '../../../shared/edit-records-table/edit-records-table.component';
 
 @Component({
     moduleId: module.id,
@@ -26,11 +24,6 @@ import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
     styleUrls: ['manage-data.component.css'],
 })
 export class ManageDataComponent implements OnInit, OnDestroy {
-    private static COLUMN_WIDTH: number = 240;
-    private static CHAR_LENGTH_MULTIPLIER: number = 8;
-    private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
-    private static PADDING: number = 50;
-    private static FIXED_COLUMNS_TOTAL_WIDTH: number = 240;
     private static ACCEPTED_TYPES: string[] = [
         'text/csv',
         'text/comma-separated-values',
@@ -43,30 +36,16 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
+    @ViewChild(EditRecordsTableComponent)
+    public editRecordsTableComponent: EditRecordsTableComponent;
+
     @ViewChild(FileuploaderComponent)
     public uploader: FileuploaderComponent;
 
-    @ViewChild(DataTable)
-    public recordsDatatable: DataTable;
-
-    @Input()
-    set selectAllRecords(selected: boolean) {
-        this.isAllRecordsSelected = selected;
-        this.selectedRecords = selected ? this.flatRecords.map((record: Record) => record.id) : [];
-    }
-    get selectAllRecords(): boolean {
-        return this.isAllRecordsSelected;
-    }
-
-    public selectedRecords: number[] = [];
     public breadcrumbItems: any = [];
     public projId: number;
     public datasetId: number;
     public dataset: Dataset;
-    public dropdownItems: any = {};
-    public recordsTableColumnWidths: {[key: string]: number} = {};
-    public flatRecords: any[];
-    public totalRecords: number = 0;
     public messages: Message[] = [];
     public uploadURL: string;
     public isUploading: boolean = false;
@@ -74,22 +53,17 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public uploadDeleteExistingRecords: boolean = false;
     public uploadErrorMessages: Message[] = [];
     public uploadWarningMessages: Message[] = [];
+
     public pageState: any = {
         mapZoom: DEFAULT_ZOOM,
         mapPosition: DEFAULT_CENTER,
         rowOffset: 0,
-        rowLimit: DEFAULT_ROW_LIMIT,
+        rowLimit: DEFAULT_ROW_LIMIT
     };
 
     private map: L.Map;
     private markers: L.MarkerClusterGroup;
     private markersByRecordId: object;
-    private previousRowData: any;
-
-
-    private isAllRecordsSelected: boolean = false;
-
-    private editingRowEvent: any;
 
     constructor(private apiService: APIService, private  authService: AuthService, private router: Router,
                 private route: ActivatedRoute, private confirmationService: ConfirmationService) {
@@ -100,10 +74,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
         this.projId = Number(params['projId']);
         this.datasetId = Number(params['datasetId']);
-
-        if (sessionStorage.getItem('pageState' + this.datasetId) !== null) {
-            this.pageState = JSON.parse(sessionStorage.getItem('pageState' + this.datasetId));
-        }
 
         this.apiService.getProjectById(this.projId)
         .subscribe(
@@ -119,9 +89,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         .then(
             (dataset: Dataset) => {
                 this.dataset = dataset;
-
-                // force initial lazy load
-                this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
 
                 this.breadcrumbItems.push({label: this.dataset.name});
                 if (dataset.type !== 'generic') {
@@ -185,41 +152,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
-    public getDropdownOptions(fieldName: string, options: string[]): SelectItem[] {
-        if (!(fieldName in this.dropdownItems)) {
-            this.dropdownItems[fieldName] = options.map(option => ({'label': option, 'value': option}));
-        }
-
-        return this.dropdownItems[fieldName];
-    }
-
-    public loadRecordsLazy(event: LazyLoadEvent) {
-        let params: any = {};
-
-        if (event.first !== undefined && event.first > -1) {
-            params['offset'] = event.first;
-        }
-        if (event.rows) {
-            params['limit'] = event.rows;
-        }
-        if (event.sortField) {
-            params['ordering'] = (event.sortOrder && event.sortOrder < 0) ? '-' + event.sortField : event.sortField;
-        }
-        if (event.globalFilter) {
-            params['search'] = event.globalFilter;
-        }
-
-        this.apiService.getRecordsByDatasetId(this.datasetId, params)
-        .subscribe(
-            (data: RecordResponse) => {
-                this.flatRecords = this.formatFlatRecords(data.results);
-                this.totalRecords = data.count;
-                this.recordsTableColumnWidths = {};
-            },
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
-    }
-
     private recordToLatLng(record: Record): L.LatLng {
         let result;
         if (record.geometry) {
@@ -261,80 +193,21 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         );
     }
 
-    public getRecordsTableWidth(): any {
-        if (!Object.keys(this.recordsTableColumnWidths).length) {
-            return {width: '100%'};
-        }
-
-        const width = Object.keys(this.recordsTableColumnWidths).map((key) => this.recordsTableColumnWidths[key]).
-            reduce((a, b) => a + b) + ManageDataComponent.FIXED_COLUMNS_TOTAL_WIDTH;
-
-        return {width: width + 'px'};
+    public onRecordChanged(record: Record) {
+        let marker = this.markersByRecordId[record.id];
+        marker.setLatLng(this.recordToLatLng(record));
+        this.markers.refreshClusters([marker]);
     }
 
-    public getRecordsTableColumnWidth(fieldName: string): any {
-        let width: number;
-
-        if (!this.flatRecords || this.flatRecords.length === 0) {
-            width = ManageDataComponent.COLUMN_WIDTH;
-        } else {
-            if (!(fieldName in this.recordsTableColumnWidths)) {
-                const maxCharacterLength = Math.max(fieldName.length,
-                    this.flatRecords.map((r) => r[fieldName] ? (r[fieldName] instanceof Date ?
-                    ManageDataComponent.DATE_FIELD_FIXED_CHARACTER_COUNT : r[fieldName].length) : 0).
-                    reduce((a, b) => Math.max(a , b)));
-
-                this.recordsTableColumnWidths[fieldName] =
-                    maxCharacterLength * ManageDataComponent.CHAR_LENGTH_MULTIPLIER + ManageDataComponent.PADDING;
-            }
-
-            width = this.recordsTableColumnWidths[fieldName];
-        }
-
-        return {width: width + 'px'};
-    }
-
-    public add() {
-        this.router.navigate(['/data/projects/' + this.projId + '/datasets/' + this.datasetId + '/create-record/']);
-    }
-
-    public confirmDeleteSelectedRecords() {
-        this.confirmationService.confirm({
-            message: 'Are you sure that you want to delete selected records?',
-            accept: () => {
-                this.apiService.deleteRecords(this.datasetId, this.selectedRecords)
-                .subscribe(
-                    () => this.onDeleteRecordsSuccess(),
-                    (error: APIError) => this.onDeleteRecordError(error)
-                );
-            }
-        });
-    }
-
-    public confirmDeleteAllRecords() {
-        this.confirmationService.confirm({
-            message: 'Are you sure that you want to delete all records for this dataset?',
-            accept: () => {
-                this.apiService.deleteAllRecords(this.datasetId)
-                    .subscribe(
-                        () => this.onDeleteRecordsSuccess(),
-                        (error: APIError) => this.onDeleteRecordError(error)
-                    );
-            }
-        });
-    }
-
-    public onPageChange(event) {
-        this.pageState.rowOffset = event.first;
-        this.pageState.rowLimit = event.rows;
+    public onRecordsDeleted() {
+        this.loadRecordMarkers();
     }
 
     public onUpload(event: any) {
         this.parseAndDisplayResponse(event.xhr.response);
         this.isUploading = false;
 
-        // reload table page without resetting pagination/ordering/search params unlike reset()
-        this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+        this.editRecordsTableComponent.reloadRecords();
 
         this.loadRecordMarkers();
     }
@@ -360,8 +233,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         }
         this.isUploading = false;
 
-        // reload table page without resetting pagination/ordering/search params unlike reset()
-        this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+        this.editRecordsTableComponent.reloadRecords();
 
         this.loadRecordMarkers();
     }
@@ -393,113 +265,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             // put back the file in the list
             files.push(file);
         }
-    }
-
-    public onRowEditComplete(event: any) {
-        let data: any = JSON.parse(JSON.stringify(this.editingRowEvent.data));
-        for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row']) {
-            delete data[key];
-        }
-
-        // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
-        for (let field of this.dataset.data_package.resources[0].schema.fields) {
-            if (field.type === 'date' && data[field.name]) {
-                data[field.name] = moment(data[field.name]).
-                format(pyDateFormatToMomentDateFormat(field.format));
-            }
-        }
-
-        this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data, true).subscribe(
-            (record: Record) => {
-                let marker = this.markersByRecordId[record.id];
-                marker.setLatLng(this.recordToLatLng(record));
-                this.markers.refreshClusters([marker]);
-            },
-            (error: APIError) => {
-                this.showUpdateError(error);
-                // revert data
-                if (this.previousRowData) {
-                    let flatRecord = this.flatRecords[event.index];
-                    for (let prop in this.previousRowData) {
-                        if (this.previousRowData.hasOwnProperty(prop)) {
-                            flatRecord[prop] = this.previousRowData[prop];
-                        }
-                    }
-                }
-            }
-        );
-    }
-
-    // Regarding next three methods - onEditComplete event doesn't recognize changing calendar date or dropdown item
-    // change but does recognize starting to edit these fields, so need to keep a reference to the event, in this case
-    // 'editingRowEvent'. This event contains a reference to the data of the row (i.e. the record) and will have the
-    // latest (post-edited) data, which can be used to update the record by manually calling onRowEditComplete when the
-    // calendar or dropdown have changed, as in onRecordDateSelect and onRecordDropdownSelect methods.
-
-    public onRowEditInit(event: any) {
-        this.editingRowEvent = event;
-        this.previousRowData = JSON.parse(JSON.stringify(event.data));
-    }
-
-    public onRecordDateSelect() {
-        this.onRowEditComplete(null);
-    }
-
-    public onRecordDropdownSelect() {
-        this.onRowEditComplete(null);
-    }
-
-    private formatFlatRecords(records: Record[]) {
-        let flatRecords = records.map((r: Record) => Object.assign({
-            id: r.id,
-            file_name: r.source_info ? r.source_info.file_name : 'Manually created',
-            row: r.source_info ? r.source_info.row : '',
-            created: moment(r.created).format(ManageDataComponent.DATETIME_FORMAT),
-            last_modified: moment(r.last_modified).format(ManageDataComponent.DATETIME_FORMAT),
-            geometry: r.geometry
-        }, r.data));
-
-        for (let field of this.dataset.data_package.resources[0].schema.fields) {
-            if (field.type === 'date') {
-                for (let record of flatRecords) {
-                    // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
-                    // and IE expect this when creating Date from a string
-                    let dateString: string = record[field.name];
-
-                    // use '-' rather than '_' in case '_' is used as the separator
-                    dateString = dateString.replace(/_/g, '-');
-
-                    let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
-                    if (regexGroup) {
-                        dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
-                    }
-                    record[field.name] = new Date(dateString);
-                }
-            }
-        }
-
-        return flatRecords;
-    }
-
-    private onDeleteRecordsSuccess() {
-        // reload table page without resetting pagination/ordering/search params unlike reset()
-        this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
-
-        this.loadRecordMarkers();
-
-        this.messages.push({
-            severity: 'success',
-            summary: 'Record(s) deleted',
-            detail: 'The record(s) was deleted'
-        });
-    }
-
-    private onDeleteRecordError(error: APIError) {
-        this.messages.push({
-            severity: 'error',
-            summary: 'Record delete error',
-            detail: 'There were error(s) deleting the site(s): ' + error.msg
-        });
     }
 
     private parseAndDisplayResponse(resp: any) {

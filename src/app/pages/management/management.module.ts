@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule, ConfirmationService,
     FileUploadModule, DialogModule, DataTableModule, MultiSelectModule, CheckboxModule, MessageModule } from 'primeng/primeng';
 
-import { BiosysCoreModule } from '../../biosys-core/biosys-core.module';
 import { SharedModule } from '../../shared/shared.module';
 
 import { ManagementListProjectsComponent } from './list-projects/list-projects.component';
@@ -16,7 +15,6 @@ import { UploadSitesComponent } from './upload-sites/upload-sites.component';
 @NgModule({
     imports: [
         CommonModule,
-        BiosysCoreModule,
         SharedModule,
         InputTextModule,
         InputTextareaModule,

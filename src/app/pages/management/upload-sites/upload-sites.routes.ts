@@ -1,12 +1,12 @@
 import { Route } from '@angular/router';
 import { UploadSitesComponent } from './upload-sites.component';
-import { AuthGuard } from '../../../biosys-core/services/auth.guard';
+import { SSOAuthGuard } from '../../../shared/services/sso-auth.guard';
 
 export const UploadSitesRoutes: Route[] = [
     {
         path: 'management/projects/edit-project/:projectId/upload-sites',
         component: UploadSitesComponent,
-        canActivate: [AuthGuard],
-        canActivateChild: [AuthGuard]
+        canActivate: [SSOAuthGuard],
+        canActivateChild: [SSOAuthGuard]
     }
 ];

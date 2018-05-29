@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Router, ActivatedRoute } from '@angular/router';
+
 import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
-import { APIError, Project, Dataset, Record } from '../../../biosys-core/interfaces/api.interfaces';
-import { APIService } from '../../../biosys-core/services/api.service';
-import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
-import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
+import { APIError, Project, Dataset, Record } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
+import { pyDateFormatToMomentDateFormat } from '../../../../biosys-core/utils/functions';
+import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
 
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
@@ -29,6 +29,8 @@ export class EditRecordComponent implements OnInit {
 
     public record: Record;
     public dataset: Dataset;
+
+    public hasSubRecords: boolean = false;
 
     private completeUrl: string;
 

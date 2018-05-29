@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
-import { APIService } from '../../biosys-core/services/api.service';
+import { APIService } from '../../../biosys-core/services/api.service';
 
-import { APIError, Project, Statistic, User } from '../../biosys-core/interfaces/api.interfaces';
+import { APIError, Project, Statistic, User } from '../../../biosys-core/interfaces/api.interfaces';
 
 import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers }
     from '../../shared/utils/maputils';

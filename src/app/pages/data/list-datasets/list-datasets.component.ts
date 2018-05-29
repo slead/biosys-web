@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { APIError, Project, Dataset } from '../../../biosys-core/interfaces/api.interfaces';
-import { APIService } from '../../../biosys-core/services/api.service';
-import { DATASET_TYPE_MAP } from '../../../biosys-core/utils/consts';
+import { APIError, Project, Dataset } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
+import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 
 import { Router, ActivatedRoute } from '@angular/router';
 

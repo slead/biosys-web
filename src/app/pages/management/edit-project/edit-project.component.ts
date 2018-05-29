@@ -4,9 +4,9 @@ import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
 
 import { map } from 'rxjs/operators';
 
-import { APIError, User, Project, Site, Dataset, ModelChoice } from '../../../biosys-core/interfaces/api.interfaces';
-import { APIService } from '../../../biosys-core/services/api.service';
-import { DATASET_TYPE_MAP } from '../../../biosys-core/utils/consts';
+import { APIError, User, Project, Site, Dataset, ModelChoice } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIService } from '../../../../biosys-core/services/api.service';
+import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
 import { environment } from '../../../../environments/environment';
