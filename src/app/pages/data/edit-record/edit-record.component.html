@@ -25,6 +25,18 @@
         <div class="row mt-1">
             <div class="col-md-6">
                 <div class="ui-fluid">
+                    <div class="row mt-1">
+                        <div class="col-4">
+                            <label style.font-weight="bold">
+                                Published
+                            </label>
+                        </div>
+                        <div class="col-8">
+                            <p-checkbox [(ngModel)]="record.published">
+                            </p-checkbox>
+                        </div>
+                    </div>
+                    <hr>
                     <div class="row mt-1" *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
                         <div class="col-4">
                             <label [for]="field.name" [style.font-weight]="'bold'">

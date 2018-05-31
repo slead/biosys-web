@@ -22,8 +22,24 @@
     </p-column>
     <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width': '120px'}">
         <ng-template let-flatRecord="rowData" pTemplate="body">
-            <a class="table-link"
+            <span *ngIf="flatRecord.consumed">{{ flatRecord.id }}</span>
+            <a class="table-link" *ngIf="!flatRecord.consumed"
                [routerLink]="'/data/projects/' + dataset.project + '/datasets/' + dataset.id + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
+        </ng-template>
+    </p-column>
+    <p-column styleClass="col-button" field="published" header="Published" [sortable]="true" [style]="{'width': '120px'}"
+        [editable]="true">
+        <ng-template let-flatRecord="rowData" pTemplate="body">
+            <p-checkbox [(ngModel)]="flatRecord.published" binary="true"></p-checkbox>
+        </ng-template>
+        <ng-template let-flatRecord="rowData" pTemplate="editor">
+            <p-checkbox [(ngModel)]="flatRecord.published" binary="true" (onChange)="onRecordPublishedChanged()">
+            </p-checkbox>
+        </ng-template>
+    </p-column>
+    <p-column field="id" header="Consumed" [sortable]="true" [style]="{'width': '120px'}">
+        <ng-template let-flatRecord="rowData" pTemplate="body">
+            {{ flatRecord.consumed ? 'True': 'False' }}
         </ng-template>
     </p-column>
     <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields" [field]="field.name"
@@ -33,7 +49,7 @@
             {{ flatRecord[col.field] | date:(field.format | pyDateFormatToAngularDateFormat) }}
         </ng-template>
         <ng-template *ngIf="field.type == 'date'" let-flatRecord="rowData" let-col pTemplate="editor">
-            <p-calendar *ngIf="field.type == 'date'" dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+            <p-calendar *ngIf="field.type == 'date'" [disabled]="flatRecord.consumed" dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
                         [(ngModel)]="flatRecord[col.field]" appendTo="body" (onSelect)="onRecordDateSelect()">
             </p-calendar>
         </ng-template>

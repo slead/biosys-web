@@ -24,7 +24,7 @@ export class EditRecordsTableComponent {
 
     public selectedRecords: number[] = [];
     public recordsTableColumnWidths: { [key: string]: number } = {};
-    public flatRecords: any[];
+    public flatRecords: object[];
     public totalRecords: number = 0;
     public dropdownItems: any = {};
     public messages: Message[] = [];
@@ -119,15 +119,21 @@ export class EditRecordsTableComponent {
         this.pageStateChange.emit(this.pageState);
     }
 
-    // Regarding next three methods - onEditComplete event doesn't recognize changing calendar date or dropdown item
-    // change but does recognize starting to edit these fields, so need to keep a reference to the event, in this case
-    // 'editingRowEvent'. This event contains a reference to the data of the row (i.e. the record) and will have the
-    // latest (post-edited) data, which can be used to update the record by manually calling onRowEditComplete when the
-    // calendar or dropdown have changed, as in onRecordDateSelect and onRecordDropdownSelect methods.
+    // Regarding next three methods - onEditComplete event doesn't recognize changing checkbox, calendar date or
+    // dropdown item change but does recognize starting to edit these fields, so need to keep a reference to the event,
+    // in this case 'editingRowEvent'. This event contains a reference to the data of the row (i.e. the record) and
+    // will have the latest (post-edited) data, which can be used to update the record by manually calling
+    // onRowEditComplete when the calendar or dropdown have changed, as in onRecordDateSelect and onRecordDropdownSelect
+    // methods.
 
     public onRowEditInit(event: any) {
         this.editingRowEvent = event;
         this.previousRowData = JSON.parse(JSON.stringify(event.data));
+    }
+
+    public onRecordPublishedChanged() {
+        console.log('here');
+        this.onRowEditComplete(null);
     }
 
     public onRecordDateSelect() {
@@ -139,34 +145,55 @@ export class EditRecordsTableComponent {
     }
 
     public onRowEditComplete(event: any) {
-        let data: any = JSON.parse(JSON.stringify(this.editingRowEvent.data));
-        for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row']) {
-            delete data[key];
-        }
-
-        // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
-        for (let field of this._dataset.data_package.resources[0].schema.fields) {
-            if (field.type === 'date' && data[field.name]) {
-                data[field.name] = moment(data[field.name]).format(pyDateFormatToMomentDateFormat(field.format));
-            }
-        }
-
-        this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data, true).subscribe(
-            (record: Record) => {
-                this.recordChanged.emit(record);
-            },
-            (error: APIError) => {
-                // revert data
-                if (this.previousRowData) {
-                    let flatRecord = this.flatRecords[event.index];
-                    for (let prop in this.previousRowData) {
-                        if (this.previousRowData.hasOwnProperty(prop)) {
-                            flatRecord[prop] = this.previousRowData[prop];
+        console.log(event);
+        if (this.editingRowEvent.column.field === 'published') {
+            this.apiService.updateRecordPublished(this.editingRowEvent.data.id, this.editingRowEvent.data.published,
+                true).subscribe(
+                (record: Record) => {
+                    this.recordChanged.emit(record);
+                },
+                (error: APIError) => {
+                    // revert data
+                    if (this.previousRowData) {
+                        let flatRecord = this.flatRecords[this.editingRowEvent.index];
+                        for (let prop in this.previousRowData) {
+                            if (this.previousRowData.hasOwnProperty(prop)) {
+                                flatRecord[prop] = this.previousRowData[prop];
+                            }
                         }
                     }
                 }
+            );
+        } else {
+            let data: any = JSON.parse(JSON.stringify(this.editingRowEvent.data));
+            for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'published']) {
+                delete data[key];
             }
-        );
+
+            // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
+            for (let field of this._dataset.data_package.resources[0].schema.fields) {
+                if (field.type === 'date' && data[field.name]) {
+                    data[field.name] = moment(data[field.name]).format(pyDateFormatToMomentDateFormat(field.format));
+                }
+            }
+
+            this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data, true).subscribe(
+                (record: Record) => {
+                    this.recordChanged.emit(record);
+                },
+                (error: APIError) => {
+                    // revert data
+                    if (this.previousRowData) {
+                        let flatRecord = this.flatRecords[this.editingRowEvent.index];
+                        for (let prop in this.previousRowData) {
+                            if (this.previousRowData.hasOwnProperty(prop)) {
+                                flatRecord[prop] = this.previousRowData[prop];
+                            }
+                        }
+                    }
+                }
+            );
+        }
     }
 
     public getDropdownOptions(fieldName: string, options: string[]): SelectItem[] {
@@ -243,6 +270,8 @@ export class EditRecordsTableComponent {
     private formatFlatRecords(records: Record[]) {
         let flatRecords = records.map((r: Record) => Object.assign({
             id: r.id,
+            published: r.published,
+            consumed: r.consumed,
             file_name: r.source_info ? r.source_info.file_name : 'Manually created',
             row: r.source_info ? r.source_info.row : '',
             created: moment(r.created).format(EditRecordsTableComponent.DATETIME_FORMAT),
