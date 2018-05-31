@@ -6,8 +6,9 @@ import * as moment from 'moment/moment';
 import { APIError, Dataset, Record, RecordResponse } from '../../../biosys-core/interfaces/api.interfaces';
 import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
 import { APIService } from '../../../biosys-core/services/api.service';
-import { ConfirmationService, DataTable, LazyLoadEvent, Message, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, LazyLoadEvent, Message, SelectItem } from 'primeng/primeng';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'biosys-edit-records-table',
@@ -22,7 +23,7 @@ export class EditRecordsTableComponent {
     private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
     private static PADDING: number = 50;
 
-    public selectedRecords: number[] = [];
+    public selectedRecords: object[];
     public recordsTableColumnWidths: { [key: string]: number } = {};
     public flatRecords: object[];
     public totalRecords: number = 0;
@@ -42,7 +43,7 @@ export class EditRecordsTableComponent {
             }
 
             // force initial lazy load
-            this.recordsDatatable.onLazyLoad.emit(this.recordsDatatable.createLazyLoadMetadata());
+            this.reloadRecords();
         }
     }
 
@@ -50,15 +51,16 @@ export class EditRecordsTableComponent {
         return this._dataset;
     }
 
-    @Input()
-    get selectAllRecords(): boolean {
-        return this.isAllRecordsSelected;
-    }
-
-    set selectAllRecords(selected: boolean) {
-        this.isAllRecordsSelected = selected;
-        this.selectedRecords = selected ? this.flatRecords.map((record: Record) => record.id) : [];
-    }
+    //
+    // @Input()
+    // get selectAllRecords(): boolean {
+    //     return this.isAllRecordsSelected;
+    // }
+    //
+    // set selectAllRecords(selected: boolean) {
+    //     this.isAllRecordsSelected = selected;
+    //     this.selectedRecords = selected ? this.flatRecords.map((record: Record) => record.id) : [];
+    // }
 
     @Output()
     recordChanged = new EventEmitter<Record>();
@@ -69,8 +71,8 @@ export class EditRecordsTableComponent {
     @Output()
     pageStateChange = new EventEmitter<any>();
 
-    @ViewChild(DataTable)
-    public recordsDatatable: DataTable;
+    @ViewChild(Table)
+    public recordsDatatable: Table;
 
     private _dataset: Dataset;
     private isAllRecordsSelected: boolean = false;
@@ -145,7 +147,6 @@ export class EditRecordsTableComponent {
     }
 
     public onRowEditComplete(event: any) {
-        console.log(event);
         if (this.editingRowEvent.column.field === 'published') {
             this.apiService.updateRecordPublished(this.editingRowEvent.data.id, this.editingRowEvent.data.published,
                 true).subscribe(
@@ -212,7 +213,7 @@ export class EditRecordsTableComponent {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete selected records?',
             accept: () => {
-                this.apiService.deleteRecords(this._dataset.id, this.selectedRecords)
+                this.apiService.deleteRecords(this._dataset.id, this.selectedRecords.map(sr => sr['id'] ))
                     .subscribe(
                         () => this.onDeleteRecordsSuccess(),
                         (error: APIError) => this.onDeleteRecordError(error)
