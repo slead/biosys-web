@@ -1,14 +1,14 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { ConfirmationService, LazyLoadEvent, Message, SelectItem } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 
 import { APIError, Dataset, Record, RecordResponse } from '../../../biosys-core/interfaces/api.interfaces';
 import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
 import { APIService } from '../../../biosys-core/services/api.service';
-import { ConfirmationService, LazyLoadEvent, Message, SelectItem } from 'primeng/primeng';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
-import { Table } from 'primeng/table';
 
 @Component({
     selector: 'biosys-edit-records-table',
@@ -34,7 +34,7 @@ export class EditRecordsTableComponent {
     public pageState: any;
 
     @Input()
-    set dataset(dataset: Dataset) {
+    public set dataset(dataset: Dataset) {
         if (dataset) {
             this._dataset = dataset;
 
@@ -47,39 +47,28 @@ export class EditRecordsTableComponent {
         }
     }
 
-    get dataset() {
+    public get dataset() {
         return this._dataset;
     }
 
-    //
-    // @Input()
-    // get selectAllRecords(): boolean {
-    //     return this.isAllRecordsSelected;
-    // }
-    //
-    // set selectAllRecords(selected: boolean) {
-    //     this.isAllRecordsSelected = selected;
-    //     this.selectedRecords = selected ? this.flatRecords.map((record: Record) => record.id) : [];
-    // }
+    @Output()
+    public recordChanged = new EventEmitter<Record>();
 
     @Output()
-    recordChanged = new EventEmitter<Record>();
+    public recordsDeleted = new EventEmitter();
 
     @Output()
-    recordsDeleted = new EventEmitter();
-
-    @Output()
-    pageStateChange = new EventEmitter<any>();
+    public pageStateChange = new EventEmitter<any>();
 
     @ViewChild(Table)
     public recordsDatatable: Table;
 
     private _dataset: Dataset;
-    private isAllRecordsSelected: boolean = false;
     private editingRowEvent: any;
     private previousRowData: any;
 
-    constructor(private apiService: APIService, private router: Router, private confirmationService: ConfirmationService) {
+    constructor(private apiService: APIService, private router: Router,
+                private confirmationService: ConfirmationService) {
     }
 
     public reloadRecords() {
@@ -134,7 +123,6 @@ export class EditRecordsTableComponent {
     }
 
     public onRecordPublishedChanged() {
-        console.log('here');
         this.onRowEditComplete(null);
     }
 
@@ -206,7 +194,7 @@ export class EditRecordsTableComponent {
     }
 
     public add() {
-        this.router.navigate(['/data/projects/' + this.dataset.project + '/datasets/' + this.dataset.id + '/create-record/']);
+        this.router.navigate([`/data/projects/${this.dataset.project}/datasets/'${this.dataset.id}/create-record/`]);
     }
 
     public confirmDeleteSelectedRecords() {
@@ -225,13 +213,10 @@ export class EditRecordsTableComponent {
     public confirmDeleteAllRecords() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all records for this dataset?',
-            accept: () => {
-                this.apiService.deleteAllRecords(this._dataset.id)
-                    .subscribe(
-                        () => this.onDeleteRecordsSuccess(),
-                        (error: APIError) => this.onDeleteRecordError(error)
-                    );
-            }
+            accept: () => this.apiService.deleteAllRecords(this._dataset.id).subscribe(
+                                () => this.onDeleteRecordsSuccess(),
+                                (error: APIError) => this.onDeleteRecordError(error)
+                            )
         });
     }
 
@@ -241,7 +226,8 @@ export class EditRecordsTableComponent {
         }
 
         const width = Object.keys(this.recordsTableColumnWidths)
-            .map((key) => this.recordsTableColumnWidths[key]).reduce((a, b) => a + b) + EditRecordsTableComponent.FIXED_COLUMNS_TOTAL_WIDTH;
+            .map((key) => this.recordsTableColumnWidths[key])
+            .reduce((a, b) => a + b) + EditRecordsTableComponent.FIXED_COLUMNS_TOTAL_WIDTH;
 
         return {width: width + 'px'};
     }
@@ -254,12 +240,13 @@ export class EditRecordsTableComponent {
         } else {
             if (!(fieldName in this.recordsTableColumnWidths)) {
                 const maxCharacterLength = Math.max(fieldName.length,
-                    this.flatRecords.map((r) => r[fieldName] ? (r[fieldName] instanceof Date ?
-                        EditRecordsTableComponent.DATE_FIELD_FIXED_CHARACTER_COUNT : r[fieldName].length) : 0).
-                            reduce((a, b) => Math.max(a, b)));
+                    this.flatRecords
+                        .map((r) => r[fieldName] ? (r[fieldName] instanceof Date ?
+                            EditRecordsTableComponent.DATE_FIELD_FIXED_CHARACTER_COUNT : r[fieldName].length) : 0)
+                        .reduce((a, b) => Math.max(a, b)));
 
-                this.recordsTableColumnWidths[fieldName] =
-                    maxCharacterLength * EditRecordsTableComponent.CHAR_LENGTH_MULTIPLIER + EditRecordsTableComponent.PADDING;
+                this.recordsTableColumnWidths[fieldName] = maxCharacterLength *
+                    EditRecordsTableComponent.CHAR_LENGTH_MULTIPLIER + EditRecordsTableComponent.PADDING;
             }
 
             width = this.recordsTableColumnWidths[fieldName];
@@ -283,8 +270,8 @@ export class EditRecordsTableComponent {
         for (let field of this._dataset.data_package.resources[0].schema.fields) {
             if (field.type === 'date') {
                 for (let record of flatRecords) {
-                    // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
-                    // and IE expect this when creating Date from a string
+                    // If date in DD?MM?YYYY format (where ? is any single char), convert to American
+                    // (as Chrome, Firefox and IE expect this when creating Date from a string
                     let dateString: string = record[field.name];
 
                     // use '-' rather than '_' in case '_' is used as the separator
