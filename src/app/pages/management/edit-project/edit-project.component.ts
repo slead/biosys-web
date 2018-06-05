@@ -113,7 +113,7 @@ export class EditProjectComponent implements OnInit {
                     (users: User[]): SelectItem[] =>
                         users.map((user: User): SelectItem => {
                             return {
-                                label: user.first_name + ' ' + user.last_name,
+                                label: `${user.first_name} ${user.last_name}`.trim() || `${user.username}`.trim(),
                                 value: user.id
                             };
                         })
