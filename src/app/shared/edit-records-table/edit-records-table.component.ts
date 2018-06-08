@@ -64,7 +64,6 @@ export class EditRecordsTableComponent {
     public recordsDatatable: Table;
 
     private _dataset: Dataset;
-    private editingRowEvent: any;
     private previousRowData: any;
 
     constructor(private apiService: APIService, private router: Router,
@@ -103,6 +102,16 @@ export class EditRecordsTableComponent {
             );
     }
 
+    public getFieldType(field: object) {
+        if (field['type'] === 'date' || field['type'] === 'datetime') {
+            return 'datetime';
+        } else if (field.hasOwnProperty('constraints') && field['constraints'].hasOwnProperty('enum')) {
+            return 'select';
+        } else {
+            return 'text'
+        }
+    }
+
     public onPageChange(event) {
         this.pageState.rowOffset = event.first;
         this.pageState.rowLimit = event.rows;
@@ -110,79 +119,46 @@ export class EditRecordsTableComponent {
         this.pageStateChange.emit(this.pageState);
     }
 
-    // Regarding next three methods - onEditComplete event doesn't recognize changing checkbox, calendar date or
-    // dropdown item change but does recognize starting to edit these fields, so need to keep a reference to the event,
-    // in this case 'editingRowEvent'. This event contains a reference to the data of the row (i.e. the record) and
-    // will have the latest (post-edited) data, which can be used to update the record by manually calling
-    // onRowEditComplete when the calendar or dropdown have changed, as in onRecordDateSelect and onRecordDropdownSelect
-    // methods.
+    public onRecordPublishedChanged(checked: boolean, id: number) {
+        this.apiService.updateRecordPublished(id, checked).subscribe((record: Record) =>
+            this.flatRecords.filter((flatRecord: object) => flatRecord['id'] === id)[0]['published'] = record.published);
+    }
 
     public onRowEditInit(event: any) {
-        this.editingRowEvent = event;
         this.previousRowData = JSON.parse(JSON.stringify(event.data));
     }
 
-    public onRecordPublishedChanged() {
-        this.onRowEditComplete(null);
-    }
-
-    public onRecordDateSelect() {
-        this.onRowEditComplete(null);
-    }
-
-    public onRecordDropdownSelect() {
-        this.onRowEditComplete(null);
-    }
-
     public onRowEditComplete(event: any) {
-        if (this.editingRowEvent.column.field === 'published') {
-            this.apiService.updateRecordPublished(this.editingRowEvent.data.id, this.editingRowEvent.data.published,
-                true).subscribe(
-                (record: Record) => {
-                    this.recordChanged.emit(record);
-                },
-                (error: APIError) => {
-                    // revert data
-                    if (this.previousRowData) {
-                        let flatRecord = this.flatRecords[this.editingRowEvent.index];
-                        for (let prop in this.previousRowData) {
-                            if (this.previousRowData.hasOwnProperty(prop)) {
-                                flatRecord[prop] = this.previousRowData[prop];
-                            }
-                        }
-                    }
-                }
-            );
-        } else {
-            let data: any = JSON.parse(JSON.stringify(this.editingRowEvent.data));
-            for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'published']) {
-                delete data[key];
-            }
+        const data: any = JSON.parse(JSON.stringify(event.data));
+        const id: number = data.id;
 
-            // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
-            for (let field of this._dataset.data_package.resources[0].schema.fields) {
-                if (field.type === 'date' && data[field.name]) {
-                    data[field.name] = moment(data[field.name]).format(pyDateFormatToMomentDateFormat(field.format));
-                }
-            }
-
-            this.apiService.updateRecordDataField(this.editingRowEvent.data.id, data, true).subscribe(
-                (record: Record) => {
-                    this.recordChanged.emit(record);
-                },
-                (error: APIError) => {
-                    // revert data
-                    if (this.previousRowData) {
-                        let flatRecord = this.flatRecords[this.editingRowEvent.index];
-                        for (let prop in this.previousRowData) {
-                            if (this.previousRowData.hasOwnProperty(prop)) {
-                                flatRecord[prop] = this.previousRowData[prop];
-                            }
-                        }
-                    }
-                }
-            );
+        for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'published', 'consumed']) {
+            delete data[key];
         }
+
+        // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
+        for (let field of this._dataset.data_package.resources[0].schema.fields) {
+            if ((field.type === 'date' || field.type === 'datetime') && data[field.name]) {
+                data[field.name] = moment(data[field.name]).format(pyDateFormatToMomentDateFormat(field.format));
+            }
+        }
+
+        this.apiService.updateRecordDataField(id, data, true).subscribe(
+            (record: Record) => {
+                this.recordChanged.emit(record);
+            },
+            (error: APIError) => {
+                // revert data
+                if (this.previousRowData) {
+                    let flatRecord = this.flatRecords.filter((fr: object) => fr['id'] === id)[0];
+                    for (let prop in this.previousRowData) {
+                        if (this.previousRowData.hasOwnProperty(prop)) {
+                            flatRecord[prop] = this.previousRowData[prop];
+                        }
+                    }
+                }
+            }
+        );
     }
 
     public getDropdownOptions(fieldName: string, options: string[]): SelectItem[] {
@@ -194,14 +170,14 @@ export class EditRecordsTableComponent {
     }
 
     public add() {
-        this.router.navigate([`/data/projects/${this.dataset.project}/datasets/'${this.dataset.id}/create-record/`]);
+        this.router.navigate([`/data/projects/${this.dataset.project}/datasets/${this.dataset.id}/create-record/`]);
     }
 
     public confirmDeleteSelectedRecords() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete selected records?',
             accept: () => {
-                this.apiService.deleteRecords(this._dataset.id, this.selectedRecords.map(sr => sr['id'] ))
+                this.apiService.deleteRecords(this._dataset.id, this.selectedRecords.map(sr => sr['id']))
                     .subscribe(
                         () => this.onDeleteRecordsSuccess(),
                         (error: APIError) => this.onDeleteRecordError(error)
@@ -214,9 +190,9 @@ export class EditRecordsTableComponent {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all records for this dataset?',
             accept: () => this.apiService.deleteAllRecords(this._dataset.id).subscribe(
-                                () => this.onDeleteRecordsSuccess(),
-                                (error: APIError) => this.onDeleteRecordError(error)
-                            )
+                () => this.onDeleteRecordsSuccess(),
+                (error: APIError) => this.onDeleteRecordError(error)
+            )
         });
     }
 
