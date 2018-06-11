@@ -25,6 +25,7 @@ export class HomeComponent implements OnInit {
     public projects: Project[];
     public statistic: Statistic;
     public user: User;
+    public userString= '';
 
     private map: L.Map;
 
@@ -35,7 +36,10 @@ export class HomeComponent implements OnInit {
         // need to get user before projects so use Promise 'then' syntax
         this.apiService.whoAmI()
         .toPromise()
-        .then((user: User) => this.user = user,
+        .then((user: User) => {
+            this.user = user;
+            this.userString = `${this.user.first_name} ${this.user.last_name}`.trim() || `${this.user.username}`.trim();
+            },
             (error: APIError) => console.log('error.msg', error.msg)
         )
         .then(() => this.apiService.getProjects()
@@ -67,6 +71,7 @@ export class HomeComponent implements OnInit {
 
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
+
 
     public onMapReady(map: L.Map) {
         this.map = map;
