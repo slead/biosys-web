@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 import { ConfirmationService, LazyLoadEvent, Message, SelectItem } from 'primeng/primeng';
@@ -9,7 +10,6 @@ import { APIError, Dataset, Record, RecordResponse } from '../../../biosys-core/
 import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
 import { APIService } from '../../../biosys-core/services/api.service';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'biosys-edit-records-table',
@@ -32,7 +32,7 @@ export class EditRecordsTableComponent {
     public messages: Message[] = [];
 
     @Input()
-    public pageState: any;
+    public pageState: object;
 
     @Input()
     public set dataset(dataset: Dataset) {
@@ -59,7 +59,7 @@ export class EditRecordsTableComponent {
     public recordsDeleted = new EventEmitter();
 
     @Output()
-    public pageStateChange = new EventEmitter<any>();
+    public pageStateChange = new EventEmitter<object>();
 
     @ViewChild(Table)
     public recordsDatatable: Table;
@@ -103,7 +103,7 @@ export class EditRecordsTableComponent {
             );
     }
 
-    public getFieldType(field: object) {
+    public getFieldType(field: object): string {
         if (field['type'] === 'date' || field['type'] === 'datetime') {
             return 'datetime';
         } else if (field.hasOwnProperty('constraints') && field['constraints'].hasOwnProperty('enum')) {
@@ -114,8 +114,8 @@ export class EditRecordsTableComponent {
     }
 
     public onPageChange(event) {
-        this.pageState.rowOffset = event.first;
-        this.pageState.rowLimit = event.rows;
+        this.pageState['rowOffset'] = event.first;
+        this.pageState['rowLimit'] = event.rows;
 
         this.pageStateChange.emit(this.pageState);
     }
@@ -197,7 +197,7 @@ export class EditRecordsTableComponent {
         });
     }
 
-    public getRecordsTableWidth(): any {
+    public getRecordsTableWidth(): SafeStyle {
         if (!Object.keys(this.recordsTableColumnWidths).length) {
             return this.sanitizer.bypassSecurityTrustStyle('100%');
         }
@@ -209,7 +209,7 @@ export class EditRecordsTableComponent {
         return this.sanitizer.bypassSecurityTrustStyle(`${width}px`);
     }
 
-    public getRecordsTableColumnWidth(fieldName: string): any {
+    public getRecordsTableColumnWidth(fieldName: string): SafeStyle {
         let width: number;
 
         if (!this.flatRecords || this.flatRecords.length === 0) {
@@ -232,7 +232,7 @@ export class EditRecordsTableComponent {
         return this.sanitizer.bypassSecurityTrustStyle(`${width}px`);
     }
 
-    private formatFlatRecords(records: Record[]) {
+    private formatFlatRecords(records: Record[]): object[] {
         let flatRecords = records.map((r: Record) => Object.assign({
             id: r.id,
             published: r.published,

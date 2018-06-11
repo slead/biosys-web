@@ -17,20 +17,18 @@
                                 [style]="{'width': '100%', 'font-weight': 'bold'}">
                     </p-dropdown>
                 </div>
-                <div class="col-2">
+                <div class="col-3">
                     <p-calendar placeholder="Start Date" (onSelect)="filter()" yearNavigator="true"
-                                yearRange="2000:2020"
+                                yearRange="2000:2020" [inputStyle]="{width: '120px'}"
                                 [(ngModel)]="dateStart" dateFormat="dd/mm/yy">
                     </p-calendar>
-                </div>
-                <div class="col-2">
                     <p-calendar placeholder="End Date" (onSelect)="filter()" [(ngModel)]="dateEnd" yearNavigator="true"
-                                yearRange="2000:2020" dateFormat="dd/mm/yy">
+                                yearRange="2000:2020" dateFormat="dd/mm/yy" [inputStyle]="{width: '120px'}">
                     </p-calendar>
                 </div>
-                <div class="col-3 text-center">
-                    Published <p-checkbox (onChange)="filter()" [(ngModel)]="isPublished" binary="true"></p-checkbox>
-                    Consumed <p-checkbox (onChange)="filter()" [(ngModel)]="isConsumed" binary="true"></p-checkbox>
+                <div class="col-4 text-center">
+                    Published Only <p-checkbox (onChange)="filter()" [(ngModel)]="publishedOny" binary="true"></p-checkbox>
+                    Include Consumed <p-checkbox (onChange)="filter()" [(ngModel)]="includeConsumed" binary="true"></p-checkbox>
                 </div>
                 <div class="col-2">
                     <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems"

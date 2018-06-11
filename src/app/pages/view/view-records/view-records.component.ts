@@ -3,8 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
 
-import { Observable } from 'rxjs/Observable'
-import { map, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { from } from 'rxjs/observable/from';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 
@@ -12,8 +11,6 @@ import { APIError, Dataset, Record, RecordResponse } from '../../../../biosys-co
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 import { SelectItem, DataTable, LazyLoadEvent } from 'primeng/primeng';
-
-// import 'rxjs/add/observable/forkJoin';
 
 @Component({
     moduleId: module.id,
@@ -42,8 +39,8 @@ export class ViewRecordsComponent implements OnInit {
     public projectId: number;
     public dateStart: Date;
     public dateEnd: Date;
-    public isPublished: boolean = true;
-    public isConsumed: boolean = false;
+    public publishedOny: boolean = true;
+    public includeConsumed: boolean = false;
     public speciesName: string;
     public fileType: string = 'csv';
 
@@ -93,6 +90,7 @@ export class ViewRecordsComponent implements OnInit {
         this.records = null;
 
         let datasetParams: any = {};
+        this.recordParams = {};
 
         if (this.projectId) {
             datasetParams['project'] = this.projectId;
@@ -108,9 +106,13 @@ export class ViewRecordsComponent implements OnInit {
                 this.dateEnd.toISOString();
         }
 
-        datasetParams['record__published'] = this.recordParams['published'] = this.isPublished;
+        if (this.publishedOny) {
+            datasetParams['record__published'] = this.recordParams['published'] = true;
+        }
 
-        datasetParams['record__consumed'] = this.recordParams['consumed'] = this.isConsumed;
+        if (!this.includeConsumed) {
+            datasetParams['record__consumed'] = this.recordParams['consumed'] = false;
+        }
 
         if (this.speciesName) {
             datasetParams['record__species_name'] = this.recordParams['species_name'] = this.speciesName;
