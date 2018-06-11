@@ -1,9 +1,15 @@
+<p>
+    Use the table below to view and edit records. You can edit a record on a dedicated page by clicking the record ID
+    of a particular record. Alternatively, edit a records value directly in the table by clicking the table cell it is
+    contained in and then press enter when complete. <strong>Note:</strong> you can only edit records that have not
+    been <em>consumed</em>.
+</p>
 <p-table [value]="flatRecords" autoLayout="true"
          resizableColumns="true" columnResizeMode="expand"
          [scrollable]="true" [style.width]="getRecordsTableWidth()"
          [(selection)]="selectedRecords"
          (onEditInit)="onRowEditInit($event)" (onEditComplete)="onRowEditComplete($event)"
-         [paginator]="true" [rows]="pageState.rowLimit" [rowsPerPageOptions]="[10, 25, 50, 100]"
+         [paginator]="true" [rows]="pageState['rowLimit']" [rowsPerPageOptions]="[10, 25, 50, 100]"
          [lazy]="!!dataset" (onLazyLoad)="loadRecordsLazy($event)" [loading]="!flatRecords" [totalRecords]="totalRecords">
     <ng-template pTemplate="colgroup" let-columns>
         <colgroup>
@@ -54,19 +60,21 @@
                 </a>
             </td>
             <td align="center">
-                <p-checkbox [(ngModel)]="rowData.published" binary="true"
+                <p-checkbox [(ngModel)]="rowData.published" binary="true" [disabled]="rowData.consumed"
                             (onChange)="onRecordPublishedChanged($event, rowData.id)"></p-checkbox>
             </td>
             <td>{{ rowData.consumed }}</td>
-            <td *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
+            <td *ngFor="let field of !rowData.consumed ? dataset?.data_package?.resources[0]?.schema?.fields : []"
                 [pEditableColumn]="rowData" [pEditableColumnField]="field.name">
                 <p-cellEditor>
                     <ng-template pTemplate="input">
                         <span [ngSwitch]="getFieldType(field)">
-                        <input *ngSwitchCase="'text'" [type]="field.type" [(ngModel)]="rowData[field.name]">
+                        <input *ngSwitchCase="'text'" [type]="field.type" [(ngModel)]="rowData[field.name]"
+                        [style.width]="'100%' | safe: 'style'">
                         <p-calendar *ngSwitchCase="'datetime'"
                                     dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
-                                    [(ngModel)]="rowData[field.name]" appendTo="body">
+                                    [(ngModel)]="rowData[field.name]" appendTo="body"
+                                    [inputStyle]="{width: '100%'}">
                         </p-calendar>
                         <p-dropdown *ngSwitchCase="'select'" [placeholder]="'Select a ' + field.name.toLowerCase()"
                                     [options]="getDropdownOptions(field.name, field.constraints.enum)"
@@ -80,6 +88,10 @@
                             pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
                     </ng-template>
                 </p-cellEditor>
+            </td>
+            <td *ngFor="let field of rowData.consumed ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+                {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
+                pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
             </td>
             <td>{{ rowData.file_name }}</td>
             <td>{{ rowData.row }}</td>

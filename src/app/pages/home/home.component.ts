@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
     public projects: Project[];
     public statistic: Statistic;
     public user: User;
-    public userString= '';
+    public userString = '';
 
     private map: L.Map;
 
