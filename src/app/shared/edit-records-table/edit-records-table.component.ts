@@ -9,6 +9,7 @@ import { APIError, Dataset, Record, RecordResponse } from '../../../biosys-core/
 import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
 import { APIService } from '../../../biosys-core/services/api.service';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'biosys-edit-records-table',
@@ -17,7 +18,7 @@ import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
 })
 export class EditRecordsTableComponent {
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
-    private static FIXED_COLUMNS_TOTAL_WIDTH: number = 240;
+    private static FIXED_COLUMNS_TOTAL_WIDTH: number = 1400;
     private static COLUMN_WIDTH: number = 240;
     private static CHAR_LENGTH_MULTIPLIER: number = 8;
     private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
@@ -66,7 +67,7 @@ export class EditRecordsTableComponent {
     private _dataset: Dataset;
     private previousRowData: any;
 
-    constructor(private apiService: APIService, private router: Router,
+    constructor(private apiService: APIService, private router: Router, private sanitizer: DomSanitizer,
                 private confirmationService: ConfirmationService) {
     }
 
@@ -198,14 +199,14 @@ export class EditRecordsTableComponent {
 
     public getRecordsTableWidth(): any {
         if (!Object.keys(this.recordsTableColumnWidths).length) {
-            return {width: '100%'};
+            return this.sanitizer.bypassSecurityTrustStyle('100%');
         }
 
         const width = Object.keys(this.recordsTableColumnWidths)
             .map((key) => this.recordsTableColumnWidths[key])
             .reduce((a, b) => a + b) + EditRecordsTableComponent.FIXED_COLUMNS_TOTAL_WIDTH;
 
-        return {width: width + 'px'};
+        return this.sanitizer.bypassSecurityTrustStyle(`${width}px`);
     }
 
     public getRecordsTableColumnWidth(fieldName: string): any {
@@ -228,7 +229,7 @@ export class EditRecordsTableComponent {
             width = this.recordsTableColumnWidths[fieldName];
         }
 
-        return {width: width + 'px'};
+        return this.sanitizer.bypassSecurityTrustStyle(`${width}px`);
     }
 
     private formatFlatRecords(records: Record[]) {
