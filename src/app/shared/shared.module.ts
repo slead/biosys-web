@@ -11,20 +11,27 @@ import { FileuploaderComponent } from './fileuploader/fileuploader.component';
 import { ExpandableMessagesComponent } from './expandablemessages/expandablemessages.component';
 import { EditRecordsTableComponent } from './edit-records-table/edit-records-table.component';
 import { PyToPrimeDateFormatConversionPipe } from './pipes/date-conversion.pipe';
-import { ButtonModule, MenubarModule, BreadcrumbModule, MessagesModule, ProgressBarModule, CheckboxModule, DropdownModule, DataTableModule,
-    CalendarModule } from 'primeng/primeng';
+import { SafePipe } from './pipes/safe.pipe';
+
+import {
+    ButtonModule, MenubarModule, BreadcrumbModule, MessagesModule, ProgressBarModule, CheckboxModule,
+    DropdownModule, DataTableModule, CalendarModule
+} from 'primeng/primeng';
+import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
 import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
-import {BiosysCoreModule} from '../../biosys-core/biosys-core.module';
+import { BiosysCoreModule } from '../../biosys-core/biosys-core.module';
 
 
 @NgModule({
     imports: [CommonModule, FormsModule, RouterModule, MenubarModule, BreadcrumbModule, ButtonModule, MessagesModule,
-        ProgressBarModule, CheckboxModule, DropdownModule, DataTableModule, CalendarModule, PrimeSharedModule, BiosysCoreModule],
+        ProgressBarModule, CheckboxModule, DropdownModule, DataTableModule, TableModule, CalendarModule,
+        PrimeSharedModule, BiosysCoreModule],
     declarations: [HeaderComponent, JsonEditorComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent, FileuploaderComponent,
-        MarkerDirective, PyToPrimeDateFormatConversionPipe, ExpandableMessagesComponent, EditRecordsTableComponent],
+        MarkerDirective, PyToPrimeDateFormatConversionPipe, SafePipe, ExpandableMessagesComponent, EditRecordsTableComponent],
     exports: [CommonModule, FormsModule, RouterModule, BiosysCoreModule, HeaderComponent, JsonEditorComponent, NavbarComponent,
         BreadcrumbsComponent, EditRecordsTableComponent, ExpandableMessagesComponent, FeatureMapComponent, FileuploaderComponent,
-        MarkerDirective, PyToPrimeDateFormatConversionPipe
+        MarkerDirective, PyToPrimeDateFormatConversionPipe, SafePipe
     ]
 })
-export class SharedModule {}
+export class SharedModule {
+}

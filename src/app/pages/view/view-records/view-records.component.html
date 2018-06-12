@@ -6,29 +6,34 @@
         <div class="col-md">
             <h3>View and Export Records</h3>
             <p>
-                Step 1: Click on the  appropriate dataset to show the corresponding records to export. You can refine
+                Step 1: Click on the appropriate dataset to show the corresponding records to export. You can refine
                 the datasets and records using the filters below. Note that the species filter only shows species of
                 records already in the system.
             </p>
             <div class="row mb-3">
-                <div class="col-3">
-                    <p-dropdown [(ngModel)]="projectId" (onChange)="filter()" [options]="projectDropdownItems" [filter]="true"
-                                [style]="{'width': '100%', 'font-weight': 'bold'}" >
+                <div class="col-2">
+                    <p-dropdown [(ngModel)]="projectId" (onChange)="filter()" [options]="projectDropdownItems"
+                                [filter]="true"
+                                [style]="{'width': '100%', 'font-weight': 'bold'}">
                     </p-dropdown>
                 </div>
-                <div class="col-2">
-                    <p-calendar placeholder="Start Date" (onSelect)="filter()" yearNavigator="true" yearRange="2000:2020"
+                <div class="col-3">
+                    <p-calendar placeholder="Start Date" (onSelect)="filter()" yearNavigator="true"
+                                yearRange="2000:2020" [inputStyle]="{width: '120px'}"
                                 [(ngModel)]="dateStart" dateFormat="dd/mm/yy">
                     </p-calendar>
-                </div>
-                <div class="col-3">
                     <p-calendar placeholder="End Date" (onSelect)="filter()" [(ngModel)]="dateEnd" yearNavigator="true"
-                                yearRange="2000:2020" dateFormat="dd/mm/yy">
+                                yearRange="2000:2020" dateFormat="dd/mm/yy" [inputStyle]="{width: '120px'}">
                     </p-calendar>
                 </div>
-                <div class="col-3">
-                    <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems" [filter]="true"
-                                [style]="{'width': '100%', 'font-weight': 'bold'}" >
+                <div class="col-4 text-center">
+                    Published Only <p-checkbox (onChange)="filter()" [(ngModel)]="publishedOny" binary="true"></p-checkbox>
+                    Include Consumed <p-checkbox (onChange)="filter()" [(ngModel)]="includeConsumed" binary="true"></p-checkbox>
+                </div>
+                <div class="col-2">
+                    <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems"
+                                [filter]="true"
+                                [style]="{'width': '100%', 'font-weight': 'bold'}">
                     </p-dropdown>
                 </div>
                 <div class="col-1">
@@ -57,7 +62,7 @@
                 <div class="data-table-container">
                     <p-dataTable #recordsTable [tableStyle]="getRecordsTableWidth()" [value]="records"
                                  [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
-                                 [totalRecords] = "totalRecords" [loading]="records == null" [lazy]="true"
+                                 [totalRecords]="totalRecords" [loading]="records == null" [lazy]="true"
                                  (onLazyLoad)="loadRecordsLazy($event)" resizableColumns="true"
                                  columnResizeMode="expand" [scrollable]="true"
                                  [emptyMessage]="records == null ? 'Loading records': 'No records found'">
@@ -78,6 +83,23 @@
                     </div>
                     <div class="col-1">
                         <button pButton class="float-right" type="button" label="Export" (click)="export()"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="selectedDataset" class="mt-5 mb-3">
+                <p>
+                    Step 3: You can mark all the records listed in the above table as <em>consumed</em>, after which
+                    they will no longer be editable.
+                </p>
+                <div class="row">
+                    <div class="offset-9 col-3">
+                        <p-progressSpinner *ngIf="isConsuming" animationDuration="1s"
+                                           [style]="{width: '26px', height: '26px'}">
+                        </p-progressSpinner>
+                        <button pButton class="float-right" type="button" label="Mark as consumed"
+                                (click)="markAsConsumed()" [disabled]="isConsuming">
+                        </button>
                     </div>
                 </div>
             </div>

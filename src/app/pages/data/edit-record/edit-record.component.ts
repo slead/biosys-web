@@ -127,7 +127,7 @@ export class EditRecordComponent implements OnInit {
     public save(event: any) {
         // need to use a copy because there may be Date objects within this.selectedRecord which are bound
         // to calendar elements which must remain dates
-        let recordCopy = JSON.parse(JSON.stringify(this.record));
+        const recordCopy = JSON.parse(JSON.stringify(this.record));
 
         // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
         for (let field of this.dataset.data_package.resources[0].schema.fields) {
