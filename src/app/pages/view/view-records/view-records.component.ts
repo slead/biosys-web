@@ -97,12 +97,12 @@ export class ViewRecordsComponent implements OnInit {
         }
 
         if (this.dateStart) {
-            datasetParams['record__datetime__start'] = this.recordParams['datetime__start'] =
+            datasetParams['record__datetime__gte'] = this.recordParams['datetime__gte'] =
                 this.dateStart.toISOString();
         }
 
         if (this.dateEnd) {
-            datasetParams['record__datetime__end'] = this.recordParams['datetime__end'] =
+            datasetParams['record__datetime__lte'] = this.recordParams['datetime__lte'] =
                 this.dateEnd.toISOString();
         }
 
@@ -158,6 +158,18 @@ export class ViewRecordsComponent implements OnInit {
         }
         if (event.sortField) {
             params['ordering'] = (event.sortOrder && event.sortOrder < 0) ? '-' + event.sortField : event.sortField;
+        }
+
+        if (this.dateStart) {
+            params['datetime__gte'] = this.dateStart.toISOString();
+        }
+
+        if (this.dateEnd) {
+            params['datetime__lte'] = this.dateEnd.toISOString();
+        }
+
+        if (this.speciesName) {
+            params['record__species_name'] = this.speciesName;
         }
 
         this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params)
