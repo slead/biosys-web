@@ -3,12 +3,14 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
 
+import { mergeMap } from 'rxjs/operators';
+import { from } from 'rxjs/observable/from';
+import { forkJoin } from 'rxjs/observable/forkJoin';
+
 import { APIError, Dataset, Record, RecordResponse } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 import { SelectItem, DataTable, LazyLoadEvent } from 'primeng/primeng';
-import { Observable } from 'rxjs/Observable'
-import 'rxjs/add/observable/forkJoin';
 
 @Component({
     moduleId: module.id,
@@ -30,15 +32,19 @@ export class ViewRecordsComponent implements OnInit {
 
     public datasets: Dataset[];
     public records: Record[];
-    public recordsTableColumnWidths: {[key: string]: number} = {};
+    public recordsTableColumnWidths: { [key: string]: number } = {};
     public totalRecords: number = 0;
     public selectedDataset: Dataset;
 
     public projectId: number;
     public dateStart: Date;
     public dateEnd: Date;
+    public publishedOny: boolean = true;
+    public includeConsumed: boolean = false;
     public speciesName: string;
     public fileType: string = 'csv';
+
+    public isConsuming: boolean = false;
 
     private recordParams: any = {};
 
@@ -50,7 +56,7 @@ export class ViewRecordsComponent implements OnInit {
 
     ngOnInit() {
         // projects and datasets
-        Observable.forkJoin([
+        forkJoin([
             this.apiService.getProjects(),
             this.apiService.getDatasets()
         ]).subscribe(
@@ -84,21 +90,32 @@ export class ViewRecordsComponent implements OnInit {
         this.records = null;
 
         let datasetParams: any = {};
+        this.recordParams = {};
 
         if (this.projectId) {
             datasetParams['project'] = this.projectId;
         }
 
         if (this.dateStart) {
-            datasetParams['record__datetime__start'] = this.dateStart.toISOString();
+            datasetParams['record__datetime__gte'] = this.recordParams['datetime__gte'] =
+                this.dateStart.toISOString();
         }
 
         if (this.dateEnd) {
-            datasetParams['record__datetime__end'] = this.dateEnd.toISOString();
+            datasetParams['record__datetime__lte'] = this.recordParams['datetime__lte'] =
+                this.dateEnd.toISOString();
+        }
+
+        if (this.publishedOny) {
+            datasetParams['record__published'] = this.recordParams['published'] = true;
+        }
+
+        if (!this.includeConsumed) {
+            datasetParams['record__consumed'] = this.recordParams['consumed'] = false;
         }
 
         if (this.speciesName) {
-            datasetParams['record__species_name'] = this.speciesName;
+            datasetParams['record__species_name'] = this.recordParams['species_name'] = this.speciesName;
         }
 
         this.apiService.getDatasets(datasetParams).subscribe(
@@ -143,21 +160,32 @@ export class ViewRecordsComponent implements OnInit {
             params['ordering'] = (event.sortOrder && event.sortOrder < 0) ? '-' + event.sortField : event.sortField;
         }
 
+        if (this.dateStart) {
+            params['datetime__gte'] = this.dateStart.toISOString();
+        }
+
+        if (this.dateEnd) {
+            params['datetime__lte'] = this.dateEnd.toISOString();
+        }
+
+        if (this.speciesName) {
+            params['record__species_name'] = this.speciesName;
+        }
+
         this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params)
-        .subscribe(
-            (data: RecordResponse) => {
-                this.records = data.results;
-                this.totalRecords = data.count;
-                this.recordsTableColumnWidths = {};
-            },
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+            .subscribe(
+                (data: RecordResponse) => {
+                    this.records = data.results;
+                    this.totalRecords = data.count;
+                    this.recordsTableColumnWidths = {};
+                },
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
     }
 
     public export() {
         this.apiService.exportRecords(this.dateStart, this.dateEnd, this.speciesName, this.selectedDataset.id,
-            this.fileType).
-        subscribe(
+            this.fileType).subscribe(
             resp => {
                 const timeStamp = moment().format('YYYY-MM-DD-HHmmss');
                 const extension = this.fileType;
@@ -168,13 +196,30 @@ export class ViewRecordsComponent implements OnInit {
         );
     }
 
+    public markAsConsumed() {
+        let params = JSON.parse(JSON.stringify(this.recordParams));
+
+        this.isConsuming = true;
+        this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params).pipe(
+            // map((recordResponse: RecordResponse) => recordResponse.results),
+            mergeMap((records: Record[]) => from(records).pipe(
+                mergeMap((record: Record) => this.apiService.updateRecordConsumed(record.id, true))
+            ))
+        ).subscribe({
+            error: (error: APIError) => {
+                console.log('error.msg', error.msg);
+                this.isConsuming = false;
+            },
+            complete: () => this.isConsuming = false
+        });
+    }
+
     public getRecordsTableWidth(): any {
         if (!Object.keys(this.recordsTableColumnWidths).length) {
             return {width: '100%'};
         }
 
-        const width = Object.keys(this.recordsTableColumnWidths).map((key) => this.recordsTableColumnWidths[key]).
-            reduce((a, b) => a + b);
+        const width = Object.keys(this.recordsTableColumnWidths).map((key) => this.recordsTableColumnWidths[key]).reduce((a, b) => a + b);
 
         return {width: width + 'px'};
     }
@@ -188,7 +233,7 @@ export class ViewRecordsComponent implements OnInit {
             if (!(fieldName in this.recordsTableColumnWidths)) {
                 const maxCharacterLength = Math.max(fieldName.length,
                     this.records.map((r) => r.data[fieldName] ? r.data[fieldName].length : 0)
-                    .reduce((a, b) => Math.max(a, b)));
+                        .reduce((a, b) => Math.max(a, b)));
 
                 this.recordsTableColumnWidths[fieldName] =
                     maxCharacterLength * ViewRecordsComponent.CHAR_LENGTH_MULTIPLIER + ViewRecordsComponent.PADDING;

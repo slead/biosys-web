@@ -1,66 +1,121 @@
-<p-dataTable [tableStyle]="getRecordsTableWidth()" [value]="flatRecords"
-             [emptyMessage]="!flatRecords ? '' : 'No records found'"
-             [paginator]="true" [rows]="pageState.rowLimit" [rowsPerPageOptions]="[10, 25, 50, 100]"
-             [totalRecords] = "totalRecords" [first]="pageState.rowOffset" [globalFilter]="recordSearch"
-             [loading]="!flatRecords" [editable]="true" (onEditComplete)="onRowEditComplete($event)"
-             (onPage)="onPageChange($event)" resizableColumns="true" (onEditInit)="onRowEditInit($event)"
-             columnResizeMode="expand" [scrollable]="true" [lazy]="!!dataset"
-             (onLazyLoad)="loadRecordsLazy($event)">
-    <p-header>
-        <div class="ui-helper-clearfix" style="width:100%">
-            <i class="fa fa-search float-left mt-1 mr-1"></i>
-            <input #recordSearch type="text" class="float-left" pInputText placeholder="Search">
+<p>
+    Use the table below to view and edit records. You can edit a record on a dedicated page by clicking the record ID
+    of a particular record. Alternatively, edit a records value directly in the table by clicking the table cell it is
+    contained in and then press enter when complete. <strong>Note:</strong> you can only edit records that have not
+    been <em>consumed</em>.
+</p>
+<p-table [value]="flatRecords" autoLayout="true"
+         resizableColumns="true" columnResizeMode="expand"
+         [scrollable]="true" [style.width]="getRecordsTableWidth()"
+         [(selection)]="selectedRecords"
+         (onEditInit)="onRowEditInit($event)" (onEditComplete)="onRowEditComplete($event)"
+         [paginator]="true" [rows]="pageState['rowLimit']" [rowsPerPageOptions]="[10, 25, 50, 100]"
+         [lazy]="!!dataset" (onLazyLoad)="loadRecordsLazy($event)" [loading]="!flatRecords" [totalRecords]="totalRecords">
+    <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+            <col [style.width]="'140px' | safe: 'style'">
+            <col [style.width]="'100px' | safe: 'style'">
+            <col [style.width]="'100px' | safe: 'style'">
+            <col [style.width]="'100px' | safe: 'style'">
+
+            <col *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
+                 [style.width]="getRecordsTableColumnWidth(field.name)">
+            <col [style.width]="'240px' | safe: 'style'">
+            <col [style.width]="'240px' | safe: 'style'">
+            <col [style.width]="'240px' | safe: 'style'">
+            <col [style.width]="'240px' | safe: 'style'">
+        </colgroup>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>
+                Select All
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th>Record ID</th>
+            <th>
+                Published
+            </th>
+            <th>Consumed</th>
+            <th *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                {{ field.name }}
+            </th>
+            <th>Source File</th>
+            <th>Source Row</th>
+            <th>Created</th>
+            <th>Last Modified</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+        <tr>
+            <td align="center">
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td>
+                <span *ngIf="rowData.consumed">{{ rowData.id }}</span>
+                <a class="table-link" *ngIf="!rowData.consumed"
+                   [routerLink]="'/data/projects/' + dataset.project + '/datasets/' + dataset.id + '/record/' +
+                    rowData.id">
+                    {{ rowData.id }}
+                </a>
+            </td>
+            <td align="center">
+                <p-checkbox [(ngModel)]="rowData.published" binary="true" [disabled]="rowData.consumed"
+                            (onChange)="onRecordPublishedChanged($event, rowData.id)"></p-checkbox>
+            </td>
+            <td>{{ rowData.consumed }}</td>
+            <td *ngFor="let field of !rowData.consumed ? dataset?.data_package?.resources[0]?.schema?.fields : []"
+                [pEditableColumn]="rowData" [pEditableColumnField]="field.name">
+                <p-cellEditor>
+                    <ng-template pTemplate="input">
+                        <span [ngSwitch]="getFieldType(field)">
+                        <input *ngSwitchCase="'text'" [type]="field.type" [(ngModel)]="rowData[field.name]"
+                        [style.width]="'100%' | safe: 'style'">
+                        <p-calendar *ngSwitchCase="'datetime'"
+                                    dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+                                    [(ngModel)]="rowData[field.name]" appendTo="body"
+                                    [inputStyle]="{width: '100%'}">
+                        </p-calendar>
+                        <p-dropdown *ngSwitchCase="'select'" [placeholder]="'Select a ' + field.name.toLowerCase()"
+                                    [options]="getDropdownOptions(field.name, field.constraints.enum)"
+                                    [(ngModel)]="rowData[field.name]" [style.width]="'100%' | safe: 'style'"
+                                    appendTo="body">
+                        </p-dropdown>
+                        </span>
+                    </ng-template>
+                    <ng-template pTemplate="output">
+                        {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
+                            pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
+                    </ng-template>
+                </p-cellEditor>
+            </td>
+            <td *ngFor="let field of rowData.consumed ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+                {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
+                pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
+            </td>
+            <td>{{ rowData.file_name }}</td>
+            <td>{{ rowData.row }}</td>
+            <td>{{ rowData.created }}</td>
+            <td>{{ rowData.last_modified }}</td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td [attr.colspan]="dataset?.data_package?.resources[0]?.schema?.fields.length + 8">
+                {{ flatRecords?.length > 0 ? '' : 'No records found' }}
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+        <div class="ui-helper-clearfix">
+            <button type="button" pButton icon="fa-trash" class="float-left" label="Delete Selected"
+                    (click)="confirmDeleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length">
+            </button>
+            <button type="button" pButton icon="fa-trash" class="float-left" label="Delete All"
+                    (click)="confirmDeleteAllRecords()">
+            </button>
+            <button type="button" pButton icon="fa-plus" class="float-right" label="Add" (click)="add()">
+            </button>
         </div>
-    </p-header>
-    <p-column styleClass="col-button" [style]="{'width': '120px'}">
-        <ng-template pTemplate="header">
-            <p-checkbox label="Select All" [(ngModel)]="selectAllRecords" binary="true"></p-checkbox>
-        </ng-template>
-        <ng-template let-flatRecord="rowData" pTemplate="body">
-            <p-checkbox [value]="flatRecord.id" [(ngModel)]="selectedRecords"></p-checkbox>
-        </ng-template>
-    </p-column>
-    <p-column field="id" header="Record ID" [sortable]="true" [style]="{'width': '120px'}">
-        <ng-template let-flatRecord="rowData" pTemplate="body">
-            <a class="table-link"
-               [routerLink]="'/data/projects/' + dataset.project + '/datasets/' + dataset.id + '/record/' + flatRecord.id">{{flatRecord.id}}</a>
-        </ng-template>
-    </p-column>
-    <p-column *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields" [field]="field.name"
-              [header]="field.name" [sortable]="true" [editable]="true"
-              [style]="getRecordsTableColumnWidth(field.name)">
-        <ng-template *ngIf="field.type == 'date'" let-col let-flatRecord="rowData" pTemplate="body">
-            {{ flatRecord[col.field] | date:(field.format | pyDateFormatToAngularDateFormat) }}
-        </ng-template>
-        <ng-template *ngIf="field.type == 'date'" let-flatRecord="rowData" let-col pTemplate="editor">
-            <p-calendar *ngIf="field.type == 'date'" dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
-                        [(ngModel)]="flatRecord[col.field]" appendTo="body" (onSelect)="onRecordDateSelect()">
-            </p-calendar>
-        </ng-template>
-        <ng-template *ngIf="field.constraints?.enum" let-flatRecord="rowData" let-col pTemplate="editor">
-            <p-dropdown [placeholder]="'Select a ' + field.name.toLowerCase()"
-                        [options]="getDropdownOptions(field.name, field.constraints.enum)"
-                        [(ngModel)]="flatRecord[col.field]" [style]="{'width':'100%'}" appendTo="body"
-                        (onChange)="onRecordDropdownSelect()">
-            </p-dropdown>
-        </ng-template>
-    </p-column>
-    <p-column field="file_name" header="Source File" [sortable]="true" [style]="getRecordsTableColumnWidth('source_file')">
-    </p-column>
-    <p-column field="row" header="Source Row" [sortable]="true" [style]="getRecordsTableColumnWidth('source_row')">
-    </p-column>
-    <p-column field="created" header="Created" [sortable]="true" [style]="getRecordsTableColumnWidth('created')">
-    </p-column>
-    <p-column field="last_modified" header="Last Modified" [sortable]="true"
-              [style]="getRecordsTableColumnWidth('last_modified')"></p-column>
-    <p-footer>
-        <div class="ui-helper-clearfix" style="width:100%">
-            <button type="button" pButton icon="fa-trash" style="float:left" label="Delete Selected"
-                    (click)="confirmDeleteSelectedRecords()" [disabled]="selectedRecords.length === 0"></button>
-            <button type="button" pButton icon="fa-trash" style="float:left" label="Delete All"
-                    (click)="confirmDeleteAllRecords()"></button>
-            <button type="button" pButton icon="fa-plus" style="float:right" label="Add"
-                    (click)="add()"></button>
-        </div>
-    </p-footer>
-</p-dataTable>
+    </ng-template>
+</p-table>
