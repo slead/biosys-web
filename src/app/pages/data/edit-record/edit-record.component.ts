@@ -1,22 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { ConfirmationService, SelectItem, Message } from 'primeng/primeng';
+import { ConfirmationService, SelectItem, Message, FileUpload } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
-import { APIError, Project, Dataset, Record } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Project, Dataset, Record, Media } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { pyDateFormatToMomentDateFormat } from '../../../../biosys-core/utils/functions';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
 
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
+import { from } from 'rxjs/observable/from';
+import { map, mergeMap } from 'rxjs/operators';
 
 
 @Component({
     moduleId: module.id,
     selector: 'biosys-data-edit-record',
-    templateUrl: 'edit-record.component.html',
-    styleUrls: [],
+    templateUrl: 'edit-record.component.html'
 })
 
 export class EditRecordComponent implements OnInit {
@@ -31,6 +32,11 @@ export class EditRecordComponent implements OnInit {
     public dataset: Dataset;
 
     public hasSubRecords: boolean = false;
+
+    public imagesMetadata: object[] = [];
+
+    @ViewChild(FileUpload)
+    public imageUploader;
 
     private completeUrl: string;
 
@@ -61,11 +67,20 @@ export class EditRecordComponent implements OnInit {
                 });
 
                 if ('recordId' in params) {
-                    this.apiService.getRecordById(Number(params['recordId'])).subscribe(
+                    const recordId = +params['recordId'];
+                    this.apiService.getRecordById(recordId).subscribe(
                         (record: Record) => {
                             this.record = this.formatRecord(record);
                         },
                         (error: APIError) => console.log('error.msg', error.msg)
+                    );
+
+                    this.apiService.getRecordMedia(recordId).subscribe(
+                        (media: Media[]) => this.imagesMetadata = media.map((image: Media) => ({
+                            source: image.file,
+                            alt: image.file.substring(image.file.lastIndexOf('/') + 1),
+                            title: image.file.substring(image.file.lastIndexOf('/') + 1)
+                        }))
                     );
                 } else {
                     let data: any = {};
@@ -163,6 +178,26 @@ export class EditRecordComponent implements OnInit {
 
     public cancel() {
         this.router.navigate([this.completeUrl]);
+    }
+
+    public onUploadMedia(event: any) {
+        // galleria component only runs change detection of images if the whole array is re-assigned (as opposed to just
+        // appended to)
+        const newImagesMetadata = JSON.parse(JSON.stringify(this.imagesMetadata));
+
+        from(event.files).pipe(
+            mergeMap((file: any) => this.apiService.uploadRecordMediaBinary(this.record.id, file))
+        ).subscribe({
+            next: (image: Media) => newImagesMetadata.push({
+                source: image.file,
+                alt: image.file.substring(image.file.lastIndexOf('/') + 1),
+                title: image.file.substring(image.file.lastIndexOf('/') + 1)
+            }),
+            complete: () => {
+                this.imageUploader.clear();
+                this.imagesMetadata = newImagesMetadata;
+            }
+        });
     }
 
     private onSaveSuccess(record: Record) {
