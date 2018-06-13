@@ -45,7 +45,8 @@
                         </div>
                         <div [ngSwitch]="field.type" class="col-8">
                             <div *ngSwitchCase="'date'">
-                                <p-calendar dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}" [id]="field.name"
+                                <p-calendar dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+                                            [id]="field.name"
                                             [(ngModel)]="record.data[field.name]">
                                 </p-calendar>
                             </div>
@@ -69,7 +70,7 @@
             <div class="col-md-6" *ngIf="dataset.type !== 'generic'">
                 <label class="field-label">Location</label>
                 <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']"
-                    (onGeometryChanged)="onFeatureMapGeometryChanged($event)">
+                                   (onGeometryChanged)="onFeatureMapGeometryChanged($event)">
                 </biosys-featuremap>
             </div>
         </div>
@@ -88,6 +89,27 @@
         <h4>
             Sub-Records
         </h4>
+    </div>
+    <div>
+        <hr>
+        <h4>
+            Images
+        </h4>
+        <div class="row mt-3 mb-3">
+            <div class="col-8 offset-2">
+                <p-galleria [images]="imagesMetadata" panelWidth="100%" panelHeight="600" [showCaption]="false"></p-galleria>
+            </div>
+        </div>
+        <h5>
+            Upload Image(s)
+        </h5>
+        <div class="row mt-3 mb-3">
+            <div class="col-12">
+                <p-fileUpload customUpload="true" (uploadHandler)="onUploadMedia($event)" multiple="true">
+
+                </p-fileUpload>
+            </div>
+        </div>
     </div>
 </div>
 <p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>

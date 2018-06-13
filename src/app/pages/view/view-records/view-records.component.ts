@@ -219,7 +219,8 @@ export class ViewRecordsComponent implements OnInit {
             return {width: '100%'};
         }
 
-        const width = Object.keys(this.recordsTableColumnWidths).map((key) => this.recordsTableColumnWidths[key]).reduce((a, b) => a + b);
+        const width = Object.keys(this.recordsTableColumnWidths).
+            map((key) => this.recordsTableColumnWidths[key]).reduce((a, b) => a + b);
 
         return {width: width + 'px'};
     }
@@ -247,7 +248,7 @@ export class ViewRecordsComponent implements OnInit {
 
     private addProjectNameToDatasets(): void {
         if (this.datasets && this.projectsMap) {
-            this.datasets.forEach(dataset => dataset['projectName'] = this.projectsMap[dataset.project] || '')
+            this.datasets.forEach(dataset => dataset['projectName'] = this.projectsMap[dataset.project] || '');
         }
     }
 }
