@@ -48,6 +48,9 @@ export class EditRecordsTableComponent {
         }
     }
 
+    @Input()
+    public parentRecordId: number;
+
     public get dataset() {
         return this._dataset;
     }
@@ -90,6 +93,11 @@ export class EditRecordsTableComponent {
         }
         if (event.globalFilter) {
             params['search'] = event.globalFilter;
+        }
+
+        // TODO: enable this filter (or similar) on server
+        if (this.parentRecordId) {
+            params['parent'] = this.parentRecordId;
         }
 
         this.apiService.getRecordsByDatasetId(this._dataset.id, params)

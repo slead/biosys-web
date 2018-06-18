@@ -11,7 +11,7 @@ import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
 
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { from } from 'rxjs/observable/from';
-import { map, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 
 @Component({
@@ -30,6 +30,7 @@ export class EditRecordComponent implements OnInit {
 
     public record: Record;
     public dataset: Dataset;
+    public childDataset: Dataset;
 
     public hasSubRecords: boolean = false;
 
@@ -68,9 +69,17 @@ export class EditRecordComponent implements OnInit {
 
                 if ('recordId' in params) {
                     const recordId = +params['recordId'];
+
+                    // TODO: refactor inner subscriptions into mergeMap
                     this.apiService.getRecordById(recordId).subscribe(
                         (record: Record) => {
                             this.record = this.formatRecord(record);
+                            if (record.children && record.children.length) {
+                                this.apiService.getRecordById(record.children[0]).subscribe(
+                                    (childRecord: Record) => this.apiService.getDatasetById(childRecord.dataset).
+                                        subscribe((childDataset: Dataset) => this.childDataset = childDataset)
+                                )
+                            }
                         },
                         (error: APIError) => console.log('error.msg', error.msg)
                     );
