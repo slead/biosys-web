@@ -31,10 +31,8 @@ export class EditRecordComponent implements OnInit {
     public record: Record;
     public dataset: Dataset;
     public childDataset: Dataset;
-
-    public hasSubRecords: boolean = false;
-
     public imagesMetadata: object[] = [];
+    public parentRecordId: number;
 
     @ViewChild(FileUpload)
     public imageUploader;
@@ -50,6 +48,8 @@ export class EditRecordComponent implements OnInit {
 
         let projId: number = Number(params['projId']);
         let datasetId: number = Number(params['datasetId']);
+        this.parentRecordId = Number(params['parentRecordId']);
+        this.completeUrl = params['completeUrl'];
 
         this.apiService.getProjectById(projId).subscribe(
             (project: Project) => this.breadcrumbItems.splice(1, 0, {
@@ -110,8 +110,6 @@ export class EditRecordComponent implements OnInit {
             {label: 'Enter Records - Projects', routerLink: ['/data/projects']},
             {label: 'recordId' in params ? 'Edit Record' : 'Create Record'}
         ];
-
-        this.completeUrl = '/data/projects/' + projId + '/datasets/' + datasetId;
     }
 
     public getDropdownOptions(fieldName: string, options: string[]): SelectItem[] {

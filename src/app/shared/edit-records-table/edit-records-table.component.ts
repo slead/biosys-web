@@ -49,7 +49,25 @@ export class EditRecordsTableComponent {
     }
 
     @Input()
-    public parentRecordId: number;
+    public parentRecord: Record;
+
+    public getEditRecordRoute(recordId) {
+        const isChild = !!this.parentRecord;
+        const endPoint = isChild ? 'child-record' : 'record';
+        const datasetPath = `/data/projects/${this._dataset.project}/datasets/${this._dataset.id}`;
+        const path = `${datasetPath}/${endPoint}/${recordId}`;
+        let params = {};
+        if (isChild) {
+            params['parentRecordId'] = this.parentRecord.id;
+        }
+        let completeUrl = datasetPath;
+        if (isChild) {
+            // should point back to the edit parent url
+            completeUrl = `/data/projects/${this._dataset.project}/datasets/${this.parentRecord.dataset}/record/${this.parentRecord.id}`;
+        }
+        params['completeUrl'] = completeUrl;
+        return [path, params];
+    }
 
     public get dataset() {
         return this._dataset;
