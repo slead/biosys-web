@@ -1,0 +1,10 @@
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.max-dimensions-100-percent {
+    max-width: 100%;
+    max-height: 100%;
+}
