@@ -20,17 +20,20 @@ import {
 import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
 import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
 import { BiosysCoreModule } from '../../biosys-core/biosys-core.module';
+import { GalleriaComponent } from './galleria/galleria.component';
 
 
 @NgModule({
     imports: [CommonModule, FormsModule, RouterModule, MenubarModule, BreadcrumbModule, ButtonModule, MessagesModule,
         ProgressBarModule, CheckboxModule, DropdownModule, DataTableModule, TableModule, CalendarModule,
         PrimeSharedModule, BiosysCoreModule],
-    declarations: [HeaderComponent, JsonEditorComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent, FileuploaderComponent,
-        MarkerDirective, PyToPrimeDateFormatConversionPipe, SafePipe, ExpandableMessagesComponent, EditRecordsTableComponent],
-    exports: [CommonModule, FormsModule, RouterModule, BiosysCoreModule, HeaderComponent, JsonEditorComponent, NavbarComponent,
-        BreadcrumbsComponent, EditRecordsTableComponent, ExpandableMessagesComponent, FeatureMapComponent, FileuploaderComponent,
-        MarkerDirective, PyToPrimeDateFormatConversionPipe, SafePipe
+    declarations: [HeaderComponent, JsonEditorComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent,
+        FileuploaderComponent, GalleriaComponent, MarkerDirective, PyToPrimeDateFormatConversionPipe, SafePipe,
+        ExpandableMessagesComponent, EditRecordsTableComponent, GalleriaComponent],
+    exports: [CommonModule, FormsModule, RouterModule, BiosysCoreModule, HeaderComponent, JsonEditorComponent,
+        NavbarComponent, BreadcrumbsComponent, EditRecordsTableComponent, ExpandableMessagesComponent,
+        FeatureMapComponent, FileuploaderComponent, GalleriaComponent, MarkerDirective,
+        PyToPrimeDateFormatConversionPipe, SafePipe
     ]
 })
 export class SharedModule {
