@@ -51,6 +51,25 @@ export class EditRecordsTableComponent {
     @Input()
     public parentRecord: Record;
 
+    @Output()
+    public recordChanged = new EventEmitter<Record>();
+
+    @Output()
+    public recordsDeleted = new EventEmitter();
+
+    @Output()
+    public pageStateChange = new EventEmitter<object>();
+
+    @ViewChild(Table)
+    public recordsDatatable: Table;
+
+    private _dataset: Dataset;
+    private previousRowData: any;
+
+    constructor(private apiService: APIService, private router: Router, private sanitizer: DomSanitizer,
+                private confirmationService: ConfirmationService) {
+    }
+
     public getEditRecordRoute(recordId) {
         const isChild = !!this.parentRecord;
         const endPoint = isChild ? 'child-record' : 'record';
@@ -71,25 +90,6 @@ export class EditRecordsTableComponent {
 
     public get dataset() {
         return this._dataset;
-    }
-
-    @Output()
-    public recordChanged = new EventEmitter<Record>();
-
-    @Output()
-    public recordsDeleted = new EventEmitter();
-
-    @Output()
-    public pageStateChange = new EventEmitter<object>();
-
-    @ViewChild(Table)
-    public recordsDatatable: Table;
-
-    private _dataset: Dataset;
-    private previousRowData: any;
-
-    constructor(private apiService: APIService, private router: Router, private sanitizer: DomSanitizer,
-                private confirmationService: ConfirmationService) {
     }
 
     public reloadRecords() {
@@ -113,9 +113,10 @@ export class EditRecordsTableComponent {
             params['search'] = event.globalFilter;
         }
 
-        // TODO: enable this filter (or similar) on server
-        if (this.parentRecordId) {
-            params['parent'] = this.parentRecordId;
+        if (this.parentRecord && this.parentRecord.children) {
+            // Note: the server doesn't support the default query param serialization for an array (repeated key: &id__in=1&id__in=2...)
+            // the server support only comma separated list: &id__in=1,2,3
+            params['id__in'] = this.parentRecord.children.join();
         }
 
         this.apiService.getRecordsByDatasetId(this._dataset.id, params)
