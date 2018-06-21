@@ -49,7 +49,7 @@ export class EditRecordComponent implements OnInit {
         let projId: number = Number(params['projId']);
         let datasetId: number = Number(params['datasetId']);
         this.parentRecordId = Number(params['parentRecordId']);
-        this.completeUrl = params['completeUrl'];
+        this.completeUrl = params['completeUrl'] || `/data/projects/${projId}/datasets/${datasetId}`;
 
         this.apiService.getProjectById(projId).subscribe(
             (project: Project) => this.breadcrumbItems.splice(1, 0, {
