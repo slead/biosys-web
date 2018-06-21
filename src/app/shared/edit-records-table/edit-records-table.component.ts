@@ -115,7 +115,7 @@ export class EditRecordsTableComponent {
 
         if (this.parentRecord && this.parentRecord.children) {
             // Note: the server doesn't support the default query param serialization for an array (repeated key: &id__in=1&id__in=2...)
-            // the server support only comma separated list: &id__in=1,2,3
+            // the server supports only comma separated list: &id__in=1,2,3
             params['id__in'] = this.parentRecord.children.join();
         }
 
