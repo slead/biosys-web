@@ -4,7 +4,7 @@
     contained in and then press enter when complete. <strong>Note:</strong> you can only edit records that have not
     been <em>consumed</em>.
 </p>
-<p-table [value]="flatRecords" autoLayout="true"
+<p-table #table [value]="flatRecords" autoLayout="true"
          resizableColumns="true" columnResizeMode="expand"
          [scrollable]="true" [style.width]="getRecordsTableWidth()"
          [(selection)]="selectedRecords"
@@ -26,6 +26,11 @@
             <col [style.width]="'240px' | safe: 'style'">
         </colgroup>
     </ng-template>
+    <ng-template pTemplate="caption">
+        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+        <input type="text" pInputText size="50" placeholder="Search"
+               (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+    </ng-template>
     <ng-template pTemplate="header">
         <tr>
             <th>
@@ -37,8 +42,10 @@
                 Published
             </th>
             <th>Consumed</th>
-            <th *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+            <th *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
+                [pSortableColumn]="field.name">
                 {{ field.name }}
+                <p-sortIcon [field]="field.name"></p-sortIcon>
             </th>
             <th>Source File</th>
             <th>Source Row</th>

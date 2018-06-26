@@ -22,7 +22,7 @@ export class EditRecordsTableComponent {
     private static COLUMN_WIDTH: number = 240;
     private static CHAR_LENGTH_MULTIPLIER: number = 8;
     private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
-    private static PADDING: number = 50;
+    private static PADDING: number = 70;
 
     public selectedRecords: object[];
     public recordsTableColumnWidths: { [key: string]: number } = {};
