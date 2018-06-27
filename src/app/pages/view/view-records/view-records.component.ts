@@ -1,8 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
+import { SelectItem, LazyLoadEvent } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
-
 import { mergeMap } from 'rxjs/operators';
 import { from } from 'rxjs/observable/from';
 import { forkJoin } from 'rxjs/observable/forkJoin';
@@ -10,7 +12,7 @@ import { forkJoin } from 'rxjs/observable/forkJoin';
 import { APIError, Dataset, Record, RecordResponse } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
-import { SelectItem, DataTable, LazyLoadEvent } from 'primeng/primeng';
+
 
 @Component({
     moduleId: module.id,
@@ -49,9 +51,9 @@ export class ViewRecordsComponent implements OnInit {
     private recordParams: any = {};
 
     @ViewChild('recordsTable')
-    public datatable: DataTable;
+    public table: Table;
 
-    constructor(private apiService: APIService) {
+    constructor(private apiService: APIService, private sanitizer: DomSanitizer) {
     }
 
     ngOnInit() {
@@ -128,13 +130,14 @@ export class ViewRecordsComponent implements OnInit {
 
         if (this.selectedDataset) {
             this.recordParams['dataset__id'] = this.selectedDataset.id;
-            if (this.datatable) {
-                this.datatable.reset();
+            if (this.table) {
+                this.table.reset();
             }
         }
     }
 
     public selectDataset(event: any) {
+        console.log('here');
         this.filter();
     }
 
@@ -214,21 +217,22 @@ export class ViewRecordsComponent implements OnInit {
         });
     }
 
-    public getRecordsTableWidth(): any {
+    public getRecordsTableWidth(): SafeStyle {
         if (!Object.keys(this.recordsTableColumnWidths).length) {
-            return {width: '100%'};
+            return this.sanitizer.bypassSecurityTrustStyle('100%');
         }
 
-        const width = Object.keys(this.recordsTableColumnWidths).
-            map((key) => this.recordsTableColumnWidths[key]).reduce((a, b) => a + b);
+        const width = Object.keys(this.recordsTableColumnWidths)
+            .map((key) => this.recordsTableColumnWidths[key])
+            .reduce((a, b) => a + b);
 
-        return {width: width + 'px'};
+        return this.sanitizer.bypassSecurityTrustStyle(`${width}px`);
     }
 
-    public getRecordsTableColumnWidth(fieldName: string): any {
+    public getRecordsTableColumnWidth(fieldName: string): SafeStyle {
         let width: number;
 
-        if (!this.records || this.records.length === 0) {
+        if (!this.records || !this.records.length) {
             width = ViewRecordsComponent.COLUMN_WIDTH;
         } else {
             if (!(fieldName in this.recordsTableColumnWidths)) {
@@ -236,14 +240,14 @@ export class ViewRecordsComponent implements OnInit {
                     this.records.map((r) => r.data[fieldName] ? r.data[fieldName].length : 0)
                         .reduce((a, b) => Math.max(a, b)));
 
-                this.recordsTableColumnWidths[fieldName] =
-                    maxCharacterLength * ViewRecordsComponent.CHAR_LENGTH_MULTIPLIER + ViewRecordsComponent.PADDING;
+                this.recordsTableColumnWidths[fieldName] = maxCharacterLength *
+                    ViewRecordsComponent.CHAR_LENGTH_MULTIPLIER + ViewRecordsComponent.PADDING;
             }
 
             width = this.recordsTableColumnWidths[fieldName];
         }
 
-        return {width: width + 'px'};
+        return this.sanitizer.bypassSecurityTrustStyle(`${width}px`);
     }
 
     private addProjectNameToDatasets(): void {

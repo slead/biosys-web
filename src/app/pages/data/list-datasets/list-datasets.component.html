@@ -6,37 +6,63 @@
         <div class="col-md">
             <h3>Datasets for {{project?.name}}</h3>
             <p>Select the dataset the records belong to</p>
-            <p-dataTable [value]="datasets" emptyMessage="No datasets found" [paginator]="true" [rows]="15"
-                         [globalFilter]="datasetSearch" [responsive]="true" [loading]="datasets == null"
-                         resizableColumns="true" columnResizeMode="expand">
-                <p-header>
-                    <div class="ui-helper-clearfix" style="width:100%">
-                        <i class="fa fa-search float-left mt-1 mr-1"></i>
-                        <input #datasetSearch type="text" class="float-left" pInputText placeholder="Search">
-                    </div>
-                </p-header>
-                <p-column field="name" header="Name" [sortable]="true" [style]="{'width':'120px'}">
-                    <ng-template let-dataset="rowData" pTemplate="body">
-                        <a [routerLink]="'/data/projects/' + project?.id + '/datasets/' + dataset.id">{{dataset.name}}</a>
-                    </ng-template>
-                </p-column>
-                <p-column field="code" header="Code" [sortable]="true" [style]="{'width':'60px'}">
-                    <ng-template let-dataset="rowData" pTemplate="body">
-                        <span [innerHTML]="dataset.code"></span>
-                    </ng-template>
-                </p-column>
-                <p-column field="type" header="Type" [sortable]="true" [style]="{'width':'120px'}">
-                    <ng-template let-dataset="rowData" pTemplate="body">
-                        {{DATASET_TYPE_MAP[dataset.type]}}
-                    </ng-template>
-                </p-column>
-                <p-column field="record_count" header="Records" [sortable]="true" [style]="{'width':'80px'}"></p-column>
-                <p-column field="description" header="Description" [style]="{'width':'280px'}">
-                    <ng-template let-dataset="rowData" let-col pTemplate="body">
-                        <span [innerHTML]="dataset.description | truncate:60"></span>
-                    </ng-template>
-                </p-column>
-            </p-dataTable>
+            <p-table #table [value]="datasets" autoLayout="true" resizableColumns="true"
+                     columnResizeMode="expand"
+                     [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                     [globalFilterFields]="['name', 'code', 'type', 'record_count', 'description']">
+                <ng-template pTemplate="caption">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Search"
+                           (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th [pSortableColumn]="'name'">
+                            Name
+                            <p-sortIcon [field]="'name'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'code'">
+                            Code
+                            <p-sortIcon [field]="'code'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'type'">
+                            Type
+                            <p-sortIcon [field]="'type'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'record_count'">
+                            Records
+                            <p-sortIcon [field]="'record_count'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'description'">
+                            Description
+                            <p-sortIcon [field]="'description'"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData>
+                    <tr>
+                        <td>
+                            <a [routerLink]="'/data/projects/' + project?.id + '/datasets/' + rowData.id">
+                                {{rowData.name}}
+                            </a>
+                        </td>
+                        <td>{{ rowData.code }}</td>
+                        <td>{{ rowData.type }}</td>
+                        <td>{{ rowData.record_count }}</td>
+                        <td>
+                            <label [innerHtml]="rowData.description | truncate:70"></label>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="6">
+                            {{ datasets?.length > 0 ? '' : 'No datasets found' }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
         </div>
     </div>
 </div>

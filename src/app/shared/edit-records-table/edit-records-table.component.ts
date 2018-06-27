@@ -82,7 +82,8 @@ export class EditRecordsTableComponent {
         let completeUrl = datasetPath;
         if (isChild) {
             // should point back to the edit parent url
-            completeUrl = `/data/projects/${this._dataset.project}/datasets/${this.parentRecord.dataset}/record/${this.parentRecord.id}`;
+            completeUrl = `/data/projects/${this._dataset.project}/datasets/${this.parentRecord.dataset}/record/
+                ${this.parentRecord.id}`;
         }
         params['completeUrl'] = completeUrl;
         return [path, params];

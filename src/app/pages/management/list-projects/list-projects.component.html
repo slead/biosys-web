@@ -7,42 +7,81 @@
         <div class="col-md">
             <h3>Projects</h3>
             <p>Select a project to edit or delete or click add to create a new project</p>
-            <p-dataTable [value]="projects" [globalFilter]="projectSearch" [paginator]="true" [rows]="15"
-                         [responsive]="true" [loading]="projects == null" resizableColumns="true"
-                         columnResizeMode="expand">
-                <p-header>
-                    <div class="ui-helper-clearfix" style="width:100%">
-                        <i class="fa fa-search float-left mt-1 mr-1"></i>
-                        <input #projectSearch type="text" class="float-left" pInputText placeholder="Search">
-                    </div>
-                </p-header>
-                <p-column field="name" header="Name" [sortable]="true">
-                    <ng-template let-project="rowData" pTemplate="body">
-                        <a class="table-link" [routerLink]="'/management/projects/edit-project/' + project.id">{{project.name}}</a>
-                    </ng-template>
-                </p-column>
-                <p-column field="code" header="Code" [sortable]="true" [style]="{'width':'160px'}"></p-column>
-                <p-column header="Description" [style]="{'width':'300px'}">
-                    <ng-template let-project="rowData" pTemplate="body">
-                        <label [innerHtml]="project.description | truncate:54"></label>
-                    </ng-template>
-                </p-column>
-                <p-column field="dataset_count" header="Datasets" [sortable]="true" [style]="{'width':'120px'}"></p-column>
-                <p-column field="site_count" header="Sites" [sortable]="true" [style]="{'width':'100px'}"></p-column>
-                <p-column field="record_count" header="Records" [sortable]="true" [style]="{'width':'120px'}"></p-column>
-                <p-column styleClass="col-button" header="Delete" [style]="{'width':'100px'}">
-                    <ng-template let-project="rowData" pTemplate="body">
-                        <button type="button" pButton icon="fa-trash-o" title="Delete"
-                                (click)="confirmDelete(project)"></button>
-                    </ng-template>
-                </p-column>
-                <p-footer>
-                    <div class="ui-helper-clearfix" style="width:100%">
+            <p-table #table [value]="projects" autoLayout="true" resizableColumns="true" columnResizeMode="expand"
+                     [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                     [globalFilterFields]="['name','code', 'description', 'dataset_count', 'site_count',
+                     'record_count']">
+                <ng-template pTemplate="caption">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Search"
+                           (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th [pSortableColumn]="'name'">
+                            Name
+                            <p-sortIcon [field]="'name'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'code'">
+                            Code
+                            <p-sortIcon [field]="'code'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'description'">Description
+                            <p-sortIcon [field]="'description'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'dataset_count'">
+                            Datasets
+                            <p-sortIcon [field]="'dataset_count'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'site_count'">
+                            Sites
+                            <p-sortIcon [field]="'site_count'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'record_count'">
+                            Records
+                            <p-sortIcon [field]="'record_count'"></p-sortIcon>
+                        </th>
+                        <th>
+                            Delete
+                        </th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-rowData>
+                    <tr>
+                        <td>
+                            <a [routerLink]="'/management/projects/edit-project/' + rowData.id">
+                                {{rowData.name}}
+                            </a>
+                        </td>
+
+                        <td>{{ rowData.code }}</td>
+                        <td>
+                            <label [innerHtml]="rowData.description | truncate:70"></label>
+                        </td>
+                        <td>{{ rowData.dataset_count }}</td>
+                        <td>{{ rowData.site_count }}</td>
+                        <td>{{ rowData.record_count }}</td>
+                        <td align="center">
+                            <button type="button" pButton icon="fa-trash-o" title="Delete"
+                                    (click)="confirmDelete(rowData)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="6">
+                            {{ projects?.length > 0 ? '' : 'No projects found' }}
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    <div class="ui-helper-clearfix">
                         <button type="button" pButton icon="fa-plus" style="float:right" label="Add"
                                 routerLink="/management/projects/create-project"></button>
                     </div>
-                </p-footer>
-            </p-dataTable>
+                </ng-template>
+            </p-table>
         </div>
     </div>
 </div>

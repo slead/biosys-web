@@ -17,7 +17,6 @@
             <col [style.width]="'100px' | safe: 'style'">
             <col [style.width]="'100px' | safe: 'style'">
             <col [style.width]="'100px' | safe: 'style'">
-
             <col *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
                  [style.width]="getRecordsTableColumnWidth(field.name)">
             <col [style.width]="'240px' | safe: 'style'">
@@ -60,8 +59,7 @@
             </td>
             <td>
                 <span *ngIf="rowData.consumed">{{ rowData.id }}</span>
-                <a class="table-link" *ngIf="!rowData.consumed"
-                   [routerLink]="getEditRecordRoute(rowData.id)">
+                <a *ngIf="!rowData.consumed" [routerLink]="getEditRecordRoute(rowData.id)">
                     {{ rowData.id }}
                 </a>
             </td>

@@ -119,120 +119,181 @@
             <div *ngIf="project.id" class="row mt-1">
                 <div class="col-md">
                     <h4>Datasets</h4>
-                    <p-dataTable [value]="datasets" [globalFilter]="datasetSearch" [paginator]="true" [rows]="10"
-                                 [responsive]="true" [loading]="datasets == null" resizableColumns="true"
-                                 columnResizeMode="expand">
-                        <p-header>
-                            <div class="ui-helper-clearfix" style="width:100%">
-                                <i class="fa fa-search float-left mt-1 mr-1"></i>
-                                <input #datasetSearch type="text" class="float-left" placeholder="Search">
-                            </div>
-                        </p-header>
-                        <p-column field="name" header="Name">
-                            <ng-template let-dataset="rowData" pTemplate="body">
-                                <a [routerLink]="'/management/projects/edit-project/' + project.id + '/edit-dataset/' + dataset.id">{{dataset.name}}</a>
-                            </ng-template>
-                        </p-column>
-                        <p-column field="code" header="Code" [sortable]="true">
-                            <ng-template let-dataset="rowData" pTemplate="body">
-                                <span [innerHTML]="dataset.code"></span>
-                            </ng-template>
-                        </p-column>
-                        <p-column field="type" header="Type">
-                            <ng-template let-dataset="rowData" pTemplate="body">
-                                {{DATASET_TYPE_MAP[dataset.type]}}
-                            </ng-template>
-                        </p-column>
-                        <p-column field="record_count" header="Records" [sortable]="true"
-                                  [style]="{'width':'120px'}"></p-column>
-                        <p-column field="description" header="Description" [style]="{'width':'300px'}">
-                            <ng-template let-dataset="rowData" let-col pTemplate="body">
-                                <span [innerHTML]="dataset.description | truncate:38"></span>
-                            </ng-template>
-                        </p-column>
-                        <p-column styleClass="col-button" header="Action">
-                            <ng-template let-dataset="rowData" pTemplate="body">
-                                <button type="button" pButton icon="fa-pencil-square-o" title="Edit Records"
-                                        [routerLink]="'/data/projects/' + project.id + '/datasets/' + dataset.id"></button>
-                                <button type="button" pButton icon="fa-trash-o" title="Delete"
-                                        (click)="confirmDeleteDataset(dataset)"></button>
-                            </ng-template>
-                        </p-column>
-                        <p-footer>
-                            <div class="ui-helper-clearfix" style="width:100%">
+
+                    <p-table #table [value]="datasets" autoLayout="true" resizableColumns="true"
+                             columnResizeMode="expand"
+                             [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                             [globalFilterFields]="['name', 'code', 'type', 'record_count', 'description']">
+                        <ng-template pTemplate="caption">
+                            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                            <input type="text" pInputText size="50" placeholder="Search"
+                                   (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th [pSortableColumn]="'name'">
+                                    Name
+                                    <p-sortIcon [field]="'name'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'code'">
+                                    Code
+                                    <p-sortIcon [field]="'code'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'type'">
+                                    Type
+                                    <p-sortIcon [field]="'type'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'record_count'">
+                                    Records
+                                    <p-sortIcon [field]="'record_count'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'description'">
+                                    Description
+                                    <p-sortIcon [field]="'description'"></p-sortIcon>
+                                </th>
+                                <th>
+                                    Action
+                                </th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData>
+                            <tr>
+                                <td>
+                                    <a [routerLink]="'/management/projects/edit-project/' + project.id +
+                                       '/edit-dataset/' + rowData.id">
+                                        {{rowData.name}}
+                                    </a>
+                                </td>
+                                <td>{{ rowData.code }}</td>
+                                <td>{{ rowData.type }}</td>
+                                <td>{{ rowData.record_count }}</td>
+                                <td>
+                                    <label [innerHtml]="rowData.description | truncate:70"></label>
+                                </td>
+                                <td align="center">
+                                    <button type="button" pButton icon="fa-pencil-square-o" title="Edit Records"
+                                            [routerLink]="'/data/projects/' + project.id + '/datasets/' + rowData.id"></button>
+                                    <button type="button" pButton icon="fa-trash-o" title="Delete"
+                                            (click)="confirmDeleteDataset(rowData)"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td [attr.colspan]="6">
+                                    {{ datasets?.length > 0 ? '' : 'No datasets found' }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="summary">
+                            <div class="ui-helper-clearfix">
                                 <button type="button" pButton icon="fa-plus" style="float:right" label="Add"
-                                        [routerLink]="'/management/projects/edit-project/' + project.id + '/create-dataset'"></button>
+                                        [routerLink]="'/management/projects/edit-project/' + project.id +
+                                        '/create-dataset'">
+                                </button>
                             </div>
-                        </p-footer>
-                    </p-dataTable>
+                        </ng-template>
+                    </p-table>
                 </div>
             </div>
             <!-- sites table -->
             <div *ngIf="project.id" class="row mt-3 mb-3">
                 <div class="col-md">
                     <h4>Sites</h4>
-                    <p-dataTable [tableStyle]="getSiteTableWidth()" [value]="flatSites" [globalFilter]="siteSearch"
-                                 [paginator]="true" [rows]="10" [responsive]="true" [loading]="flatSites == null"
-                                 resizableColumns="true" columnResizeMode="expand" [scrollable]="true">
-                        <p-header>
-                            <div class="ui-helper-clearfix" style="width:100%">
-                                <i class="fa fa-search float-left mt-1 mr-1"></i>
-                                <input #siteSearch type="text" class="float-left" placeholder="Search">
-                                <a href="{{TEMPLATE_EASTNORTH_URL}}">
-                                    <button type="button" pButton icon="fa-file-excel-o" style="float:right"
-                                            label="Download Site Template (east/north)"></button>
-                                </a>
-                                <a href="{{TEMPLATE_LATLNG_URL}}">
-                                    <button type="button" class="ml-1" pButton icon="fa-file-excel-o"
-                                            style="float:right"
-                                            label="Download Site Template (lat/lng)"></button>
-                                </a>
-                            </div>
-                        </p-header>
-                        <p-column styleClass="col-button" [style]="{'width':'100px'}">
-                            <ng-template pTemplate="header">
-                                <p-checkbox label="Select All" [(ngModel)]="selectAllSites"
-                                            binary="true"></p-checkbox>
-                            </ng-template>
-                            <ng-template let-flatSite="rowData" pTemplate="body">
-                                <p-checkbox [value]="flatSite.id" [(ngModel)]="selectedSites"></p-checkbox>
-                            </ng-template>
-                        </p-column>
-                        <p-column field="code" header="Code" [style]="{'width':'120px'}">
-                            <ng-template let-flatSite="rowData" pTemplate="body">
-                                <a [routerLink]="'/management/projects/edit-project/' + project.id + '/edit-site/' +
-                                      flatSite.id" [innerHTML]='flatSite.code | truncate:22'></a>
-                            </ng-template>
-                        </p-column>
-                        <p-column field="name" header="Name" [style]="{'width':'140px'}">
-                            <ng-template let-flatSite="rowData" let-col pTemplate="body">
-                                <span [innerHTML]="flatSite.name | truncate:28"></span>
-                            </ng-template>
-                        </p-column>
-                        <p-column field="description" header="Description" [style]="{'width':'240px'}">
-                            <ng-template let-flatSite="rowData" let-col pTemplate="body">
-                                <span [innerHTML]="flatSite.description | truncate:38"></span>
-                            </ng-template>
-                        </p-column>
-                        <p-column *ngFor="let attribute of siteAttributeKeys"
-                                  [field]="attribute" [header]="attribute" [sortable]="true">
-                            <ng-template let-flatSite="rowData" let-col pTemplate="body">
-                                    <span
-                                        [innerHTML]="flatSite.hasOwnProperty(col.field) ? (flatSite[col.field] | truncate:25) : ''"></span>
-                            </ng-template>
-                        </p-column>
-                        <p-footer>
-                            <div class="ui-helper-clearfix" style="width:100%">
+
+                    <p-table #table [value]="flatSites" autoLayout="true" resizableColumns="true" [scrollable]="true"
+                             columnResizeMode="expand" [style.width]="getSiteTableWidth()" [(selection)]="selectedSites"
+                             [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                             [globalFilterFields]="['name', 'code', 'type', 'description'].concat(siteAttributeKeys)">
+                        <ng-template pTemplate="colgroup" let-columns>
+                            <colgroup>
+                                <col [style.width]="'100px' | safe: 'style'">
+                                <col [style.width]="'120px' | safe: 'style'">
+                                <col [style.width]="'140px' | safe: 'style'">
+                                <col [style.width]="'240px' | safe: 'style'">
+
+                                <col *ngFor="let attribute of siteAttributeKeys"
+                                     [style.width]="'240px' | safe: 'style'">
+                            </colgroup>
+                        </ng-template>
+                        <ng-template pTemplate="caption">
+                            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                            <input type="text" pInputText size="50" placeholder="Search"
+                                   (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+
+                            <a href="{{TEMPLATE_EASTNORTH_URL}}">
+                                <button type="button" pButton icon="fa-file-excel-o" style="float:right"
+                                        label="Download Site Template (east/north)"></button>
+                            </a>
+                            <a href="{{TEMPLATE_LATLNG_URL}}">
+                                <button type="button" class="ml-1" pButton icon="fa-file-excel-o"
+                                        style="float:right"
+                                        label="Download Site Template (lat/lng)"></button>
+                            </a>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>
+                                    Select All
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
+                                <th [pSortableColumn]="'code'">
+                                    Code
+                                    <p-sortIcon [field]="'code'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'name'">
+                                    Name
+                                    <p-sortIcon [field]="'name'"></p-sortIcon>
+                                </th>
+                                <th [pSortableColumn]="'description'">
+                                    Description
+                                    <p-sortIcon [field]="'description'"></p-sortIcon>
+                                </th>
+                                <th *ngFor="let attribute of siteAttributeKeys" [pSortableColumn]="'attribute'">
+                                    {{ attribute }}
+                                    <p-sortIcon [field]="'attribute'"></p-sortIcon>
+                                </th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-rowData>
+                            <tr>
+                                <td align="center">
+                                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                                </td>
+                                <td>
+                                    <a [routerLink]="'/management/projects/edit-project/' + project.id + '/edit-site/' +
+                                      rowData.id" [innerHTML]='rowData.code | truncate:22'></a></td>
+                                <td>{{ rowData.name }}</td>
+                                <td>{{ rowData.description }}</td>
+                                <td *ngFor="let attribute of siteAttributeKeys">
+                                    <span [innerHTML]="rowData.hasOwnProperty(attribute) ? (rowData[attribute] |
+                                        truncate:25) : ''">
+                                    </span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td [attr.colspan]="6">
+                                    {{ datasets?.length > 0 ? '' : 'No sites found' }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="summary">
+                            <div class="ui-helper-clearfix">
                                 <button type="button" pButton icon="fa-trash" style="float:left" label="Delete"
-                                        (click)="confirmDeleteSelectedSites()" [disabled]="selectedSites.length === 0"></button>
+                                        (click)="confirmDeleteSelectedSites()"
+                                        [disabled]="selectedSites.length === 0"></button>
                                 <button type="button" class="ml-1" pButton icon="fa-plus" style="float:right"
                                         label="Add"
                                         [routerLink]="'/management/projects/edit-project/' + project.id + '/create-site'"></button>
                                 <button type="button" pButton icon="fa-reply" style="float:right" label="Import"
                                         [routerLink]="'/management/projects/edit-project/' + project.id + '/upload-sites'"></button>
                             </div>
-                        </p-footer>
-                    </p-dataTable>
+                        </ng-template>
+                    </p-table>
                 </div>
             </div>
         </div>

@@ -27,8 +27,10 @@
                     </p-calendar>
                 </div>
                 <div class="col-4 text-center">
-                    Published Only <p-checkbox (onChange)="filter()" [(ngModel)]="publishedOny" binary="true"></p-checkbox>
-                    Include Consumed <p-checkbox (onChange)="filter()" [(ngModel)]="includeConsumed" binary="true"></p-checkbox>
+                    Published Only
+                    <p-checkbox (onChange)="filter()" [(ngModel)]="publishedOny" binary="true"></p-checkbox>
+                    Include Consumed
+                    <p-checkbox (onChange)="filter()" [(ngModel)]="includeConsumed" binary="true"></p-checkbox>
                 </div>
                 <div class="col-2">
                     <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems"
@@ -40,18 +42,54 @@
                     <button pButton class="float-right" type="button" label="Reset" (click)="reset()"></button>
                 </div>
             </div>
+
             <h4>Datasets</h4>
-            <p-dataTable selectionMode="single" [(selection)]="selectedDataset" (onRowSelect)="selectDataset($event)"
-                         [value]="datasets" [paginator]="true" [rows]="10" [responsive]="true"
-                         [loading]="datasets == null" resizableColumns="true" columnResizeMode="expand">
-                <p-column field="name" header="Name" [sortable]="true"></p-column>
-                <p-column field="type" header="Type" [sortable]="true">
-                    <ng-template let-dataset="rowData" pTemplate="body">
-                        {{DATASET_TYPE_MAP[dataset.type]}}
-                    </ng-template>
-                </p-column>
-                <p-column field="projectName" header="Project" [sortable]="true"></p-column>
-            </p-dataTable>
+
+            <p-table #table [value]="datasets" autoLayout="true" resizableColumns="true" columnResizeMode="expand"
+                     selectionMode="single" [(selection)]="selectedDataset" (onRowSelect)="selectDataset($event)"
+                     [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                     [globalFilterFields]="['name', 'type', 'projectName', 'record_count']">
+                <ng-template pTemplate="caption">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Search"
+                           (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th [pSortableColumn]="'name'">
+                            Name
+                            <p-sortIcon [field]="'name'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'type'">
+                            Type
+                            <p-sortIcon [field]="'type'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'projectName'">
+                            Project
+                            <p-sortIcon [field]="'projectName'"></p-sortIcon>
+                        </th>
+                        <th [pSortableColumn]="'record_count'">
+                            Record Count
+                            <p-sortIcon [field]="'record_count'"></p-sortIcon>
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData>
+                    <tr [pSelectableRow]="rowData">
+                        <td>{{ rowData.name }}</td>
+                        <td>{{ DATASET_TYPE_MAP[rowData.type] }}</td>
+                        <td>{{ rowData.projectName }}</td>
+                        <td>{{ rowData.record_count }}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td [attr.colspan]="6">
+                            {{ datasets?.length > 0 ? '' : 'No datasets with records found' }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
 
             <div *ngIf="selectedDataset" class="mt-5">
                 <p>
@@ -60,20 +98,42 @@
                 </p>
                 <h4>Records for {{selectedDataset?.name}}</h4>
                 <div class="data-table-container">
-                    <p-dataTable #recordsTable [tableStyle]="getRecordsTableWidth()" [value]="records"
-                                 [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
-                                 [totalRecords]="totalRecords" [loading]="records == null" [lazy]="true"
-                                 (onLazyLoad)="loadRecordsLazy($event)" resizableColumns="true"
-                                 columnResizeMode="expand" [scrollable]="true"
-                                 [emptyMessage]="records == null ? 'Loading records': 'No records found'">
-                        <p-column *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields"
-                                  [field]="field.name" [header]="field.name" [sortable]="true"
-                                  [style]="getRecordsTableColumnWidth(field.name)">
-                            <ng-template let-record="rowData" let-col pTemplate="body">
-                                <span [innerHTML]="record.data[col.field]"></span>
-                            </ng-template>
-                        </p-column>
-                    </p-dataTable>
+                    <p-table #recordsTable [value]="records"
+                             resizableColumns="true" columnResizeMode="expand"
+                             [scrollable]="true" [style.width]="getRecordsTableWidth()"
+                             [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                             [lazy]="true" (onLazyLoad)="loadRecordsLazy($event)" [loading]="records === null"
+                             [totalRecords]="totalRecords">
+                        <ng-template pTemplate="colgroup" let-columns>
+                            <colgroup>
+                                <col *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields"
+                                     [style.width]="getRecordsTableColumnWidth(field.name)">
+                            </colgroup>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields"
+                                    [pSortableColumn]="field.name">
+                                    {{ field.name }}
+                                    <p-sortIcon [field]="field.name"></p-sortIcon>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData>
+                            <tr>
+                                <td *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields">
+                                    {{ rowData.data[field.name] }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td [attr.colspan]="selectedDataset?.data_package?.resources[0]?.schema?.fields.length + 8">
+                                    {{ records?.length > 0 ? '' : 'No records found' }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
                 </div>
                 <div class="row mt-3 mb-3">
                     <div class="col-3 offset-8">

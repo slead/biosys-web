@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
+import { DomSanitizer } from '@angular/platform-browser';
 
+import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
 import { map } from 'rxjs/operators';
 
 import { APIError, User, Project, Site, Dataset, ModelChoice } from '../../../../biosys-core/interfaces/api.interfaces';
@@ -25,15 +26,6 @@ export class EditProjectComponent implements OnInit {
     private static COLUMN_WIDTH: number = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 700;
 
-    @Input()
-    set selectAllSites(selected: boolean) {
-        this.isAllSitesSelected = selected;
-        this.selectedSites = selected ? this.flatSites.map((site: Site) => site.id) : [];
-    }
-    get selectAllSites(): boolean {
-        return this.isAllSitesSelected;
-    }
-
     @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
 
@@ -41,7 +33,7 @@ export class EditProjectComponent implements OnInit {
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
     public TEMPLATE_LATLNG_URL: string = environment.server + '/download/templates/site/lat-long';
     public TEMPLATE_EASTNORTH_URL: string = environment.server + '/download/templates/site/easting-northing';
-    public selectedSites: number[] = [];
+    public selectedSites: Site[] = [];
     public flatSites: any[];
     public siteAttributeKeys: string[] = [];
     public breadcrumbItems: any = [];
@@ -59,7 +51,7 @@ export class EditProjectComponent implements OnInit {
     private isAllSitesSelected: boolean = false;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
-        private confirmationService: ConfirmationService) {
+        private confirmationService: ConfirmationService, private sanitizer: DomSanitizer) {
     }
 
     ngOnInit() {
@@ -180,12 +172,14 @@ export class EditProjectComponent implements OnInit {
     }
 
     public getSiteTableWidth(): any {
-        if (this.siteAttributeKeys.length > 0) {
-            return {'width': String(EditProjectComponent.FIXED_COLUMNS_TOTAL_WIDTH +
-                (this.siteAttributeKeys.length * EditProjectComponent.COLUMN_WIDTH)) + 'px'};
-        } else {
-            return {width: '100%'};
+        if (!this.siteAttributeKeys.length) {
+            return this.sanitizer.bypassSecurityTrustStyle('100%');
         }
+
+        const width = EditProjectComponent.FIXED_COLUMNS_TOTAL_WIDTH +
+            this.siteAttributeKeys.length * EditProjectComponent.COLUMN_WIDTH;
+
+        return this.sanitizer.bypassSecurityTrustStyle(`${width}px`);
     }
 
     public formatSitePopup(site: Site): string {
@@ -268,11 +262,11 @@ export class EditProjectComponent implements OnInit {
         });
     }
 
-    public confirmDeleteSelectedSites(site: Site) {
+    public confirmDeleteSelectedSites() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all selected sites?',
             accept: () => {
-                this.apiService.deleteSites(this.project.id, this.selectedSites)
+                this.apiService.deleteSites(this.project.id, this.selectedSites.map((site: Site) => site.id))
                 .subscribe(
                     () => this.onDeleteSitesSuccess(),
                     (error: APIError) => this.onDeleteSiteError(error)
