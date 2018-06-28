@@ -12,7 +12,7 @@
                      [globalFilterFields]="['name','code', 'description', 'dataset_count', 'site_count',
                      'record_count']">
                 <ng-template pTemplate="caption">
-                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <i class="fa fa-search table-search-icon"></i>
                     <input type="text" pInputText size="50" placeholder="Search"
                            (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
                 </ng-template>

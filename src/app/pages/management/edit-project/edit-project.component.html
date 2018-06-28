@@ -125,7 +125,7 @@
                              [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
                              [globalFilterFields]="['name', 'code', 'type', 'record_count', 'description']">
                         <ng-template pTemplate="caption">
-                            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                            <i class="fa fa-search table-search-icon"></i>
                             <input type="text" pInputText size="50" placeholder="Search"
                                    (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
                         </ng-template>
@@ -218,7 +218,7 @@
                             </colgroup>
                         </ng-template>
                         <ng-template pTemplate="caption">
-                            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                            <i class="fa fa-search table-search-icon"></i>
                             <input type="text" pInputText size="50" placeholder="Search"
                                    (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
 
