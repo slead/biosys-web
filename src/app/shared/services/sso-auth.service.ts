@@ -34,8 +34,7 @@ export class SSOAuthService extends AuthService {
     public login(username: string, password: string) {
         return this.api.getAuthToken(username, password).pipe(
             map(res => Cookie.set('auth_token', res.token)),
-            mergeMap(() => this.api.whoAmI()),
-            map((user: User) => this.user = user)
+            mergeMap(() => this.getCurrentUser())
         );
     }
 

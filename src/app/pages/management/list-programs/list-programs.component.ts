@@ -50,6 +50,10 @@ export class ListProgramsComponent implements OnInit {
         ];
     }
 
+    public formatDataEnginners(users: User[]): string {
+        return users.reduce((acc, cur) => acc + '; ' + cur.username, '');
+    }
+
     public confirmDelete(program: Program) {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this program?',

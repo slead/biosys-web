@@ -29,17 +29,9 @@
                         <th [pSortableColumn]="'description'">Description
                             <p-sortIcon [field]="'description'"></p-sortIcon>
                         </th>
-                        <th [pSortableColumn]="'dataset_count'">
-                            Datasets
-                            <p-sortIcon [field]="'dataset_count'"></p-sortIcon>
-                        </th>
-                        <th [pSortableColumn]="'site_count'">
-                            Sites
-                            <p-sortIcon [field]="'site_count'"></p-sortIcon>
-                        </th>
-                        <th [pSortableColumn]="'record_count'">
-                            Records
-                            <p-sortIcon [field]="'record_count'"></p-sortIcon>
+                        <th [pSortableColumn]="'data_engineers'">
+                            Data Engineers
+                            <p-sortIcon [field]="'data_engineers'"></p-sortIcon>
                         </th>
                         <th>
                             Delete
@@ -50,18 +42,16 @@
                 <ng-template pTemplate="body" let-rowData>
                     <tr>
                         <td>
-                            <a [routerLink]="'/management/projects/edit-program/' + rowData.id">
+                            <a [routerLink]="'/management/programs/edit-program/' + rowData.id">
                                 {{rowData.name}}
                             </a>
                         </td>
 
                         <td>{{ rowData.code }}</td>
                         <td>
-                            <label [innerHtml]="rowData.description | truncate:70"></label>
+                            {{ rowData.description }}
                         </td>
-                        <td>{{ rowData.dataset_count }}</td>
-                        <td>{{ rowData.site_count }}</td>
-                        <td>{{ rowData.record_count }}</td>
+                        <td>{{ formatDataEnginners(rowData.data_engineers) }}</td>
                         <td align="center">
                             <button type="button" pButton icon="fa-trash-o" title="Delete"
                                     (click)="confirmDelete(rowData)"></button>
@@ -71,14 +61,14 @@
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td [attr.colspan]="6">
-                            {{ projects?.length > 0 ? '' : 'No programs found' }}
+                            {{ programs?.length > 0 ? '' : 'No programs found' }}
                         </td>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="summary">
                     <div class="ui-helper-clearfix">
                         <button type="button" pButton icon="fa-plus" style="float:right" label="Add"
-                                routerLink="/management/projects/create-program"></button>
+                                routerLink="/management/programs/create-program"></button>
                     </div>
                 </ng-template>
             </p-table>

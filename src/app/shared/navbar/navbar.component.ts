@@ -48,7 +48,16 @@ export class NavbarComponent implements OnInit {
                 this.items.splice(1, 0, {
                     label: 'Manage',
                     icon: 'fa-university',
-                    routerLink: ['/management/projects']
+                    items: [
+                        {
+                            label: 'Programs',
+                            routerLink: ['/management/programs']
+                        },
+                        {
+                            label: 'Projects',
+                            routerLink: ['/management/projects']
+                        }
+                    ]
                 });
             }
         });
