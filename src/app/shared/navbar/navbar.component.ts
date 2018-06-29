@@ -44,7 +44,12 @@ export class NavbarComponent implements OnInit {
         ];
 
         this.authService.getCurrentUser().subscribe((user: User) => {
-            if (user.is_superuser) {
+            const projectItem = {
+                label: 'Projects',
+                routerLink: ['/management/projects']
+            };
+
+            if (user.is_admin) {
                 this.items.splice(1, 0, {
                     label: 'Manage',
                     icon: 'fa-university',
@@ -53,10 +58,15 @@ export class NavbarComponent implements OnInit {
                             label: 'Programs',
                             routerLink: ['/management/programs']
                         },
-                        {
-                            label: 'Projects',
-                            routerLink: ['/management/projects']
-                        }
+                        projectItem
+                    ]
+                });
+            } else {
+                this.items.splice(1, 0, {
+                    label: 'Manage',
+                    icon: 'fa-university',
+                    items: [
+                        projectItem
                     ]
                 });
             }

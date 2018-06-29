@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { APIError, Program, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
-import { Router } from '@angular/router';
-import { ConfirmationService, Message } from 'primeng/primeng';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
+import { AuthService } from '../../../../biosys-core/services/auth.service';
+import { map } from 'rxjs/operators';
+import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
 @Component({
     moduleId: module.id,
@@ -16,42 +19,51 @@ export class ListProgramsComponent implements OnInit {
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];
-    public programs: Project[] = [];
+    public programs: Program[] = [];
     public messages: Message[] = [];
 
-    private user: User;
+    private allUsers: { [id: number]: User } = {};
 
-    constructor(private apiService: APIService, private router: Router,
-                private confirmationService: ConfirmationService) {
+    constructor(private apiService: APIService, private authService: AuthService, private router: Router,
+                private route: ActivatedRoute, private confirmationService: ConfirmationService) {
     }
 
     ngOnInit() {
-        this.apiService.whoAmI()
-            .toPromise()
-            .then((user: User) => this.user = user,
+        const params = this.route.snapshot.params;
+
+        this.apiService.getPrograms().subscribe(
+            (programs: Program[]) => this.programs = programs,
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
+
+        this.apiService.getUsers()
+            .subscribe(
+                (users: User[]) => users.forEach((user: User) => this.allUsers[user.id] = user),
                 (error: APIError) => console.log('error.msg', error.msg)
-            )
-            .then(() => {
-                if (this.user.is_superuser) {
-                    this.apiService.getPrograms().subscribe(
-                        (programs: Program[]) => this.programs = programs,
-                        (error: APIError) => console.log('error.msg', error.msg)
-                    );
-                } else {
-                    this.apiService.getPrograms([this.user.id]).subscribe(
-                        (programs: Program[]) => this.programs = programs,
-                        (error: APIError) => console.log('error.msg', error.msg)
-                    );
-                }
-            }, (error: APIError) => console.log('error.msg', error.msg));
+            );
 
         this.breadcrumbItems = [
             {label: 'Manage - Programs'}
         ];
+
+        if ('programSaved' in params) {
+            this.messages.push({
+                severity: 'success',
+                summary: 'Program saved',
+                detail: 'The program was saved'
+            });
+        } else if ('programDeleted' in params) {
+            this.messages.push({
+                severity: 'success',
+                summary: 'Program deleted',
+                detail: 'The program was deleted'
+            });
+        }
     }
 
-    public formatDataEnginners(users: User[]): string {
-        return users.reduce((acc, cur) => acc + '; ' + cur.username, '');
+    public formatDataEnginners(userIds: number[]): string {
+        return userIds.
+            reduce((acc, cur) => `${acc}${acc.length ? '; ' : ''}${formatUserFullName(this.allUsers[cur])}`, '');
     }
 
     public confirmDelete(program: Program) {
@@ -68,17 +80,10 @@ export class ListProgramsComponent implements OnInit {
     }
 
     private onDeleteSuccess(program: Program) {
-        if (this.user.is_superuser) {
-            this.apiService.getPrograms().subscribe(
-                (programs: Program[]) => this.programs = programs,
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
-        } else {
-            this.apiService.getPrograms([this.user.id]).subscribe(
-                (programs: Program[]) => this.programs = programs,
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
-        }
+        this.apiService.getPrograms().subscribe(
+            (programs: Program[]) => this.programs = programs,
+            (error: APIError) => console.log('error.msg', error.msg)
+        );
 
         this.messages.push({
             severity: 'success',

@@ -47,6 +47,18 @@
                         </div>
                         <div class="row mb-1">
                             <div class="col-md-4">
+                                <label class="field-label">Program</label>
+                            </div>
+                            <div class="col-md-8">
+                                <label [hidden]="isEditing">{{getProgramLabel(project.program)}}</label>
+                                <p-dropdown [hidden]="!isEditing" [options]="programChoices"
+                                            [(ngModel)]="project.program" [autoWidth]="false">
+                                </p-dropdown>
+                                <div [hidden]="!isEditing" class="text-danger">{{projectErrors['program']}}</div>
+                            </div>
+                        </div>
+                        <div class="row mb-1">
+                            <div class="col-md-4">
                                 <label class="field-label">Default Datum</label>
                             </div>
                             <div class="col-md-8">
