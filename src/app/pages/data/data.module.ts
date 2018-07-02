@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 
 import {
-    ConfirmationService, DataTableModule, DialogModule, ButtonModule, GrowlModule, MessagesModule, InputTextModule,
+    ConfirmationService, DialogModule, ButtonModule, GrowlModule, MessagesModule, InputTextModule,
     ConfirmDialogModule, CalendarModule, DropdownModule, FileUploadModule, CheckboxModule, TooltipModule, GalleriaModule
 }
     from 'primeng/primeng';
+import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
 
 import { SharedModule } from '../../shared/shared.module';
 
@@ -15,9 +16,9 @@ import { EditRecordComponent } from './edit-record/edit-record.component';
 
 
 @NgModule({
-    imports: [SharedModule, DataTableModule, DialogModule, ButtonModule, GrowlModule,
-        MessagesModule, ConfirmDialogModule, CalendarModule, DropdownModule, FileUploadModule, CheckboxModule,
-        InputTextModule, TooltipModule, GalleriaModule],
+    imports: [SharedModule, DialogModule, ButtonModule, GrowlModule, MessagesModule, ConfirmDialogModule,
+        CalendarModule, DropdownModule, FileUploadModule, CheckboxModule, InputTextModule, TooltipModule,
+        GalleriaModule, TableModule],
     declarations: [DataListProjectsComponent, ListDatasetsComponent, ManageDataComponent, EditRecordComponent],
     providers: [ConfirmationService]
 })

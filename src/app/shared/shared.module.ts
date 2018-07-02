@@ -15,7 +15,7 @@ import { SafePipe } from './pipes/safe.pipe';
 
 import {
     ButtonModule, MenubarModule, BreadcrumbModule, MessagesModule, ProgressBarModule, CheckboxModule,
-    DropdownModule, DataTableModule, CalendarModule
+    DropdownModule, CalendarModule
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
 import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
@@ -25,8 +25,8 @@ import { GalleriaComponent } from './galleria/galleria.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, RouterModule, MenubarModule, BreadcrumbModule, ButtonModule, MessagesModule,
-        ProgressBarModule, CheckboxModule, DropdownModule, DataTableModule, TableModule, CalendarModule,
-        PrimeSharedModule, BiosysCoreModule],
+        ProgressBarModule, CheckboxModule, DropdownModule, TableModule, CalendarModule, PrimeSharedModule,
+        BiosysCoreModule],
     declarations: [HeaderComponent, JsonEditorComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent,
         FileuploaderComponent, GalleriaComponent, MarkerDirective, PyToPrimeDateFormatConversionPipe, SafePipe,
         ExpandableMessagesComponent, EditRecordsTableComponent, GalleriaComponent],

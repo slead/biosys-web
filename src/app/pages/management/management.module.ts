@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule, ConfirmationService,
-    FileUploadModule, DialogModule, DataTableModule, MultiSelectModule, CheckboxModule, MessageModule } from 'primeng/primeng';
+    FileUploadModule, DialogModule, MultiSelectModule, CheckboxModule, MessageModule } from 'primeng/primeng';
+import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
 
 import { SharedModule } from '../../shared/shared.module';
 
@@ -24,10 +25,10 @@ import { UploadSitesComponent } from './upload-sites/upload-sites.component';
         ConfirmDialogModule,
         FileUploadModule,
         DialogModule,
-        DataTableModule,
         MultiSelectModule,
         CheckboxModule,
-        MessageModule
+        MessageModule,
+        TableModule
     ],
     declarations: [ManagementListProjectsComponent, EditProjectComponent, EditDatasetComponent, EditSiteComponent, UploadSitesComponent],
     providers: [ConfirmationService]

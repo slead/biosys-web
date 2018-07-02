@@ -17,7 +17,6 @@
             <col [style.width]="'100px' | safe: 'style'">
             <col [style.width]="'100px' | safe: 'style'">
             <col [style.width]="'100px' | safe: 'style'">
-
             <col *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
                  [style.width]="getRecordsTableColumnWidth(field.name)">
             <col [style.width]="'240px' | safe: 'style'">
@@ -27,7 +26,7 @@
         </colgroup>
     </ng-template>
     <ng-template pTemplate="caption">
-        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+        <i class="fa fa-search table-search-icon"></i>
         <input type="text" pInputText size="50" placeholder="Search"
                (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
     </ng-template>
@@ -60,8 +59,7 @@
             </td>
             <td>
                 <span *ngIf="rowData.consumed">{{ rowData.id }}</span>
-                <a class="table-link" *ngIf="!rowData.consumed"
-                   [routerLink]="getEditRecordRoute(rowData.id)">
+                <a *ngIf="!rowData.consumed" [routerLink]="getEditRecordRoute(rowData.id)">
                     {{ rowData.id }}
                 </a>
             </td>

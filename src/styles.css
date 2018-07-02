@@ -91,3 +91,7 @@ table td {
     text-align: left;
     font-weight: bold;
 }
+
+.table-search-icon {
+    margin: 4px 4px 0 0;
+}
