@@ -104,11 +104,11 @@ export class EditProgramComponent implements OnInit {
         this.router.navigate([EditProgramComponent.PROGRAMS_URL, {'programDeleted': true}]);
     }
 
-    private onDeleteError(recordErrors: any) {
+    private onDeleteError(errors: any) {
         this.messages.push({
             severity: 'error',
             summary: 'Program delete error',
-            detail: 'There were error(s) deleting the program'
+            detail: 'There were error(s) deleting the program: ' + errors.msg 
         });
     }
 
