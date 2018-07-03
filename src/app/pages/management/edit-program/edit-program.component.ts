@@ -92,7 +92,7 @@ export class EditProgramComponent implements OnInit {
 
     public confirmDelete(event: any) {
         this.confirmationService.confirm({
-            message: 'Are you sure that you want to delete this program? Warning: all projects and related records' +
+            message: 'Are you sure that you want to delete this program? Warning: all related projects and records' +
             'will also be deleted.',
             accept: () => this.apiService.deleteProgram(this.program.id).subscribe(
                 (program: Program) => this.onDeleteSuccess(this.program),
@@ -108,7 +108,7 @@ export class EditProgramComponent implements OnInit {
         this.messages.push({
             severity: 'error',
             summary: 'Program delete error',
-            detail: 'There were error(s) program the site'
+            detail: 'There were error(s) deleting the program'
         });
     }
 
