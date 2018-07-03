@@ -158,7 +158,7 @@ export class EditProjectComponent implements OnInit {
         }, DEFAULT_GROWL_LIFE);
     }
 
-    public getProgramLabel(value: string): string {
+    public getProgramLabel(value: any): string {
         if (!this.programChoices) {
             return '';
         }
