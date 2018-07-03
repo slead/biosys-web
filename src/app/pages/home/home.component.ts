@@ -10,6 +10,8 @@ import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer,
 import * as L from 'leaflet';
 import 'leaflet-mouse-position';
 import '../../../lib/leaflet.latlng-graticule'
+import { AuthService } from '../../../biosys-core/services/auth.service';
+import { formatUserFullName } from '../../../biosys-core/utils/functions';
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -24,32 +26,26 @@ import '../../../lib/leaflet.latlng-graticule'
 export class HomeComponent implements OnInit {
     public projects: Project[];
     public statistic: Statistic;
-    public user: User;
     public userString = '';
 
+    private user: User;
     private map: L.Map;
 
-    constructor(public apiService: APIService) {
+    constructor(private apiService: APIService, private authService: AuthService) {
+        this.authService.getCurrentUser().subscribe((user: User) => {
+            this.user = user
+            this.userString = formatUserFullName(user);
+        });
     }
 
     ngOnInit() {
-        // need to get user before projects so use Promise 'then' syntax
-        this.apiService.whoAmI()
-        .toPromise()
-        .then((user: User) => {
-            this.user = user;
-            this.userString = `${this.user.first_name} ${this.user.last_name}`.trim() || `${this.user.username}`.trim();
-            },
-            (error: APIError) => console.log('error.msg', error.msg)
-        )
-        .then(() => this.apiService.getProjects()
-        .subscribe(
+        this.apiService.getProjects().subscribe(
             (projects: Project[]) => {
                 this.projects = projects;
                 this.loadProjectMarkers();
             },
             (error: APIError) => console.log('error.msg', error.msg)
-        ));
+        );
 
         this.apiService.getStatistics()
         .subscribe(

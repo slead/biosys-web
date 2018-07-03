@@ -1,22 +1,22 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
-import { map } from 'rxjs/operators';
 
-import { APIError, User, Project, Site, Dataset, ModelChoice } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, User, Project, Site, Dataset, ModelChoice, Program }
+    from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
-import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
 import { environment } from '../../../../environments/environment';
 
 import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
+import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
 @Component({
     moduleId: module.id,
-    selector: 'biosys-edit-roject',
+    selector: 'biosys-edit-project',
     templateUrl: 'edit-project.component.html',
 })
 
@@ -29,7 +29,6 @@ export class EditProjectComponent implements OnInit {
     @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
 
-    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
     public TEMPLATE_LATLNG_URL: string = environment.server + '/download/templates/site/lat-long';
     public TEMPLATE_EASTNORTH_URL: string = environment.server + '/download/templates/site/easting-northing';
@@ -43,12 +42,11 @@ export class EditProjectComponent implements OnInit {
     };
     public datasets: Dataset[];
     public isEditing: boolean;
+    public programChoices: SelectItem[];
     public datamTypeChoices: SelectItem[];
     public custodianChoices: SelectItem[];
     public projectErrors: any = {};
     public messages: Message[] = [];
-
-    private isAllSitesSelected: boolean = false;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
         private confirmationService: ConfirmationService, private sanitizer: DomSanitizer) {
@@ -60,7 +58,7 @@ export class EditProjectComponent implements OnInit {
         this.isEditing = !('id' in params);
 
         if (!this.isEditing) {
-            this.apiService.getProjectById(Number(params['id'])).subscribe(
+            this.apiService.getProjectById(+params['id']).subscribe(
                 (project: Project) => {
                     this.project = project;
                     this.breadcrumbItems.push({label: this.project.name});
@@ -68,12 +66,12 @@ export class EditProjectComponent implements OnInit {
                 (error: APIError) => console.log('error.msg', error.msg)
             );
 
-            this.apiService.getAllDatasetsForProjectID(Number(params['id'])).subscribe(
+            this.apiService.getAllDatasetsForProjectID(+params['id']).subscribe(
                 (datasets: Dataset[]) => this.datasets = datasets,
                 (error: APIError) => console.log('error.msg', error.msg)
             );
 
-            this.apiService.getAllSitesForProjectID(Number(params['id'])).subscribe(
+            this.apiService.getAllSitesForProjectID(+params['id']).subscribe(
                 (sites: Site[]) => {
                     this.flatSites = this.formatFlatSites(sites);
                     this.siteAttributeKeys = sites.length > 0 ? this.extractSiteAttributeKeys(sites[0]) : [];
@@ -82,37 +80,34 @@ export class EditProjectComponent implements OnInit {
             );
         }
 
-        this.apiService.getModelChoices('project', 'datum')
-            .pipe(
-                map(
-                    (choices: ModelChoice[]): SelectItem[] =>
-                        choices.map((choice: ModelChoice): SelectItem => {
-                            return {
-                                label: choice.display_name,
-                                value: choice.value
-                            };
-                        })
-                )
-            )
+        this.apiService.getPrograms()
             .subscribe(
-                (choices: SelectItem[]) => this.datamTypeChoices = choices,
+                (programs: Program[]) => this.programChoices = programs.map((program: Program) => ({
+                        label: program.name,
+                        value: program.id
+                    })
+                ),
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
+
+        this.apiService.getModelChoices('project', 'datum')
+            .subscribe(
+                (choices: ModelChoice[]) => this.datamTypeChoices = choices.
+                    map((choice: ModelChoice) => ({
+                            label: choice.display_name,
+                            value: choice.value
+                    })
+                ),
                 (error: APIError) => console.log('error.msg', error.msg)
             );
 
         this.apiService.getUsers()
-            .pipe(
-                map(
-                    (users: User[]): SelectItem[] =>
-                        users.map((user: User): SelectItem => {
-                            return {
-                                label: `${user.first_name} ${user.last_name}`.trim() || `${user.username}`.trim(),
-                                value: user.id
-                            };
-                        })
-                )
-            )
             .subscribe(
-                (users: SelectItem[]) => this.custodianChoices = users,
+                (users: User[]) => this.custodianChoices = users.map((user: User) => ({
+                        label: formatUserFullName(user),
+                        value: user.id
+                    })
+                ),
                 (error: APIError) => console.log('error.msg', error.msg)
             );
 
@@ -163,12 +158,20 @@ export class EditProjectComponent implements OnInit {
         }, DEFAULT_GROWL_LIFE);
     }
 
+    public getProgramLabel(value: string): string {
+        if (!this.programChoices) {
+            return '';
+        }
+
+        return this.programChoices.filter(d => d.value === value).pop().label;
+    }
+
     public getDatumLabel(value: string): string {
         if (!this.datamTypeChoices) {
             return '';
         }
 
-        return this.datamTypeChoices.filter(d => d.value === value).pop().label;
+        return this.datamTypeChoices.filter(choice => choice.value === value).pop().label;
     }
 
     public getSiteTableWidth(): any {

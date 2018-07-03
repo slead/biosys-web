@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { APIError, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Program, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { Router } from '@angular/router';
 import { ConfirmationService, Message } from 'primeng/primeng';
+import { AuthService } from '../../../../biosys-core/services/auth.service';
 
 @Component({
     moduleId: module.id,
@@ -18,32 +19,40 @@ export class ManagementListProjectsComponent implements OnInit {
     public breadcrumbItems: any = [];
     public projects: Project[] = [];
     public messages: Message[] = [];
+    public programNameLookup: object = {};
 
     private user: User;
 
-    constructor(private apiService: APIService, private router: Router,
+    constructor(private apiService: APIService, private authService: AuthService, private router: Router,
                 private confirmationService: ConfirmationService) {
     }
 
     ngOnInit() {
-        this.apiService.whoAmI()
+        this.authService.getCurrentUser()
             .toPromise()
             .then((user: User) => this.user = user,
                 (error: APIError) => console.log('error.msg', error.msg)
             )
             .then(() => {
-                if (this.user.is_superuser) {
+                if (this.user.is_admin) {
                     this.apiService.getProjects().subscribe(
                         (projects: Project[]) => this.projects = projects,
                         (error: APIError) => console.log('error.msg', error.msg)
                     );
-                } else {
-                    this.apiService.getProjects([this.user.id]).subscribe(
+                } else if (this.user.is_data_engineer) {
+                    this.apiService.getProjects({program__data_engineers: this.user.id}).subscribe(
                         (projects: Project[]) => this.projects = projects,
                         (error: APIError) => console.log('error.msg', error.msg)
                     );
                 }
             }, (error: APIError) => console.log('error.msg', error.msg));
+
+        this.apiService.getPrograms()
+            .subscribe(
+                (programs: Program[]) =>
+                    programs.forEach((program: Program) => this.programNameLookup[program.id] = program.name),
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
 
         this.breadcrumbItems = [
             {label: 'Manage - Projects'}
@@ -64,13 +73,13 @@ export class ManagementListProjectsComponent implements OnInit {
     }
 
     private onDeleteSuccess(project: Project) {
-        if (this.user.is_superuser) {
+        if (this.user.is_admin) {
             this.apiService.getProjects().subscribe(
                 (projects: Project[]) => this.projects = projects,
                 (error: APIError) => console.log('error.msg', error.msg)
             );
-        } else {
-            this.apiService.getProjects([this.user.id]).subscribe(
+        } else if (this.user.is_data_engineer) {
+            this.apiService.getProjects({program__data_engineers: this.user.id}).subscribe(
                 (projects: Project[]) => this.projects = projects,
                 (error: APIError) => console.log('error.msg', error.msg)
             );

@@ -12,6 +12,8 @@ import { EditProjectComponent } from './edit-project/edit-project.component';
 import { EditDatasetComponent } from './edit-dataset/edit-dataset.component';
 import { EditSiteComponent } from './edit-site/edit-site.component';
 import { UploadSitesComponent } from './upload-sites/upload-sites.component';
+import { EditProgramComponent } from './edit-program/edit-program.component';
+import { ListProgramsComponent } from './list-programs/list-programs.component';
 
 @NgModule({
     imports: [
@@ -30,7 +32,8 @@ import { UploadSitesComponent } from './upload-sites/upload-sites.component';
         MessageModule,
         TableModule
     ],
-    declarations: [ManagementListProjectsComponent, EditProjectComponent, EditDatasetComponent, EditSiteComponent, UploadSitesComponent],
+    declarations: [ListProgramsComponent, ManagementListProjectsComponent, EditProgramComponent,
+        EditProjectComponent, EditDatasetComponent, EditSiteComponent, UploadSitesComponent],
     providers: [ConfirmationService]
 })
 export class ManagementModule {

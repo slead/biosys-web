@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../biosys-core/services/auth.service';
 import { MenuItem } from 'primeng/primeng';
+import { User } from '../../../biosys-core/interfaces/api.interfaces';
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -14,7 +15,7 @@ import { MenuItem } from 'primeng/primeng';
 export class NavbarComponent implements OnInit {
     public items: MenuItem[];
 
-    constructor(public auth: AuthService) {
+    constructor(public authService: AuthService) {
     }
 
     ngOnInit() {
@@ -24,11 +25,7 @@ export class NavbarComponent implements OnInit {
                 icon: 'fa-home',
                 routerLink: ['/']
             },
-            {
-                label: 'Manage',
-                icon: 'fa-university',
-                routerLink: ['/management/projects']
-            },
+
             {
                 label: 'Data',
                 icon: 'fa-database',
@@ -45,9 +42,38 @@ export class NavbarComponent implements OnInit {
                 command: () => this.logout()
             }
         ];
+
+        this.authService.getCurrentUser().subscribe((user: User) => {
+            const projectItem = {
+                label: 'Projects',
+                routerLink: ['/management/projects']
+            };
+
+            if (user.is_admin) {
+                this.items.splice(1, 0, {
+                    label: 'Manage',
+                    icon: 'fa-university',
+                    items: [
+                        {
+                            label: 'Programs',
+                            routerLink: ['/management/programs']
+                        },
+                        projectItem
+                    ]
+                });
+            } else {
+                this.items.splice(1, 0, {
+                    label: 'Manage',
+                    icon: 'fa-university',
+                    items: [
+                        projectItem
+                    ]
+                });
+            }
+        });
     }
 
     logout() {
-        this.auth.logout();
+        this.authService.logout();
     }
 }
