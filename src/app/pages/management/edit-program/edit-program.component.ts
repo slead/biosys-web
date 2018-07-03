@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 import { APIError, User, Program } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
+import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
 @Component({
     moduleId: module.id,
@@ -50,14 +51,13 @@ export class EditProgramComponent implements OnInit {
 
         this.apiService.getUsers()
             .pipe(
-                map(
-                    (users: User[]): SelectItem[] =>
-                        users.map((user: User): SelectItem => {
-                            return {
-                                label: `${user.first_name} ${user.last_name}`.trim() || `${user.username}`.trim(),
-                                value: user.id
-                            };
-                        })
+                map((users: User[]): SelectItem[] =>
+                    users.map((user: User): SelectItem => {
+                        return {
+                            label: formatUserFullName(user),
+                            value: user.id
+                        };
+                    })
                 )
             )
             .subscribe(

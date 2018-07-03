@@ -11,6 +11,7 @@ import * as L from 'leaflet';
 import 'leaflet-mouse-position';
 import '../../../lib/leaflet.latlng-graticule'
 import { AuthService } from '../../../biosys-core/services/auth.service';
+import { formatUserFullName } from '../../../biosys-core/utils/functions';
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -33,7 +34,7 @@ export class HomeComponent implements OnInit {
     constructor(private apiService: APIService, private authService: AuthService) {
         this.authService.getCurrentUser().subscribe((user: User) => {
             this.user = user
-            this.userString = `${this.user.first_name} ${this.user.last_name}`.trim() || `${this.user.username}`.trim();
+            this.userString = formatUserFullName(user);
         });
     }
 
