@@ -31,7 +31,7 @@ export class SSOAuthService extends AuthService {
         }
     }
 
-    public login(username: string, password: string) {
+    public login(username: string, password: string): Observable<User> {
         return this.api.getAuthToken(username, password).pipe(
             map(res => Cookie.set('auth_token', res.token)),
             mergeMap(() => this.getCurrentUser())

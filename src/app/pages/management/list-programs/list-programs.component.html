@@ -9,8 +9,7 @@
             <p>Select a program to edit or delete or click add to create a new program</p>
             <p-table #table [value]="programs" autoLayout="true" resizableColumns="true" columnResizeMode="expand"
                      [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
-                     [globalFilterFields]="['name','code', 'description', 'dataset_count', 'site_count',
-                     'record_count']">
+                     [globalFilterFields]="['name','code', 'description', 'data_engineers']">
                 <ng-template pTemplate="caption">
                     <i class="fa fa-search table-search-icon"></i>
                     <input type="text" pInputText size="50" placeholder="Search"
