@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { APIError, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Program, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
@@ -13,6 +13,7 @@ import { AuthService } from '../../../../biosys-core/services/auth.service';
 export class DataListProjectsComponent implements OnInit {
     public breadcrumbItems: any = [];
     public projects: Project[] = [];
+    public programNameLookup: object = {};
 
     constructor(private apiService: APIService, private authService: AuthService, private router: Router) {
     }
@@ -25,6 +26,13 @@ export class DataListProjectsComponent implements OnInit {
                         (projects: Project[]) => this.projects = projects,
                         (error: APIError) => console.log('error.msg', error.msg)
                     ),
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
+
+        this.apiService.getPrograms()
+            .subscribe(
+                (programs: Program[]) =>
+                    programs.forEach((program: Program) => this.programNameLookup[program.id] = program.name),
                 (error: APIError) => console.log('error.msg', error.msg)
             );
 

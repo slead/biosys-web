@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { APIError, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Program, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { Router } from '@angular/router';
@@ -19,6 +19,7 @@ export class ManagementListProjectsComponent implements OnInit {
     public breadcrumbItems: any = [];
     public projects: Project[] = [];
     public messages: Message[] = [];
+    public programNameLookup: object = {};
 
     private user: User;
 
@@ -45,6 +46,13 @@ export class ManagementListProjectsComponent implements OnInit {
                     );
                 }
             }, (error: APIError) => console.log('error.msg', error.msg));
+
+        this.apiService.getPrograms()
+            .subscribe(
+                (programs: Program[]) =>
+                    programs.forEach((program: Program) => this.programNameLookup[program.id] = program.name),
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
 
         this.breadcrumbItems = [
             {label: 'Manage - Projects'}

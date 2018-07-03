@@ -29,6 +29,9 @@
                         <th [pSortableColumn]="'description'">Description
                             <p-sortIcon [field]="'description'"></p-sortIcon>
                         </th>
+                        <th [pSortableColumn]="'program'">Program
+                            <p-sortIcon [field]="'program'"></p-sortIcon>
+                        </th>
                         <th [pSortableColumn]="'dataset_count'">
                             Datasets
                             <p-sortIcon [field]="'dataset_count'"></p-sortIcon>
@@ -56,6 +59,7 @@
                         <td>
                             <label [innerHtml]="rowData.description | truncate:70"></label>
                         </td>
+                        <td>{{ programNameLookup[rowData.program] }}</td>
                         <td>{{ rowData.dataset_count }}</td>
                         <td>{{ rowData.site_count }}</td>
                         <td>{{ rowData.record_count }}</td>
