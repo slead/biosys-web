@@ -62,7 +62,7 @@ export class ListProgramsComponent implements OnInit {
     public formatDataEngineers(userIds: number[]): string {
         if (this.allUsers) {
             return userIds
-                .map(id => formatUserFullName(this.allUsers[id] || ''))
+                .map(id => formatUserFullName(this.allUsers[id]))
                 .join('; ')
                 .trim();
         } else {
