@@ -5,7 +5,6 @@ import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
-import { map } from 'rxjs/operators';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
 @Component({
@@ -32,7 +31,7 @@ export class ListProgramsComponent implements OnInit {
         const params = this.route.snapshot.params;
 
         this.apiService.getPrograms().subscribe(
-            (programs: Program[]) => this.programs = programs,
+            (programs: Program[]) => {console.log('programs', programs); this.programs = programs},
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
@@ -60,10 +59,15 @@ export class ListProgramsComponent implements OnInit {
             });
         }
     }
-
-    public formatDataEnginners(userIds: number[]): string {
-        return userIds.
-            reduce((acc, cur) => `${acc}${acc.length ? '; ' : ''}${formatUserFullName(this.allUsers[cur])}`, '');
+    public formatDataEngineers(userIds: number[]): string {
+        if (this.allUsers) {
+            return userIds
+                .map(id => formatUserFullName(this.allUsers[id] || ''))
+                .join('; ')
+                .trim();
+        } else {
+            return '';
+        }
     }
 
     public confirmDelete(program: Program) {
