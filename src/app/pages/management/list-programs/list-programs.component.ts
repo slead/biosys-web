@@ -31,7 +31,7 @@ export class ListProgramsComponent implements OnInit {
         const params = this.route.snapshot.params;
 
         this.apiService.getPrograms().subscribe(
-            (programs: Program[]) => {console.log('programs', programs); this.programs = programs},
+            (programs: Program[]) => this.programs = programs,
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
