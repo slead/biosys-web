@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../biosys-core/services/auth.service';
 import { MenuItem } from 'primeng/primeng';
 import { User } from '../../../biosys-core/interfaces/api.interfaces';
+import { Router } from '@angular/router';
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -15,7 +16,7 @@ import { User } from '../../../biosys-core/interfaces/api.interfaces';
 export class NavbarComponent implements OnInit {
     public items: MenuItem[];
 
-    constructor(public authService: AuthService) {
+    constructor(private authService: AuthService, private router: Router) {
     }
 
     ngOnInit() {
@@ -75,5 +76,7 @@ export class NavbarComponent implements OnInit {
 
     logout() {
         this.authService.logout();
+
+        this.router.navigate(['/login']);
     }
 }

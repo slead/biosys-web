@@ -7,6 +7,4 @@ export const environment = {
     production: false,
     server: 'http://localhost:8000',
     apiExtension: '/api/',
-    logoutUrl: '/#/login/',
-    cookieAuthToken: 'auth_token'
 };
