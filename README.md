@@ -24,22 +24,24 @@ ng serve
 
 Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files.
 
-## Build for UAT
+## DBCA Builds
+
+### Build for UAT
 
 To build the project for UAT, use: 
 
 ```bash
-ng build --env=uat --prod --build-optimizer
+ng build --env=dbca-uat --prod --build-optimizer
  ```
 
 The build artifacts will be stored in the `dist/` directory.
 
-## Build for production
+### Build for production
 
 To build the project for production, use: 
 
 ```bash
-ng build --env=prod --prod --build-optimizer
+ng build --env=dbca-prod --prod --build-optimizer
  ```
 
 The build artifacts will be stored in the `dist/` directory.

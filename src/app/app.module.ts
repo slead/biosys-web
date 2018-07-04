@@ -23,6 +23,7 @@ import { HomeModule } from './pages/home/home.module';
 import { DataModule } from './pages/data/data.module';
 import { ManagementModule } from './pages/management/management.module';
 import { ViewModule } from './pages/view/view.module';
+import { environment } from '../environments/environment';
 
 @NgModule({
     declarations: [
@@ -45,7 +46,7 @@ import { ViewModule } from './pages/view/view.module';
         APIService,
         {
             provide: AuthService,
-            useClass: SSOAuthService
+            useClass: !!environment['useSSOAuth'] ? SSOAuthService : AuthService
         },
         SSOAuthGuard,
         {

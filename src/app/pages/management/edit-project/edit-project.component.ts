@@ -158,12 +158,12 @@ export class EditProjectComponent implements OnInit {
         }, DEFAULT_GROWL_LIFE);
     }
 
-    public getProgramLabel(value: string): string {
+    public getProgramLabel(value: number): string {
         if (!this.programChoices) {
             return '';
         }
 
-        return this.programChoices.filter(d => d.value === value).pop().label;
+        return this.programChoices.filter(choice => choice.value === value).pop().label;
     }
 
     public getDatumLabel(value: string): string {
