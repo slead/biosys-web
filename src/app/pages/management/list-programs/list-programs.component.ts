@@ -18,7 +18,7 @@ export class ListProgramsComponent implements OnInit {
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];
-    public programs: Program[] = [];
+    public programs: Program[];
     public messages: Message[] = [];
 
     private allUsers: { [id: number]: User } = {};
@@ -60,14 +60,11 @@ export class ListProgramsComponent implements OnInit {
         }
     }
     public formatDataEngineers(userIds: number[]): string {
-        if (this.allUsers) {
-            return userIds
-                .map(id => formatUserFullName(this.allUsers[id]))
-                .join('; ')
-                .trim();
-        } else {
-            return '';
-        }
+        return userIds
+            .filter(id => this.allUsers.hasOwnProperty(id))
+            .map(id => formatUserFullName(this.allUsers[id]))
+            .join('; ')
+            .trim();
     }
 
     public confirmDelete(program: Program) {
