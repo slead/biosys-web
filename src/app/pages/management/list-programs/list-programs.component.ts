@@ -5,7 +5,6 @@ import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
-import { map } from 'rxjs/operators';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
 @Component({
@@ -19,7 +18,7 @@ export class ListProgramsComponent implements OnInit {
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
     public breadcrumbItems: any = [];
-    public programs: Program[] = [];
+    public programs: Program[];
     public messages: Message[] = [];
 
     private allUsers: { [id: number]: User } = {};
@@ -60,10 +59,12 @@ export class ListProgramsComponent implements OnInit {
             });
         }
     }
-
-    public formatDataEnginners(userIds: number[]): string {
-        return userIds.
-            reduce((acc, cur) => `${acc}${acc.length ? '; ' : ''}${formatUserFullName(this.allUsers[cur])}`, '');
+    public formatDataEngineers(userIds: number[]): string {
+        return userIds
+            .filter(id => this.allUsers.hasOwnProperty(id))
+            .map(id => formatUserFullName(this.allUsers[id]))
+            .join('; ')
+            .trim();
     }
 
     public confirmDelete(program: Program) {
