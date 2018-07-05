@@ -27,10 +27,10 @@
                     </p-calendar>
                 </div>
                 <div class="col-4 text-center">
-                    Published Only
-                    <p-checkbox (onChange)="filter()" [(ngModel)]="publishedOny" binary="true"></p-checkbox>
-                    Include Consumed
-                    <p-checkbox (onChange)="filter()" [(ngModel)]="includeConsumed" binary="true"></p-checkbox>
+                    Validated Only
+                    <p-checkbox (onChange)="filter()" [(ngModel)]="validatedOny" binary="true"></p-checkbox>
+                    Include locked
+                    <p-checkbox (onChange)="filter()" [(ngModel)]="includeLocked" binary="true"></p-checkbox>
                 </div>
                 <div class="col-2">
                     <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems"
@@ -149,16 +149,16 @@
 
             <div *ngIf="selectedDataset" class="mt-5 mb-3">
                 <p>
-                    Step 3: You can mark all the records listed in the above table as <em>consumed</em>, after which
+                    Step 3: You can mark all the records listed in the above table as <em>locked</em>, after which
                     they will no longer be editable.
                 </p>
                 <div class="row">
                     <div class="offset-9 col-3">
-                        <p-progressSpinner *ngIf="isConsuming" animationDuration="1s"
+                        <p-progressSpinner *ngIf="isLocking" animationDuration="1s"
                                            [style]="{width: '26px', height: '26px'}">
                         </p-progressSpinner>
-                        <button pButton class="float-right" type="button" label="Mark as consumed"
-                                (click)="markAsConsumed()" [disabled]="isConsuming">
+                        <button pButton class="float-right" type="button" label="Mark as locked"
+                                (click)="markAsLocked()" [disabled]="isLocking">
                         </button>
                     </div>
                 </div>

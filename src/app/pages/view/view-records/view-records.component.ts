@@ -41,12 +41,12 @@ export class ViewRecordsComponent implements OnInit {
     public projectId: number;
     public dateStart: Date;
     public dateEnd: Date;
-    public publishedOny: boolean = true;
-    public includeConsumed: boolean = false;
+    public validatedOny: boolean = false;
+    public includeLocked: boolean = false;
     public speciesName: string;
     public fileType: string = 'csv';
 
-    public isConsuming: boolean = false;
+    public isLocking: boolean = false;
 
     private recordParams: any = {};
 
@@ -108,12 +108,12 @@ export class ViewRecordsComponent implements OnInit {
                 this.dateEnd.toISOString();
         }
 
-        if (this.publishedOny) {
-            datasetParams['record__published'] = this.recordParams['published'] = true;
+        if (this.validatedOny) {
+            datasetParams['record__validated'] = this.recordParams['validated'] = true;
         }
 
-        if (!this.includeConsumed) {
-            datasetParams['record__consumed'] = this.recordParams['consumed'] = false;
+        if (!this.includeLocked) {
+            datasetParams['record__locked'] = this.recordParams['locked'] = false;
         }
 
         if (this.speciesName) {
@@ -199,21 +199,21 @@ export class ViewRecordsComponent implements OnInit {
         );
     }
 
-    public markAsConsumed() {
+    public markAsLocked() {
         let params = JSON.parse(JSON.stringify(this.recordParams));
 
-        this.isConsuming = true;
+        this.isLocking = true;
         this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params).pipe(
             // map((recordResponse: RecordResponse) => recordResponse.results),
             mergeMap((records: Record[]) => from(records).pipe(
-                mergeMap((record: Record) => this.apiService.updateRecordConsumed(record.id, true))
+                mergeMap((record: Record) => this.apiService.updateRecordLocked(record.id, true))
             ))
         ).subscribe({
             error: (error: APIError) => {
                 console.log('error.msg', error.msg);
-                this.isConsuming = false;
+                this.isLocking = false;
             },
-            complete: () => this.isConsuming = false
+            complete: () => this.isLocking = false
         });
     }
 

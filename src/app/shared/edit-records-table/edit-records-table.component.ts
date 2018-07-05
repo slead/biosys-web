@@ -148,9 +148,9 @@ export class EditRecordsTableComponent {
         this.pageStateChange.emit(this.pageState);
     }
 
-    public onRecordPublishedChanged(checked: boolean, id: number) {
-        this.apiService.updateRecordPublished(id, checked).subscribe((record: Record) =>
-            this.flatRecords.filter((flatRecord: object) => flatRecord['id'] === id)[0]['published'] = record.published);
+    public onRecordValidatedChanged(checked: boolean, id: number) {
+        this.apiService.updateRecordValidated(id, checked).subscribe((record: Record) =>
+            this.flatRecords.filter((flatRecord: object) => flatRecord['id'] === id)[0]['validated'] = record.validated);
     }
 
     public onRowEditInit(event: any) {
@@ -161,7 +161,7 @@ export class EditRecordsTableComponent {
         const data: any = JSON.parse(JSON.stringify(event.data));
         const id: number = data.id;
 
-        for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'published', 'consumed']) {
+        for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'validated', 'locked']) {
             delete data[key];
         }
 
@@ -263,8 +263,8 @@ export class EditRecordsTableComponent {
     private formatFlatRecords(records: Record[]): object[] {
         let flatRecords = records.map((r: Record) => Object.assign({
             id: r.id,
-            published: r.published,
-            consumed: r.consumed,
+            validated: r.validated,
+            locked: r.locked,
             file_name: r.source_info ? r.source_info.file_name : 'Manually created',
             row: r.source_info ? r.source_info.row : '',
             created: moment(r.created).format(EditRecordsTableComponent.DATETIME_FORMAT),
