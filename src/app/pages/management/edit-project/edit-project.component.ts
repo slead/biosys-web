@@ -159,7 +159,7 @@ export class EditProjectComponent implements OnInit {
     }
 
     public getProgramLabel(value: number): string {
-        if (!this.programChoices) {
+        if (!value || !this.programChoices) {
             return '';
         }
 
