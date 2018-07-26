@@ -50,7 +50,7 @@
                                 <label class="field-label">Program</label>
                             </div>
                             <div class="col-md-8">
-                                <label [hidden]="isEditing" *ngIf="project.program">{{getProgramLabel(project.program)}}</label>
+                                <label [hidden]="isEditing">{{getProgramLabel(project.program)}}</label>
                                 <p-dropdown [hidden]="!isEditing" [options]="programChoices"
                                             [(ngModel)]="project.program" [autoWidth]="false">
                                 </p-dropdown>
