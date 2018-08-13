@@ -24,6 +24,9 @@ import { DataModule } from './pages/data/data.module';
 import { ManagementModule } from './pages/management/management.module';
 import { ViewModule } from './pages/view/view.module';
 import { environment } from '../environments/environment';
+import { AuthGuard } from '../biosys-core/guards/auth.guard';
+import { AdminGuard } from '../biosys-core/guards/admin.guard';
+import { DataEngineerGuard } from '../biosys-core/guards/data-engineer.guard';
 
 @NgModule({
     declarations: [
@@ -48,7 +51,12 @@ import { environment } from '../environments/environment';
             provide: AuthService,
             useClass: !!environment['useSSOAuth'] ? SSOAuthService : AuthService
         },
-        SSOAuthGuard,
+        {
+            provide: AuthGuard,
+            useClass: !!environment['useSSOAuth'] ? SSOAuthGuard : AuthGuard
+        },
+        AdminGuard,
+        DataEngineerGuard,
         {
             provide: LocationStrategy,
             useClass: HashLocationStrategy

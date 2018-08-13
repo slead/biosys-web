@@ -1,12 +1,12 @@
 import { Route } from '@angular/router';
 import { ListDatasetsComponent } from './list-datasets.component';
-import { SSOAuthGuard } from '../../../shared/services/sso-auth.guard';
+import { AuthGuard } from '../../../../biosys-core/guards/auth.guard';
 
 export const DatasetsRoutes: Route[] = [
     {
         path: 'data/projects/:projId/datasets',
         component: ListDatasetsComponent,
-        canActivate: [SSOAuthGuard],
-        canActivateChild: [SSOAuthGuard]
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard]
     }
 ];

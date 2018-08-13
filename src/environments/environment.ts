@@ -5,6 +5,6 @@
 
 export const environment = {
     production: false,
-    server: 'http://localhost:8000',
+    server: 'https://staging-biosys.gaiaresources.com.au',
     apiExtension: '/api/',
 };

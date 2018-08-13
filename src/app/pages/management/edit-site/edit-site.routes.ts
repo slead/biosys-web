@@ -1,18 +1,19 @@
 import { Route } from '@angular/router';
 import { EditSiteComponent } from './edit-site.component';
-import { SSOAuthGuard } from '../../../shared/services/sso-auth.guard';
+import { DataEngineerGuard } from '../../../../biosys-core/guards/data-engineer.guard';
+import { AuthGuard } from '../../../../biosys-core/guards/auth.guard';
 
 export const EditSiteRoutes: Route[] = [
     {
         path: 'management/projects/edit-project/:projId/create-site',
         component: EditSiteComponent,
-        canActivate: [SSOAuthGuard],
-        canActivateChild: [SSOAuthGuard]
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard]
     },
     {
         path: 'management/projects/edit-project/:projId/edit-site/:id',
         component: EditSiteComponent,
-        canActivate: [SSOAuthGuard],
-        canActivateChild: [SSOAuthGuard]
+        canActivate: [AuthGuard, DataEngineerGuard],
+        canActivateChild: [AuthGuard]
     }
 ];
