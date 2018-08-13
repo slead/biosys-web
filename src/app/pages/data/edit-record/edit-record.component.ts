@@ -12,6 +12,7 @@ import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { from } from 'rxjs/observable/from';
 import { mergeMap } from 'rxjs/operators';
+import { getDefaultValue } from '../../../shared/utils/functions';
 
 
 @Component({
@@ -93,8 +94,8 @@ export class EditRecordComponent implements OnInit {
                     );
                 } else {
                     let data: any = {};
-                    for (let datum of this.dataset.data_package.resources[0].schema.fields) {
-                        data[datum['name']] = '';
+                    for (let field of this.dataset.data_package.resources[0].schema.fields) {
+                        data[field['name']] = getDefaultValue(field);
                     }
 
                     this.record = <Record> {

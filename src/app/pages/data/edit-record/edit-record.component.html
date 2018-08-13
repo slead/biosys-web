@@ -36,34 +36,39 @@
                         </div>
                     </div>
                     <hr>
-                    <div class="row mt-1" *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
-                        <div class="col-4">
-                            <label [for]="field.name" [style.font-weight]="'bold'">
-                                {{field.name}}
-                                <span *ngIf="field.constraints?.required">*</span>
-                            </label>
-                        </div>
-                        <div [ngSwitch]="field.type" class="col-8">
-                            <div *ngSwitchCase="'date'">
-                                <p-calendar dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
-                                            [id]="field.name"
-                                            [(ngModel)]="record.data[field.name]">
-                                </p-calendar>
-                            </div>
-                            <div *ngSwitchDefault>
-                                <p-dropdown *ngIf="field.constraints?.enum"
-                                            [placeholder]="'Select a ' + field.name.toLowerCase()"
-                                            [options]="getDropdownOptions(field.name, field.constraints.enum)"
-                                            [(ngModel)]="record.data[field.name]"
-                                            [autoWidth]="false">
-                                </p-dropdown>
-                                <input pInputText *ngIf="!field.constraints?.enum" [id]="field.name"
-                                       [(ngModel)]="record.data[field.name]" (change)="onInputChanged($event)"/>
-                                <div class="text-danger">
-                                    {{recordErrors[field.name]}}
+                    <div *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                        <input *ngIf="field | isHiddenField; else fieldSection" type="hidden"
+                               [(ngModel)]="record.data[field.name]">
+                        <ng-template #fieldSection>
+                            <div class="row mt-1">
+                                <div class="col-4">
+                                    <label [style.font-weight]="'bold'">
+                                        {{field | fieldLabel}}
+                                        <span *ngIf="field.constraints?.required">*</span>
+                                    </label>
+                                </div>
+                                <div [ngSwitch]="field.type" class="col-8">
+                                    <div *ngSwitchCase="'date'">
+                                        <p-calendar dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+                                                    [(ngModel)]="record.data[field.name]">
+                                        </p-calendar>
+                                    </div>
+                                    <div *ngSwitchDefault>
+                                        <p-dropdown *ngIf="field.constraints?.enum"
+                                                    [placeholder]="'Select a ' + field.name.toLowerCase()"
+                                                    [options]="getDropdownOptions(field.name, field.constraints.enum)"
+                                                    [(ngModel)]="record.data[field.name]"
+                                                    [autoWidth]="false">
+                                        </p-dropdown>
+                                        <input pInputText *ngIf="!field.constraints?.enum"
+                                               [(ngModel)]="record.data[field.name]" (change)="onInputChanged($event)"/>
+                                        <div class="text-danger">
+                                            {{recordErrors[field.name]}}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </ng-template>
                     </div>
                 </div>
             </div>

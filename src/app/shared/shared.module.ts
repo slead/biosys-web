@@ -21,6 +21,7 @@ import { TableModule } from 'primeng/table'; // may get moved back to primeng/pr
 import { SharedModule as PrimeSharedModule } from 'primeng/primeng';
 import { BiosysCoreModule } from '../../biosys-core/biosys-core.module';
 import { GalleriaComponent } from './galleria/galleria.component';
+import { DefaultValuePipe, FieldLabelPipe, IsHiddenFieldPipe } from './pipes/table-schema.pipe';
 
 
 @NgModule({
@@ -29,11 +30,11 @@ import { GalleriaComponent } from './galleria/galleria.component';
         BiosysCoreModule],
     declarations: [HeaderComponent, JsonEditorComponent, NavbarComponent, BreadcrumbsComponent, FeatureMapComponent,
         FileuploaderComponent, GalleriaComponent, MarkerDirective, PyToPrimeDateFormatConversionPipe, SafePipe,
-        ExpandableMessagesComponent, EditRecordsTableComponent, GalleriaComponent],
+        IsHiddenFieldPipe, DefaultValuePipe, FieldLabelPipe, ExpandableMessagesComponent, EditRecordsTableComponent, GalleriaComponent],
     exports: [CommonModule, FormsModule, RouterModule, BiosysCoreModule, HeaderComponent, JsonEditorComponent,
         NavbarComponent, BreadcrumbsComponent, EditRecordsTableComponent, ExpandableMessagesComponent,
         FeatureMapComponent, FileuploaderComponent, GalleriaComponent, MarkerDirective,
-        PyToPrimeDateFormatConversionPipe, SafePipe
+        PyToPrimeDateFormatConversionPipe, SafePipe, IsHiddenFieldPipe, DefaultValuePipe, FieldLabelPipe
     ]
 })
 export class SharedModule {

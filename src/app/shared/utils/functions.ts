@@ -21,3 +21,12 @@ export function pyDateFormatToPrimeDateFormat(pythonDateFormat: string): string 
 
     return primeDateFormat;
 }
+
+export function isHiddenField(field: any) {
+    return field.hasOwnProperty('constraints') && field.constraints.hasOwnProperty('enum') && field.constraints.enum.length === 1;
+}
+
+export function getDefaultValue(field: any) {
+    // assume default to be first enum value otherwise an empty string
+    return isHiddenField(field) ? field.constraints.enum[0] : '';
+}
