@@ -27,8 +27,8 @@ export class HomeComponent implements OnInit {
     public projects: Project[];
     public statistic: Statistic;
     public userString = '';
+    public user: User;
 
-    private user: User;
     private map: L.Map;
 
     constructor(private apiService: APIService, private authService: AuthService) {

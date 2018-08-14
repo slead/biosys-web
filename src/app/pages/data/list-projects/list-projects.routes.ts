@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { DataListProjectsComponent } from './list-projects.component';
-import { SSOAuthGuard } from '../../../shared/services/sso-auth.guard';
+import { AuthGuard } from '../../../../biosys-core/guards/auth.guard';
 import { DatasetsRoutes } from '../list-datasets/list-datasets.routes';
 import { ManageDataRoutes } from '../manage-data/manage-data.routes';
 import { EditRecordRoutes } from '../edit-record/edit-record.routes';
@@ -9,8 +9,8 @@ export const DataListProjectsRoutes: Route[] = [
     {
         path: 'data/projects',
         component: DataListProjectsComponent,
-        canActivate: [SSOAuthGuard],
-        canActivateChild: [SSOAuthGuard]
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard]
     },
     ...DatasetsRoutes,
     ...ManageDataRoutes,

@@ -26,7 +26,6 @@ export class NavbarComponent implements OnInit {
                 icon: 'fa-home',
                 routerLink: ['/']
             },
-
             {
                 label: 'Data',
                 icon: 'fa-database',
@@ -62,7 +61,7 @@ export class NavbarComponent implements OnInit {
                         projectItem
                     ]
                 });
-            } else {
+            } else if (user.is_data_engineer) {
                 this.items.splice(1, 0, {
                     label: 'Manage',
                     icon: 'fa-university',

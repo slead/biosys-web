@@ -1,11 +1,11 @@
 import { Route } from '@angular/router';
 import { HomeComponent } from './home.component';
-import { SSOAuthGuard } from '../../shared/services/sso-auth.guard';
+import { AuthGuard } from '../../../biosys-core/guards/auth.guard';
 
 export const HomeRoutes: Route[] = [
   {
     path: '',
     component: HomeComponent,
-    canActivate: [SSOAuthGuard]
+    canActivate: [AuthGuard]
   }
 ];
