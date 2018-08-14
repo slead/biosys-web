@@ -9,12 +9,12 @@
     </div>
     <div class="row mt-1 main-section">
         <div class="col-3">
-            <a routerLink="/management/projects">
+            <a *ngIf="user.is_admin || user.is_data_engineer" routerLink="/management/projects">
                 <div class="card mb-2">
                     <div class="card-block">
                         <h5 class="card-title text-center">Manage Projects / Sites / Datasets</h5>
                     </div>
-                    <img class="card-img-bottom" src="/assets/img/project.jpg">
+                    <img class="card-img-bottom" src="./assets/img/project.jpg">
                 </div>
             </a>
             <a routerLink="/data/projects">
@@ -22,7 +22,7 @@
                     <div class="card-block">
                         <h5 class="card-title text-center">Create / Import / Edit / Delete Records</h5>
                     </div>
-                    <img class="card-img-bottom" src="/assets/img/data.jpg">
+                    <img class="card-img-bottom" src="./assets/img/data.jpg">
                 </div>
             </a>
             <a routerLink="/view">
@@ -30,7 +30,7 @@
                     <div class="card-block">
                         <h5 class="card-title text-center">View and Export Records</h5>
                     </div>
-                    <img class="card-img-bottom" src="/assets/img/export.jpg">
+                    <img class="card-img-bottom" src="./assets/img/export.jpg">
                 </div>
             </a>
         </div>

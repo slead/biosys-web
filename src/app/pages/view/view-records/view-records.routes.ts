@@ -1,11 +1,11 @@
 import { Route } from '@angular/router';
 import { ViewRecordsComponent } from './view-records.component';
-import { SSOAuthGuard } from '../../../shared/services/sso-auth.guard';
+import { AuthGuard } from '../../../../biosys-core/guards/auth.guard';
 export const ViewRecordsRoutes: Route[] = [
     {
         path: 'view',
         component: ViewRecordsComponent,
-        canActivate: [SSOAuthGuard],
-        canActivateChild: [SSOAuthGuard]
+        canActivate: [AuthGuard],
+        canActivateChild: [AuthGuard]
     }
 ];
