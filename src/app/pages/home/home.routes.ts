@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { HomeComponent } from './home.component';
-import { AuthGuard } from '../../../biosys-core/guards/auth.guard';
+import { AuthGuard } from '../../shared/guards/auth.guard';
 
 export const HomeRoutes: Route[] = [
   {

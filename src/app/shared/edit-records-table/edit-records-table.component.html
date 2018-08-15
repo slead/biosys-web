@@ -17,8 +17,9 @@
             <col [style.width]="'100px' | safe: 'style'">
             <col [style.width]="'100px' | safe: 'style'">
             <col [style.width]="'100px' | safe: 'style'">
-            <col *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
-                 [style.width]="getRecordsTableColumnWidth(field.name)">
+            <ng-container *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                <col *ngIf="!(field | isHiddenField)" [style.width]="getRecordsTableColumnWidth(field.name)">
+            </ng-container>
             <col [style.width]="'240px' | safe: 'style'">
             <col [style.width]="'240px' | safe: 'style'">
             <col [style.width]="'240px' | safe: 'style'">
@@ -41,11 +42,12 @@
                 Validated
             </th>
             <th>Locked</th>
-            <th *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields"
-                [pSortableColumn]="field.name">
-                {{ field.name }}
-                <p-sortIcon [field]="field.name"></p-sortIcon>
-            </th>
+            <ng-container *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                <th *ngIf="!(field | isHiddenField)" [pSortableColumn]="field.name">
+                    {{ field.name }}
+                    <p-sortIcon [field]="field.name"></p-sortIcon>
+                </th>
+            </ng-container>
             <th>Source File</th>
             <th>Source Row</th>
             <th>Created</th>
@@ -68,35 +70,41 @@
                             (onChange)="onRecordValidatedChanged($event, rowData.id)"></p-checkbox>
             </td>
             <td>{{ rowData.locked }}</td>
-            <td *ngFor="let field of !rowData.locked ? dataset?.data_package?.resources[0]?.schema?.fields : []"
-                [pEditableColumn]="rowData" [pEditableColumnField]="field.name">
-                <p-cellEditor>
-                    <ng-template pTemplate="input">
-                        <span [ngSwitch]="getFieldType(field)">
-                        <input *ngSwitchCase="'text'" [type]="field.type" [(ngModel)]="rowData[field.name]"
-                        [style.width]="'100%' | safe: 'style'">
-                        <p-calendar *ngSwitchCase="'datetime'"
-                                    dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
-                                    [(ngModel)]="rowData[field.name]" appendTo="body"
-                                    [inputStyle]="{width: '100%'}">
-                        </p-calendar>
-                        <p-dropdown *ngSwitchCase="'select'" [placeholder]="'Select a ' + field.name.toLowerCase()"
-                                    [options]="getDropdownOptions(field.name, field.constraints.enum)"
-                                    [(ngModel)]="rowData[field.name]" [style.width]="'100%' | safe: 'style'"
-                                    appendTo="body">
-                        </p-dropdown>
-                        </span>
-                    </ng-template>
-                    <ng-template pTemplate="output">
-                        {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
-                            pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
-                    </ng-template>
-                </p-cellEditor>
-            </td>
-            <td *ngFor="let field of rowData.locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
-                {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
-                pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
-            </td>
+            <!-- have editable cells if record not locked -->
+            <ng-container
+                    *ngFor="let field of !rowData.locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+                <td *ngIf="!(field | isHiddenField)" [pEditableColumn]="rowData" [pEditableColumnField]="field.name">
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <span [ngSwitch]="getFieldType(field)">
+                            <input *ngSwitchCase="'text'" [type]="field.type" [(ngModel)]="rowData[field.name]"
+                                    [style.width]="'100%' | safe: 'style'">
+                            <p-calendar *ngSwitchCase="'datetime'"
+                                        dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+                                        [(ngModel)]="rowData[field.name]" appendTo="body"
+                                        [inputStyle]="{width: '100%'}">
+                            </p-calendar>
+                            <p-dropdown *ngSwitchCase="'select'" [placeholder]="'Select a ' + field.name.toLowerCase()"
+                                        [options]="getDropdownOptions(field.name, field.constraints.enum)"
+                                        [(ngModel)]="rowData[field.name]" [style.width]="'100%' | safe: 'style'"
+                                        appendTo="body">
+                            </p-dropdown>
+                            </span>
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
+                                pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+            </ng-container>
+            <!-- just show record values (non-editable) if record locked -->
+            <ng-container *ngFor="let field of rowData.locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+                <td *ngIf="!(field | isHiddenField)">
+                    {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
+                        pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
+                </td>
+            </ng-container>
             <td>{{ rowData.file_name }}</td>
             <td>{{ rowData.row }}</td>
             <td>{{ rowData.created }}</td>
