@@ -1,19 +1,17 @@
 import { Route } from '@angular/router';
 import { EditProjectComponent } from './edit-project.component';
-import { DataEngineerGuard } from '../../../../biosys-core/guards/data-engineer.guard';
-import { AuthGuard } from '../../../../biosys-core/guards/auth.guard';
+import { DataEngineerGuard } from '../../../shared/guards/data-engineer.guard';
+import { AuthGuard } from '../../../shared/guards/auth.guard';
 
 export const EditProjectRoutes: Route[] = [
     {
         path: 'management/projects/create-project',
         component: EditProjectComponent,
-        canActivate: [AuthGuard, DataEngineerGuard],
-        canActivateChild: [AuthGuard]
+        canActivate: [AuthGuard, DataEngineerGuard]
     },
     {
-        path: 'management/projects/edit-project/:id',
+        path: 'management/projects/edit-project/:projId',
         component: EditProjectComponent,
-        canActivate: [AuthGuard, DataEngineerGuard],
-        canActivateChild: [AuthGuard]
+        canActivate: [AuthGuard, DataEngineerGuard]
     }
 ];

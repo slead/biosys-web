@@ -23,6 +23,14 @@ table td {
   background: none;
 }
 
+.ui-menubar ul {
+    width: 100%;
+}
+
+.ui-menuitem:last-child {
+    float: right;
+}
+
 .ui-menuitem .ui-state-active {
   border: none;
   background: none;

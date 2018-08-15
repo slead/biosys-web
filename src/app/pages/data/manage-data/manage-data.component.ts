@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message, ConfirmationService } from 'primeng/primeng';
+import { Message } from 'primeng/primeng';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import '../../../../lib/leaflet.latlng-graticule'
@@ -66,7 +66,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private markersByRecordId: object;
 
     constructor(private apiService: APIService, private  authService: AuthService, private router: Router,
-                private route: ActivatedRoute, private confirmationService: ConfirmationService) {
+                private route: ActivatedRoute) {
     }
 
     public ngOnInit() {

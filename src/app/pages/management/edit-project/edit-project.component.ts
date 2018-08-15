@@ -55,10 +55,10 @@ export class EditProjectComponent implements OnInit {
     ngOnInit() {
         let params = this.route.snapshot.params;
 
-        this.isEditing = !('id' in params);
+        this.isEditing = !('projId' in params);
 
         if (!this.isEditing) {
-            this.apiService.getProjectById(+params['id']).subscribe(
+            this.apiService.getProjectById(+params['projId']).subscribe(
                 (project: Project) => {
                     this.project = project;
                     this.breadcrumbItems.push({label: this.project.name});
@@ -66,12 +66,12 @@ export class EditProjectComponent implements OnInit {
                 (error: APIError) => console.log('error.msg', error.msg)
             );
 
-            this.apiService.getAllDatasetsForProjectID(+params['id']).subscribe(
+            this.apiService.getAllDatasetsForProjectID(+params['projId']).subscribe(
                 (datasets: Dataset[]) => this.datasets = datasets,
                 (error: APIError) => console.log('error.msg', error.msg)
             );
 
-            this.apiService.getAllSitesForProjectID(+params['id']).subscribe(
+            this.apiService.getAllSitesForProjectID(+params['projId']).subscribe(
                 (sites: Site[]) => {
                     this.flatSites = this.formatFlatSites(sites);
                     this.siteAttributeKeys = sites.length > 0 ? this.extractSiteAttributeKeys(sites[0]) : [];

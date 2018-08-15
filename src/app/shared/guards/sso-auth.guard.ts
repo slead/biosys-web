@@ -3,7 +3,7 @@ import { CanActivate, Router } from '@angular/router';
 import { AuthService } from '../../../biosys-core/services/auth.service';
 
 import { environment } from '../../../environments/environment';
-import { AuthGuard } from '../../../biosys-core/guards/auth.guard';
+import { AuthGuard } from './auth.guard';
 
 @Injectable()
 export class SSOAuthGuard extends AuthGuard implements CanActivate {

@@ -16,7 +16,7 @@ import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 
 import { SSOAuthService } from './shared/services/sso-auth.service';
-import { SSOAuthGuard } from './shared/services/sso-auth.guard';
+import { SSOAuthGuard } from './shared/guards/sso-auth.guard';
 
 import { LoginModule } from './pages/login/login.module';
 import { HomeModule } from './pages/home/home.module';
@@ -24,9 +24,10 @@ import { DataModule } from './pages/data/data.module';
 import { ManagementModule } from './pages/management/management.module';
 import { ViewModule } from './pages/view/view.module';
 import { environment } from '../environments/environment';
-import { AuthGuard } from '../biosys-core/guards/auth.guard';
-import { AdminGuard } from '../biosys-core/guards/admin.guard';
-import { DataEngineerGuard } from '../biosys-core/guards/data-engineer.guard';
+import { AuthGuard } from './shared/guards/auth.guard';
+import { AdminGuard } from './shared/guards/admin.guard';
+import { DataEngineerGuard } from './shared/guards/data-engineer.guard';
+import { TeamMemberGuard } from './shared/guards/team-member.guard';
 
 @NgModule({
     declarations: [
@@ -57,6 +58,7 @@ import { DataEngineerGuard } from '../biosys-core/guards/data-engineer.guard';
         },
         AdminGuard,
         DataEngineerGuard,
+        TeamMemberGuard,
         {
             provide: LocationStrategy,
             useClass: HashLocationStrategy
