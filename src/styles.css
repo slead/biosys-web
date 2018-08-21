@@ -31,6 +31,10 @@ table td {
     float: right;
 }
 
+.ui-menu-parent .ui-menuitem:last-child {
+    float: none;
+}
+
 .ui-menuitem .ui-state-active {
   border: none;
   background: none;
