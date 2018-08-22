@@ -37,7 +37,7 @@ export class UploadSitesComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        let params = this.route.snapshot.params;
+        const params = this.route.snapshot.params;
         this.projectId = params['projectId'];
 
         this.apiService.getProjectById(this.projectId)
@@ -58,7 +58,7 @@ export class UploadSitesComponent implements OnInit {
     }
 
     onUpload() {
-        let successUrl = '/management/projects/edit-project/' + this.projectId;
+        const successUrl = '/management/projects/edit-project/' + this.projectId;
         return this.router.navigate([successUrl]);
     }
 
@@ -71,13 +71,13 @@ export class UploadSitesComponent implements OnInit {
             });
         };
         this.messages = [];
-        let statusCode = event.xhr.status;
+        const statusCode = event.xhr.status;
         let resp = event.xhr.response;
         if (statusCode === 400) {
             resp = JSON.parse(resp);
             // find errors
-            for (let rowNumber of Object.getOwnPropertyNames(resp)) {
-                let error = resp[rowNumber]['error'];
+            for (const rowNumber of Object.getOwnPropertyNames(resp)) {
+                const error = resp[rowNumber]['error'];
                 if (error) {
                     addErrorMessage('Row #' + rowNumber, error);
                 }
@@ -88,7 +88,7 @@ export class UploadSitesComponent implements OnInit {
     }
 
     public onBeforeSend(event: any) {
-        let xhr = event.xhr;
+        const xhr = event.xhr;
 
         const authToken = this.authService.getAuthToken();
         if (authToken) {
@@ -99,8 +99,8 @@ export class UploadSitesComponent implements OnInit {
     onSelect(event: any) {
         // check file type (the last in the list)
         // use the file list of uploader instead of the file list given in the event so we can add/remove to it.
-        let files: File[] = this.uploader.files;
-        let file: File = files.pop();
+        const files: File[] = this.uploader.files;
+        const file: File = files.pop();
         if (this.accepted_types.indexOf(file.type) === -1) {
             this.messages = [];
             this.messages.push({

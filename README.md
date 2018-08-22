@@ -31,7 +31,7 @@ Navigate to [http://localhost:4200/](http://localhost:4200/). The app will autom
 To build the project for UAT, use: 
 
 ```bash
-ng build --env=dbca-uat --prod --build-optimizer
+ng build --configuration=dbca-uat --prod
  ```
 
 The build artifacts will be stored in the `dist/` directory.
@@ -41,7 +41,7 @@ The build artifacts will be stored in the `dist/` directory.
 To build the project for production, use: 
 
 ```bash
-ng build --env=dbca-prod --prod --build-optimizer
+ng build --configuration=dbca-prod --prod
  ```
 
 The build artifacts will be stored in the `dist/` directory.

@@ -75,17 +75,17 @@
             <div class="col-md-6" *ngIf="dataset.type !== 'generic'">
                 <label class="field-label">Location</label>
                 <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']"
-                                   (onGeometryChanged)="onFeatureMapGeometryChanged($event)">
+                                   (geometryChanged)="onFeatureMapGeometryChanged($event)">
                 </biosys-featuremap>
             </div>
         </div>
         <div class="row mt-3 mb-3">
             <div class="col-2">
-                <button pButton icon="fa-trash" (click)="confirmDelete()" label="Delete"></button>
+                <button pButton icon="fa fa-trash" (click)="confirmDelete()" label="Delete"></button>
             </div>
             <div class="col-4">
-                <button pButton icon="fa-close" label="Cancel" (click)="cancel()"></button>
-                <button pButton icon="fa-check" (click)="save()" label="Save"></button>
+                <button pButton icon="fa fa-close" label="Cancel" (click)="cancel()"></button>
+                <button pButton icon="fa fa-check" (click)="save()" label="Save"></button>
             </div>
         </div>
     </div>

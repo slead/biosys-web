@@ -11,6 +11,10 @@ table td {
   vertical-align: top;
 }
 
+.ui-button {
+    margin-right: 5px;
+}
+
 .ui-breadcrumb {
   border: none;
   background: none;

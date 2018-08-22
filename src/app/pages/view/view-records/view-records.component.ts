@@ -6,8 +6,7 @@ import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
 import { mergeMap } from 'rxjs/operators';
-import { from } from 'rxjs/observable/from';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+import { from ,  forkJoin } from 'rxjs';
 
 import { APIError, Dataset, Record, RecordResponse } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
@@ -22,9 +21,9 @@ import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 })
 
 export class ViewRecordsComponent implements OnInit {
-    private static COLUMN_WIDTH: number = 240;
-    private static CHAR_LENGTH_MULTIPLIER: number = 8;
-    private static PADDING: number = 50;
+    private static COLUMN_WIDTH = 240;
+    private static CHAR_LENGTH_MULTIPLIER = 8;
+    private static PADDING = 50;
 
     public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
     public breadcrumbItems: any = [];
@@ -35,18 +34,18 @@ export class ViewRecordsComponent implements OnInit {
     public datasets: Dataset[];
     public records: Record[];
     public recordsTableColumnWidths: { [key: string]: number } = {};
-    public totalRecords: number = 0;
+    public totalRecords = 0;
     public selectedDataset: Dataset;
 
     public projectId: number;
     public dateStart: Date;
     public dateEnd: Date;
-    public validatedOny: boolean = false;
-    public includeLocked: boolean = false;
+    public validatedOny = false;
+    public includeLocked = false;
     public speciesName: string;
-    public fileType: string = 'csv';
+    public fileType = 'csv';
 
-    public isLocking: boolean = false;
+    public isLocking = false;
 
     private recordParams: any = {};
 
@@ -63,7 +62,7 @@ export class ViewRecordsComponent implements OnInit {
             this.apiService.getDatasets()
         ]).subscribe(
             (data: any) => {
-                let projects = data[0];
+                const projects = data[0];
                 this.datasets = data[1];
                 projects.forEach(project => this.projectsMap[project.id] = project.name);
                 this.addProjectNameToDatasets();
@@ -91,7 +90,7 @@ export class ViewRecordsComponent implements OnInit {
     public filter() {
         this.records = null;
 
-        let datasetParams: any = {};
+        const datasetParams: any = {};
         this.recordParams = {};
 
         if (this.projectId) {
@@ -151,7 +150,7 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
-        let params = JSON.parse(JSON.stringify(this.recordParams));
+        const params = JSON.parse(JSON.stringify(this.recordParams));
 
         if (event.first !== undefined && event.first > -1) {
             params['offset'] = event.first;
@@ -200,7 +199,7 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     public markAsLocked() {
-        let params = JSON.parse(JSON.stringify(this.recordParams));
+        const params = JSON.parse(JSON.stringify(this.recordParams));
 
         this.isLocking = true;
         this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params).pipe(

@@ -3,8 +3,7 @@ import { NgModule } from '@angular/core';
 import {
     ConfirmationService, DialogModule, ButtonModule, GrowlModule, MessagesModule, InputTextModule,
     ConfirmDialogModule, CalendarModule, DropdownModule, FileUploadModule, CheckboxModule, TooltipModule, GalleriaModule
-}
-    from 'primeng/primeng';
+} from 'primeng/primeng';
 import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
 
 import { SharedModule } from '../../shared/shared.module';

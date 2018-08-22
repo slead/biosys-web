@@ -13,6 +13,6 @@ export class AdminGuard implements CanActivate {
     canActivate() {
         return this.authService.getCurrentUser().pipe(
             map((user: User) => user.is_admin)
-        )
+        );
     }
 }

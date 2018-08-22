@@ -4,15 +4,15 @@
         <i class="fa fa-circle-o-notch fa-spin fa-2x"></i>
     </div>
     <div class="ui-fileupload-buttonbar ui-widget-header ui-corner-top">
-        <span class="ui-fileupload-choose" [label]="chooseLabel" icon="fa-plus" pButton
+        <span class="ui-fileupload-choose" [label]="chooseLabel" icon="fa fa-plus" pButton
               [ngClass]="{'ui-state-focus': focus}">
             <input #advancedfileinput type="file" (change)="onFileSelect($event)" [multiple]="multiple"
                    [accept]="accept" [disabled]="disabled" (focus)="onFocus()" (blur)="onBlur()">
         </span>
 
-        <button *ngIf="!auto&&showUploadButton" type="button" [label]="uploadLabel" icon="fa-upload" pButton
+        <button *ngIf="!auto&&showUploadButton" type="button" [label]="uploadLabel" icon="fa fa-upload" pButton
                 (click)="upload()" [disabled]="!hasFiles()"></button>
-        <button *ngIf="!auto&&showCancelButton" type="button" [label]="cancelLabel" icon="fa-close" pButton
+        <button *ngIf="!auto&&showCancelButton" type="button" [label]="cancelLabel" icon="fa fa-close" pButton
                 (click)="clear()" [disabled]="!hasFiles()"></button>
 
         <ng-container *ngTemplateOutlet="toolbarTemplate"></ng-container>
@@ -30,7 +30,7 @@
                     <div>{{file.name}}</div>
                     <div>{{formatSize(file.size)}}</div>
                     <div>
-                        <button type="button" icon="fa-close" pButton (click)="remove($event,i)"></button>
+                        <button type="button" icon="fa fa-close" pButton (click)="remove($event,i)"></button>
                     </div>
                 </div>
             </div>

@@ -23,9 +23,9 @@ export class ListDatasetsComponent implements OnInit {
     }
 
     ngOnInit() {
-        let params = this.route.snapshot.params;
+        const params = this.route.snapshot.params;
 
-        let projId: number = Number(params['projId']);
+        const projId: number = Number(params['projId']);
 
         this.apiService.getProjectById(projId)
             .subscribe(

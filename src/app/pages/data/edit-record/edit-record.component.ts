@@ -10,7 +10,7 @@ import { pyDateFormatToMomentDateFormat } from '../../../../biosys-core/utils/fu
 import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
 
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
-import { from } from 'rxjs/observable/from';
+import { from } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { getDefaultValue } from '../../../shared/utils/functions';
 
@@ -45,10 +45,10 @@ export class EditRecordComponent implements OnInit {
     }
 
     ngOnInit() {
-        let params = this.route.snapshot.params;
+        const params = this.route.snapshot.params;
 
-        let projId: number = Number(params['projId']);
-        let datasetId: number = Number(params['datasetId']);
+        const projId: number = Number(params['projId']);
+        const datasetId: number = Number(params['datasetId']);
         this.parentRecordId = Number(params['parentRecordId']);
         this.completeUrl = params['completeUrl'] || `/data/projects/${projId}/datasets/${datasetId}`;
 
@@ -79,7 +79,7 @@ export class EditRecordComponent implements OnInit {
                                 this.apiService.getRecordById(record.children[0]).subscribe(
                                     (childRecord: Record) => this.apiService.getDatasetById(childRecord.dataset).
                                         subscribe((childDataset: Dataset) => this.childDataset = childDataset)
-                                )
+                                );
                             }
                         },
                         (error: APIError) => console.log('error.msg', error.msg)
@@ -93,8 +93,8 @@ export class EditRecordComponent implements OnInit {
                         }))
                     );
                 } else {
-                    let data: any = {};
-                    for (let field of this.dataset.data_package.resources[0].schema.fields) {
+                    const data: any = {};
+                    for (const field of this.dataset.data_package.resources[0].schema.fields) {
                         data[field['name']] = getDefaultValue(field);
                     }
 
@@ -125,7 +125,7 @@ export class EditRecordComponent implements OnInit {
         this.apiService.recordGeometryToData(this.dataset.id, geometry, this.record.data)
         .subscribe(
             (geometryAndData: any) => {
-                let recordCopy = JSON.parse(JSON.stringify(this.record));
+                const recordCopy = JSON.parse(JSON.stringify(this.record));
                 recordCopy.data = geometryAndData.data;
                 recordCopy.geometry = geometryAndData.geometry;
                 this.record = this.formatRecord(recordCopy);
@@ -138,7 +138,7 @@ export class EditRecordComponent implements OnInit {
         this.apiService.recordDataToGeometry(this.dataset.id, this.record.geometry, this.record.data)
         .subscribe(
             (geometryAndData: any) => {
-                let recordCopy = JSON.parse(JSON.stringify(this.record));
+                const recordCopy = JSON.parse(JSON.stringify(this.record));
                 recordCopy.data = geometryAndData.data;
                 recordCopy.geometry = geometryAndData.geometry;
                 this.record = this.formatRecord(recordCopy);
@@ -153,7 +153,7 @@ export class EditRecordComponent implements OnInit {
         const recordCopy = JSON.parse(JSON.stringify(this.record));
 
         // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
-        for (let field of this.dataset.data_package.resources[0].schema.fields) {
+        for (const field of this.dataset.data_package.resources[0].schema.fields) {
             if (field.type === 'date' && recordCopy.data[field.name]) {
                 recordCopy.data[field.name] = moment(recordCopy.data[field.name]).
                     format(pyDateFormatToMomentDateFormat(field.format));
@@ -241,7 +241,7 @@ export class EditRecordComponent implements OnInit {
 
     private formatRecord(record: Record) {
         // convert date fields to Date type because calendar element in form expects a Date
-        for (let field of this.dataset.data_package.resources[0].schema.fields) {
+        for (const field of this.dataset.data_package.resources[0].schema.fields) {
             if (field.type === 'date' && record.data[field.name]) {
                 // If date in DD?MM?YYYY format (where ? is any single char), convert to American (as Chrome, Firefox
                 // and IE expect this when creating Date from a string
@@ -250,7 +250,7 @@ export class EditRecordComponent implements OnInit {
                 // use '-' rather than '_' in case '_' is used as the separator
                 dateString = dateString.replace(/_/g, '-');
 
-                let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
+                const regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
                 if (regexGroup) {
                     dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
                 }

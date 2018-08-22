@@ -108,7 +108,7 @@ export class EditProgramComponent implements OnInit {
         this.messages.push({
             severity: 'error',
             summary: 'Program delete error',
-            detail: 'There were error(s) deleting the program: ' + errors.msg 
+            detail: 'There were error(s) deleting the program: ' + errors.msg
         });
     }
 

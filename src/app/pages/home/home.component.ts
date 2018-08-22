@@ -4,12 +4,13 @@ import { APIService } from '../../../biosys-core/services/api.service';
 
 import { APIError, Project, Statistic, User } from '../../../biosys-core/interfaces/api.interfaces';
 
-import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers }
-    from '../../shared/utils/maputils';
+import {
+    DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers
+} from '../../shared/utils/maputils';
 
 import * as L from 'leaflet';
 import 'leaflet-mouse-position';
-import '../../../lib/leaflet.latlng-graticule'
+import '../../../lib/leaflet.latlng-graticule';
 import { AuthService } from '../../../biosys-core/services/auth.service';
 import { formatUserFullName } from '../../../biosys-core/utils/functions';
 
@@ -33,7 +34,7 @@ export class HomeComponent implements OnInit {
 
     constructor(private apiService: APIService, private authService: AuthService) {
         this.authService.getCurrentUser().subscribe((user: User) => {
-            this.user = user
+            this.user = user;
             this.userString = formatUserFullName(user);
         });
     }
@@ -74,10 +75,10 @@ export class HomeComponent implements OnInit {
     }
 
     private loadProjectMarkers() {
-        for (let project of this.projects) {
+        for (const project of this.projects) {
             if (project.centroid) {
-                let coord: GeoJSON.Position = project.centroid.coordinates as GeoJSON.Position;
-                let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                const coord: GeoJSON.Position = project.centroid.coordinates as GeoJSON.Position;
+                const marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
                     {icon: DEFAULT_MARKER_ICON});
                 let popupContent: string = '<p class="m-0"><strong>' + project.name + '</strong></p>';
                 if (project.description) {

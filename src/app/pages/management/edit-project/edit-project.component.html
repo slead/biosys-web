@@ -106,11 +106,11 @@
                             </div>
                         </div>
                     </div>
-                    <button [hidden]="isEditing" pButton icon="fa-pencil-square-o" label="Edit"
+                    <button [hidden]="isEditing" pButton icon="fa fa-pencil-square-o" label="Edit"
                             (click)="editProject()"></button>
-                    <button [hidden]="!isEditing || !project.id" pButton icon="fa-close" label="Cancel"
+                    <button [hidden]="!isEditing || !project.id" pButton icon="fa fa-close" label="Cancel"
                             (click)="cancelEditProject()"></button>
-                    <button [hidden]="!isEditing" pButton icon="fa-save" label="Save" (click)="saveProject()">
+                    <button [hidden]="!isEditing" pButton icon="fa fa-save" label="Save" (click)="saveProject()">
                     </button>
                 </div>
                 <!-- feature map -->
@@ -184,9 +184,9 @@
                                     <label [innerHtml]="rowData.description | truncate:70"></label>
                                 </td>
                                 <td align="center">
-                                    <button type="button" pButton icon="fa-pencil-square-o" title="Edit Records"
+                                    <button type="button" pButton icon="fa fa-pencil-square-o" title="Edit Records"
                                             [routerLink]="'/data/projects/' + project.id + '/datasets/' + rowData.id"></button>
-                                    <button type="button" pButton icon="fa-trash-o" title="Delete"
+                                    <button type="button" pButton icon="fa fa-trash-o" title="Delete"
                                             (click)="confirmDeleteDataset(rowData)"></button>
                                 </td>
                             </tr>
@@ -200,7 +200,7 @@
                         </ng-template>
                         <ng-template pTemplate="summary">
                             <div class="ui-helper-clearfix">
-                                <button type="button" pButton icon="fa-plus" style="float:right" label="Add"
+                                <button type="button" pButton icon="fa fa-plus" style="float:right" label="Add"
                                         [routerLink]="'/management/projects/edit-project/' + project.id +
                                         '/create-dataset'">
                                 </button>
@@ -235,11 +235,11 @@
                                    (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
 
                             <a href="{{TEMPLATE_EASTNORTH_URL}}">
-                                <button type="button" pButton icon="fa-file-excel-o" style="float:right"
+                                <button type="button" pButton icon="fa fa-file-excel-o" style="float:right"
                                         label="Download Site Template (east/north)"></button>
                             </a>
                             <a href="{{TEMPLATE_LATLNG_URL}}">
-                                <button type="button" class="ml-1" pButton icon="fa-file-excel-o"
+                                <button type="button" class="ml-1" pButton icon="fa fa-file-excel-o"
                                         style="float:right"
                                         label="Download Site Template (lat/lng)"></button>
                             </a>
@@ -295,13 +295,13 @@
                         </ng-template>
                         <ng-template pTemplate="summary">
                             <div class="ui-helper-clearfix">
-                                <button type="button" pButton icon="fa-trash" style="float:left" label="Delete"
+                                <button type="button" pButton icon="fa fa-trash" style="float:left" label="Delete"
                                         (click)="confirmDeleteSelectedSites()"
                                         [disabled]="selectedSites.length === 0"></button>
-                                <button type="button" class="ml-1" pButton icon="fa-plus" style="float:right"
+                                <button type="button" class="ml-1" pButton icon="fa fa-plus" style="float:right"
                                         label="Add"
                                         [routerLink]="'/management/projects/edit-project/' + project.id + '/create-site'"></button>
-                                <button type="button" pButton icon="fa-reply" style="float:right" label="Import"
+                                <button type="button" pButton icon="fa fa-reply" style="float:right" label="Import"
                                         [routerLink]="'/management/projects/edit-project/' + project.id + '/upload-sites'"></button>
                             </div>
                         </ng-template>

@@ -18,16 +18,16 @@ import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
 })
 export class EditRecordsTableComponent {
     private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
-    private static FIXED_COLUMNS_TOTAL_WIDTH: number = 1400;
-    private static COLUMN_WIDTH: number = 240;
-    private static CHAR_LENGTH_MULTIPLIER: number = 8;
+    private static FIXED_COLUMNS_TOTAL_WIDTH = 1400;
+    private static COLUMN_WIDTH = 240;
+    private static CHAR_LENGTH_MULTIPLIER = 8;
     private static DATE_FIELD_FIXED_CHARACTER_COUNT = 8;
-    private static PADDING: number = 70;
+    private static PADDING = 70;
 
     public selectedRecords: object[];
     public recordsTableColumnWidths: { [key: string]: number } = {};
     public flatRecords: object[];
-    public totalRecords: number = 0;
+    public totalRecords = 0;
     public dropdownItems: any = {};
     public messages: Message[] = [];
 
@@ -75,7 +75,7 @@ export class EditRecordsTableComponent {
         const endPoint = isChild ? 'child-record' : 'record';
         const datasetPath = `/data/projects/${this._dataset.project}/datasets/${this._dataset.id}`;
         const path = `${datasetPath}/${endPoint}/${recordId}`;
-        let params = {};
+        const params = {};
         if (isChild) {
             params['parentRecordId'] = this.parentRecord.id;
         }
@@ -99,7 +99,7 @@ export class EditRecordsTableComponent {
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
-        let params: any = {};
+        const params: any = {};
 
         if (event.first !== undefined && event.first > -1) {
             params['offset'] = event.first;
@@ -137,7 +137,7 @@ export class EditRecordsTableComponent {
         } else if (field.hasOwnProperty('constraints') && field['constraints'].hasOwnProperty('enum')) {
             return 'select';
         } else {
-            return 'text'
+            return 'text';
         }
     }
 
@@ -161,12 +161,12 @@ export class EditRecordsTableComponent {
         const data: any = JSON.parse(JSON.stringify(event.data));
         const id: number = data.id;
 
-        for (let key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'validated', 'locked']) {
+        for (const key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'validated', 'locked']) {
             delete data[key];
         }
 
         // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
-        for (let field of this._dataset.data_package.resources[0].schema.fields) {
+        for (const field of this._dataset.data_package.resources[0].schema.fields) {
             if ((field.type === 'date' || field.type === 'datetime') && data[field.name]) {
                 data[field.name] = moment(data[field.name]).format(pyDateFormatToMomentDateFormat(field.format));
             }
@@ -179,8 +179,8 @@ export class EditRecordsTableComponent {
             (error: APIError) => {
                 // revert data
                 if (this.previousRowData) {
-                    let flatRecord = this.flatRecords.filter((fr: object) => fr['id'] === id)[0];
-                    for (let prop in this.previousRowData) {
+                    const flatRecord = this.flatRecords.filter((fr: object) => fr['id'] === id)[0];
+                    for (const prop in this.previousRowData) {
                         if (this.previousRowData.hasOwnProperty(prop)) {
                             flatRecord[prop] = this.previousRowData[prop];
                         }
@@ -261,7 +261,7 @@ export class EditRecordsTableComponent {
     }
 
     private formatFlatRecords(records: Record[]): object[] {
-        let flatRecords = records.map((r: Record) => Object.assign({
+        const flatRecords = records.map((r: Record) => Object.assign({
             id: r.id,
             validated: r.validated,
             locked: r.locked,
@@ -272,9 +272,9 @@ export class EditRecordsTableComponent {
             geometry: r.geometry
         }, r.data));
 
-        for (let field of this._dataset.data_package.resources[0].schema.fields) {
+        for (const field of this._dataset.data_package.resources[0].schema.fields) {
             if (field.type === 'date') {
-                for (let record of flatRecords) {
+                for (const record of flatRecords) {
                     // If date in DD?MM?YYYY format (where ? is any single char), convert to American
                     // (as Chrome, Firefox and IE expect this when creating Date from a string
                     let dateString: string = record[field.name];
@@ -282,7 +282,7 @@ export class EditRecordsTableComponent {
                     // use '-' rather than '_' in case '_' is used as the separator
                     dateString = dateString.replace(/_/g, '-');
 
-                    let regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
+                    const regexGroup: string[] = dateString.match(AMBIGUOUS_DATE_PATTERN);
                     if (regexGroup) {
                         dateString = regexGroup[2] + '/' + regexGroup[1] + '/' + regexGroup[3];
                     }
