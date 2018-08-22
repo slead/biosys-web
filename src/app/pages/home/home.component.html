@@ -45,16 +45,40 @@
                 </div>
                 <div *ngIf="statistic" class="card-block">
                     <h5>Projects</h5>
-                    <p>Total number of projects: {{ statistic.projects.total }}</p>
+                    <span class="float-right">Total: {{ statistic.projects.total }}</span>
                     <hr>
                     <h5>Sites</h5>
-                    <p>Total number of sites: {{ statistic.sites.total }}</p>
+                    <span class="float-right">Total: {{ statistic.sites.total }}</span>
+                    <hr>
+                    <h5>Datasets</h5>
+                    <span class="float-right">Total: {{ statistic.datasets.total }}</span>
+                    <p class="small">
+                        Number of generic datasets:
+                        <span class="float-right">{{ statistic.datasets.generic.total }}</span>
+                    </p>
+                    <p class="small">
+                        Number of observation datasets:
+                        <span class="float-right">{{ statistic.datasets.observation.total }}</span>
+                    </p>
+                    <p class="small">
+                        Number of species datasets:
+                        <span class="float-right">{{ statistic.datasets.speciesObservation.total }}</span>
+                    </p>
                     <hr>
                     <h5>Records</h5>
-                    <p>Total number of records: {{ statistic.records.total }}</p>
-                    <p class="small">Number of generic records: {{ statistic.records.generic.total }}</p>
-                    <p class="small">Number of observation records: {{ statistic.records.observation.total }}</p>
-                    <p class="small">Number of species records: {{ statistic.records.speciesObservation.total }}</p>
+                    <span class="float-right">Total:{{ statistic.records.total }}</span>
+                    <p class="small">
+                        Number of generic records:
+                        <span class="float-right">{{ statistic.records.generic.total }}</span>
+                    </p>
+                    <p class="small">
+                        Number of observation records:
+                        <span class="float-right">{{ statistic.records.observation.total }}</span>
+                    </p>
+                    <p class="small">
+                        Number of species records:
+                        <span class="float-right">{{ statistic.records.speciesObservation.total }}</span>
+                    </p>
                 </div>
             </div>
         </div>
