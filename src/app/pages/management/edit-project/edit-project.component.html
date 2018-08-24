@@ -308,6 +308,58 @@
                     </p-table>
                 </div>
             </div>
+            <!-- file attachments -->
+            <div *ngIf="project.id" class="row mt-3 mb-3">
+                <div class="col-md">
+                    <h4>Attachments</h4>
+                    <p-dataView [value]="fileAttachments" emptyMessage="No file attachments">
+                        <p-header>
+                            <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                        </p-header>
+                        <ng-template let-fileAttachment pTemplate="listItem">
+                            <div class="row m-3">
+                                <div class="col-3">
+                                    <strong>File:</strong>
+                                    {{ fileAttachment.file }}
+                                </div>
+                                <div class="col-3">
+                                    <strong>Created:</strong>
+                                    {{ fileAttachment.created }}
+                                </div>
+                                <div class="col-3">
+                                    <strong>Last modified:</strong>
+                                    {{ fileAttachment.last_modified }}
+                                </div>
+                                <div class="col-3">
+                                    <button class="float-right" pButton type="button" icon="fa fa-trash"></button>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template let-fileAttachment pTemplate="gridItem">
+                            <div class="row m-3">
+                                <div class="col-3">
+                                    <strong>File:</strong>
+                                    {{ fileAttachment.file }}
+                                </div>
+                                <div class="col-3">
+                                    <strong>Created:</strong>
+                                    {{ fileAttachment.created }}
+                                </div>
+                                <div class="col-3">
+                                    <strong>Last modified:</strong>
+                                    {{ fileAttachment.last_modified }}
+                                </div>
+                                <div class="col-3">
+                                    <button class="float-right" pButton type="button" icon="fa fa-trash"></button>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <p-footer>
+                            <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+                        </p-footer>
+                    </p-dataView>
+                </div>
+            </div>
         </div>
     </div>
 </div>

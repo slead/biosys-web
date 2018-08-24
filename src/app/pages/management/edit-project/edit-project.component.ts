@@ -5,7 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
 
 import {
-    APIError, User, Project, Site, Dataset, ModelChoice, Program
+    APIError, User, Project, Site, Dataset, ModelChoice, Program, ProjectMedia
 } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
@@ -48,6 +48,11 @@ export class EditProjectComponent implements OnInit {
     public custodianChoices: SelectItem[];
     public projectErrors: any = {};
     public messages: Message[] = [];
+    public fileAttachments: ProjectMedia[] = [{
+        file: 'Some file',
+        created: '14/08/2018',
+        last_modified: '16/08/2018',
+    }];
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
         private confirmationService: ConfirmationService, private sanitizer: DomSanitizer) {
