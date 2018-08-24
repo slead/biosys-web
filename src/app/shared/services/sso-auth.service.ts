@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { APIService } from '../../../biosys-core/services/api.service';
 import { Cookie } from 'ng2-cookies/ng2-cookies';

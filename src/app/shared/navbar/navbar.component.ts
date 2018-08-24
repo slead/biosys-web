@@ -23,22 +23,22 @@ export class NavbarComponent implements OnInit {
         this.items = [
             {
                 label: 'Home',
-                icon: 'fa-home',
+                icon: 'fa fa-home',
                 routerLink: ['/']
             },
             {
                 label: 'Data',
-                icon: 'fa-database',
+                icon: 'fa fa-database',
                 routerLink: ['/data/projects']
             },
             {
                 label: 'View',
-                icon: 'fa-search',
+                icon: 'fa fa-search',
                 routerLink: ['/view']
             },
             {
                 label: 'Logout',
-                icon: 'fa-sign-out',
+                icon: 'fa fa-sign-out',
                 command: () => this.logout()
             }
         ];
@@ -52,7 +52,7 @@ export class NavbarComponent implements OnInit {
             if (user.is_admin) {
                 this.items.splice(1, 0, {
                     label: 'Manage',
-                    icon: 'fa-university',
+                    icon: 'fa fa-university',
                     items: [
                         {
                             label: 'Programs',
@@ -64,7 +64,7 @@ export class NavbarComponent implements OnInit {
             } else if (user.is_data_engineer) {
                 this.items.splice(1, 0, {
                     label: 'Manage',
-                    icon: 'fa-university',
+                    icon: 'fa fa-university',
                     items: [
                         projectItem
                     ]

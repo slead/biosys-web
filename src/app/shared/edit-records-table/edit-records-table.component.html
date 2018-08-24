@@ -120,13 +120,13 @@
     </ng-template>
     <ng-template pTemplate="summary">
         <div class="ui-helper-clearfix">
-            <button type="button" pButton icon="fa-trash" class="float-left" label="Delete Selected"
+            <button type="button" pButton icon="fa fa-trash" class="float-left" label="Delete Selected"
                     (click)="confirmDeleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length">
             </button>
-            <button type="button" pButton icon="fa-trash" class="float-left" label="Delete All"
+            <button type="button" pButton icon="fa fa-trash" class="float-left" label="Delete All"
                     (click)="confirmDeleteAllRecords()">
             </button>
-            <button type="button" pButton icon="fa-plus" class="float-right" label="Add" (click)="add()">
+            <button type="button" pButton icon="fa fa-plus" class="float-right" label="Add" (click)="add()">
             </button>
         </div>
     </ng-template>

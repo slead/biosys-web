@@ -4,8 +4,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
 
-import { APIError, User, Project, Site, Dataset, ModelChoice, Program }
-    from '../../../../biosys-core/interfaces/api.interfaces';
+import {
+    APIError, User, Project, Site, Dataset, ModelChoice, Program
+} from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
@@ -21,9 +22,9 @@ import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 })
 
 export class EditProjectComponent implements OnInit {
-    public static DEFAULT_TIMEZONE: string = 'Australia/Perth';
+    public static DEFAULT_TIMEZONE = 'Australia/Perth';
 
-    private static COLUMN_WIDTH: number = 240;
+    private static COLUMN_WIDTH = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 700;
 
     @ViewChild(FeatureMapComponent)
@@ -53,7 +54,7 @@ export class EditProjectComponent implements OnInit {
     }
 
     ngOnInit() {
-        let params = this.route.snapshot.params;
+        const params = this.route.snapshot.params;
 
         this.isEditing = !('projId' in params);
 
@@ -191,7 +192,7 @@ export class EditProjectComponent implements OnInit {
             popupContent += '<p class="mt-1">' + site.description + '</p>';
         }
 
-        let projId = this.project.id ? this.project.id : Number(this.route.snapshot.params['id']);
+        const projId = this.project.id ? this.project.id : Number(this.route.snapshot.params['id']);
 
         if (projId) {
             popupContent += '<p class="mt-1"><a href="#/management/projects/edit-project/' + projId + '/edit-site/' +

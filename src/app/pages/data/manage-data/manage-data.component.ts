@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Message } from 'primeng/primeng';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
-import '../../../../lib/leaflet.latlng-graticule'
+import '../../../../lib/leaflet.latlng-graticule';
 
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
@@ -48,9 +48,9 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public dataset: Dataset;
     public messages: Message[] = [];
     public uploadURL: string;
-    public isUploading: boolean = false;
-    public uploadCreateSites: boolean = false;
-    public uploadDeleteExistingRecords: boolean = false;
+    public isUploading = false;
+    public uploadCreateSites = false;
+    public uploadDeleteExistingRecords = false;
     public uploadErrorMessages: Message[] = [];
     public uploadWarningMessages: Message[] = [];
 
@@ -70,7 +70,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public ngOnInit() {
-        let params = this.route.snapshot.params;
+        const params = this.route.snapshot.params;
 
         this.projId = Number(params['projId']);
         this.datasetId = Number(params['datasetId']);
@@ -155,7 +155,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private recordToLatLng(record: Record): L.LatLng {
         let result;
         if (record.geometry) {
-            let coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
+            const coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
             result = L.GeoJSON.coordsToLatLng([coord[0], coord[1]]);
         }
         return result;
@@ -172,11 +172,11 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 this.markers.clearLayers();
                 this.markersByRecordId = {};
 
-                for (let record of records) {
+                for (const record of records) {
                     if (record.geometry) {
-                        let marker: L.Marker = L.marker(this.recordToLatLng(record),
+                        const marker: L.Marker = L.marker(this.recordToLatLng(record),
                             {icon: DEFAULT_MARKER_ICON});
-                        let popupContent: string = '<p class="m-0">Record ID: <strong>' + record.id + '</strong></p>' +
+                        const popupContent: string = '<p class="m-0">Record ID: <strong>' + record.id + '</strong></p>' +
                             '<p class="mt-1"><a href="#/data/projects/' + this.projId + '/datasets/' + this.datasetId +
                             '/record/' + record.id + '">Edit Record</a></p>';
 
@@ -194,7 +194,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public onRecordChanged(record: Record) {
-        let marker = this.markersByRecordId[record.id];
+        const marker = this.markersByRecordId[record.id];
         marker.setLatLng(this.recordToLatLng(record));
         this.markers.refreshClusters([marker]);
     }
@@ -219,8 +219,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public onUploadError(event: any) {
-        let statusCode = event.xhr.status;
-        let resp = event.xhr.response;
+        const statusCode = event.xhr.status;
+        const resp = event.xhr.response;
         if (statusCode === 400) {
             this.parseAndDisplayResponse(resp);
         } else {
@@ -239,7 +239,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public onUploadBeforeSend(event: any) {
-        let xhr = event.xhr;
+        const xhr = event.xhr;
 
         const authToken = this.authService.getAuthToken();
         if (authToken) {
@@ -253,8 +253,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
         // check file type (the last in the list)
         // use the file list of uploader instead of the file list given in the event so we can add/remove to it.
-        let files: File[] = this.uploader.files;
-        let file: File = files.pop();
+        const files: File[] = this.uploader.files;
+        const file: File = files.pop();
         if (ManageDataComponent.ACCEPTED_TYPES.indexOf(file.type) === -1) {
             this.uploadErrorMessages.push({
                 severity: 'error',
@@ -268,16 +268,19 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     private parseAndDisplayResponse(resp: any) {
-        let items = resp ? JSON.parse(resp) : [];
-        let totalRecords = items.length,
-            totalErrors = 0,
-            totalWarnings = 0;
+        const items = resp ? JSON.parse(resp) : [];
+        const totalRecords = items.length;
+
+        let totalErrors = 0;
+        let totalWarnings = 0;
+
         this.messages = [];
         this.uploadErrorMessages = [];
         this.uploadWarningMessages = [];
-        for (let item of items) {
+
+        for (const item of items) {
             if ('errors' in item) {
-                for (let errorKey in item['errors']) {
+                for (const errorKey of Object.keys(item['errors'])) {
                     totalErrors += 1;
                     this.uploadErrorMessages.push({
                         severity: 'error',
@@ -287,7 +290,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 }
             }
             if ('warnings' in item) {
-                for (let warningKey in item['warnings']) {
+                for (const warningKey of Object.keys(item['warnings'])) {
                     totalWarnings += 1;
                     this.uploadWarningMessages.push({
                         severity: 'warn',
@@ -320,7 +323,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     private showUpdateError(error: APIError) {
         this.messages = [];
-        error.msg.data.forEach((err: string) => {
+        error.msg['data'].forEach((err: string) => {
             let field, message;
             [field, message] = err.split('::');
             this.messages.push({

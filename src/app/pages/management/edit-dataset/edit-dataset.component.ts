@@ -24,7 +24,7 @@ import { JsonEditorOptions } from '../../../shared/jsoneditor/jsoneditor.options
 
 export class EditDatasetComponent implements OnInit {
     @Input()
-    public isValid: boolean = true;
+    public isValid = true;
 
     @ViewChild(JsonEditorComponent)
     public editor: JsonEditorComponent;
@@ -58,9 +58,9 @@ export class EditDatasetComponent implements OnInit {
     }
 
     ngOnInit() {
-        let params = this.route.snapshot.params;
+        const params = this.route.snapshot.params;
 
-        let projId: number = Number(params['projId']);
+        const projId: number = Number(params['projId']);
 
         this.apiService.getProjectById(projId)
             .subscribe(
@@ -72,7 +72,7 @@ export class EditDatasetComponent implements OnInit {
             );
 
         if ('id' in params) {
-            let datasetId: number = Number(params['id']);
+            const datasetId: number = Number(params['id']);
 
             this.apiService.getDatasetById(datasetId).subscribe(
                 (ds: Dataset) => {
@@ -124,7 +124,7 @@ export class EditDatasetComponent implements OnInit {
     }
 
     public onUploadBeforeSend(event: any) {
-        let xhr = event.xhr;
+        const xhr = event.xhr;
 
         const authToken = this.authService.getAuthToken();
         if (authToken) {
@@ -133,14 +133,14 @@ export class EditDatasetComponent implements OnInit {
     }
 
     public onError(event: any) {
-        let response = JSON.parse(event.xhr.response);
+        const response = JSON.parse(event.xhr.response);
 
         if ('errors' in response) {
-            for (let error of response.errors) {
+            for (const error of response.errors) {
                 this.fileUpload.msgs.push({
                     severity: 'error',
                     summary: error
-                })
+                });
             }
         }
     }

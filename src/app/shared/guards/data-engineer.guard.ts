@@ -3,8 +3,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { AuthService } from '../../../biosys-core/services/auth.service';
 import { map, mergeMap } from 'rxjs/operators';
 import { Program, Project, User } from '../../../biosys-core/interfaces/api.interfaces';
-import { forkJoin } from 'rxjs/observable/forkJoin';
-import { Observable } from 'rxjs/Observable';
+import { forkJoin ,  Observable } from 'rxjs';
 import { APIService } from '../../../biosys-core/services/api.service';
 
 
@@ -17,7 +16,7 @@ export class DataEngineerGuard implements CanActivate {
         if (!route.params.hasOwnProperty('projId')) {
             return this.authService.getCurrentUser().pipe(
                 map((user: User) => user.is_admin || user.is_data_engineer)
-            )
+            );
         }
 
         const projId = +route.params['projId'];

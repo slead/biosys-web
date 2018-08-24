@@ -8,7 +8,7 @@ import { Messages } from 'primeng/primeng';
 })
 export class ExpandableMessagesComponent extends Messages {
     @Input()
-    public maxItems: number = 0;
+    public maxItems = 0;
 
-    public expanded: boolean = false;
+    public expanded = false;
 }

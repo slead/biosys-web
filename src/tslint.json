@@ -1,0 +1,17 @@
+{
+    "extends": "../tslint.json",
+    "rules": {
+        "directive-selector": [
+            true,
+            ["element", "attribute"],
+            "biosys",
+            "kebab-case"
+        ],
+        "component-selector": [
+            true,
+            "element",
+            "biosys",
+            "kebab-case"
+        ]
+    }
+}

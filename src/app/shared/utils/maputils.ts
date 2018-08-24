@@ -1,6 +1,6 @@
 import * as L from 'leaflet';
 
-export const DEFAULT_ZOOM: number = 4;
+export const DEFAULT_ZOOM = 4;
 
 export const DEFAULT_CENTER: L.LatLng = L.latLng([-27, 121]);
 

@@ -3,8 +3,7 @@ import { ActivatedRouteSnapshot, CanActivate } from '@angular/router';
 import { AuthService } from '../../../biosys-core/services/auth.service';
 import { map, mergeMap } from 'rxjs/operators';
 import { Project, Program, User } from '../../../biosys-core/interfaces/api.interfaces';
-import { forkJoin } from 'rxjs/observable/forkJoin';
-import { Observable } from 'rxjs/Observable';
+import { forkJoin ,  Observable } from 'rxjs';
 import { APIService } from '../../../biosys-core/services/api.service';
 
 
