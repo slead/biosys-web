@@ -76,7 +76,7 @@ export class UploadSitesComponent implements OnInit {
         if (statusCode === 400) {
             resp = JSON.parse(resp);
             // find errors
-            for (const rowNumber of Object.getOwnPropertyNames(resp)) {
+            for (const rowNumber of Object.keys(resp)) {
                 const error = resp[rowNumber]['error'];
                 if (error) {
                     addErrorMessage('Row #' + rowNumber, error);

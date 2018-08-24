@@ -99,7 +99,7 @@ export class EditRecordsTableComponent {
     }
 
     public loadRecordsLazy(event: LazyLoadEvent) {
-        const params: any = {};
+        const params: object = {};
 
         if (event.first !== undefined && event.first > -1) {
             params['offset'] = event.first;
