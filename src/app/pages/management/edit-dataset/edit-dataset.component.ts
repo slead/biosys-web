@@ -1,8 +1,10 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 
-import { APIError, Dataset, ModelChoice, Project } from '../../../../biosys-core/interfaces/api.interfaces';
+import {
+    APIError, Dataset, DatasetMedia, Media, ModelChoice, Project,
+} from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { formatAPIError } from '../../../../biosys-core/utils/functions';
 
@@ -10,10 +12,11 @@ import { AuthService } from '../../../../biosys-core/services/auth.service';
 
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
-import { ConfirmationService, FileUpload, Message, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, FileUpload, Message, MessageService, SelectItem } from 'primeng/primeng';
 
 import { JsonEditorComponent } from '../../../shared/jsoneditor/jsoneditor.component';
 import { JsonEditorOptions } from '../../../shared/jsoneditor/jsoneditor.options';
+import { from } from 'rxjs/index';
 
 @Component({
     moduleId: module.id,
@@ -32,24 +35,19 @@ export class EditDatasetComponent implements OnInit {
     @ViewChild(FileUpload)
     public fileUpload: FileUpload;
 
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-
     public breadcrumbItems: any = [];
     public typeChoices: SelectItem[];
-    public messages: Message[] = [];
     public ds: Dataset = <Dataset>{};
     public editorOptions: JsonEditorOptions;
-
     public dsErrors: any = {};
-
     public displayHelp = false;
+    public datasetMedia: DatasetMedia[] = [];
+    public isUploadingMedia = false;
 
     private completeUrl: string;
 
-    constructor(public apiService: APIService,
-                private authService: AuthService,
-                private router: Router,
-                private route: ActivatedRoute,
+    constructor(public apiService: APIService, private authService: AuthService, private router: Router,
+                private route: ActivatedRoute, private messageService: MessageService,
                 private confirmationService: ConfirmationService) {
         this.editorOptions = new JsonEditorOptions();
         this.editorOptions.mode = 'code';
@@ -148,12 +146,26 @@ export class EditDatasetComponent implements OnInit {
     public save() {
         if (this.ds.id) {
             this.apiService.updateDataset(this.ds).subscribe(
-                () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
+                () => {
+                    this.router.navigate([this.completeUrl, {'datasetSaved': true}]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Dataset saved',
+                        detail: 'The dataset was saved'
+                    });
+                },
                 (error: APIError) => this.dsErrors = error.msg
             );
         } else {
             this.apiService.createDataset(this.ds).subscribe(
-                () => this.router.navigate([this.completeUrl, {'datasetSaved': true}]),
+                () => {
+                    this.router.navigate([this.completeUrl, {'datasetSaved': true}]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Dataset created',
+                        detail: 'The dataset was created'
+                    });
+                },
                 (error: APIError) => this.onSaveError(error)
             );
         }
@@ -186,7 +198,7 @@ export class EditDatasetComponent implements OnInit {
     }
 
     private onDeleteRecordsSuccess() {
-        this.messages.push({
+        this.messageService.add({
             severity: 'success',
             summary: 'Records Deleted',
             detail: 'All records for this dataset have been deleted.'
@@ -208,10 +220,62 @@ export class EditDatasetComponent implements OnInit {
 
     private onDeleteError(error: APIError) {
         this.dsErrors = formatAPIError(error);
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Dataset delete error',
             detail: 'There were error(s) deleting the dataset'
+        });
+    }
+
+    public onUploadMedia(files: File[]) {
+        this.isUploadingMedia = true;
+        from(files).pipe(
+            mergeMap((file: any) => this.apiService.uploadDatasetMediaBinary(this.ds.id, file))
+        ).subscribe(
+            (dm: DatasetMedia) => {
+                this.datasetMedia.push(dm);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'File Attachment Uploaded',
+                    detail: `The file ${dm.file.substring(dm.file.lastIndexOf('/') + 1)} was uploaded`
+                });
+            },
+            (error: APIError) => {
+                this.isUploadingMedia = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error Uploading File Attachment',
+                    detail: error.msg as string
+                });
+            },
+            () => this.isUploadingMedia = false
+        );
+    }
+
+    public onDeleteMedia(media: Media) {
+        this.confirmationService.confirm({
+            message: `Are you sure that you want to delete the file ${media.file.substring(media.file.lastIndexOf('/') + 1)}`,
+            accept: () => {
+                this.apiService.deleteDatasetMedia(this.ds.id, media.id).subscribe(
+                    () => {
+                        this.datasetMedia.splice(this.datasetMedia.map(
+                        (dm: DatasetMedia) => dm.id
+                        ).indexOf(media.id),
+                        1
+                        );
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'File Attachment Deleted',
+                            detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`
+                        });
+                    },
+                    (error: APIError) => this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error Deleting File Attachment',
+                        detail: error.msg as string
+                    })
+                );
+            }
         });
     }
 }

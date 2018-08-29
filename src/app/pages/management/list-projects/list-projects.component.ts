@@ -3,7 +3,7 @@ import { APIError, Program, Project, User } from '../../../../biosys-core/interf
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { Router } from '@angular/router';
-import { ConfirmationService, Message } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService } from 'primeng/primeng';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 
 @Component({
@@ -14,17 +14,14 @@ import { AuthService } from '../../../../biosys-core/services/auth.service';
 })
 
 export class ManagementListProjectsComponent implements OnInit {
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-
     public breadcrumbItems: any = [];
     public projects: Project[] = [];
-    public messages: Message[] = [];
     public programNameLookup: object = {};
 
     private user: User;
 
     constructor(private apiService: APIService, private authService: AuthService, private router: Router,
-                private confirmationService: ConfirmationService) {
+                private messageService: MessageService, private confirmationService: ConfirmationService) {
     }
 
     ngOnInit() {
@@ -85,7 +82,7 @@ export class ManagementListProjectsComponent implements OnInit {
             );
         }
 
-        this.messages.push({
+        this.messageService.add({
             severity: 'success',
             summary: 'Project deleted',
             detail: 'The project was deleted'
@@ -93,7 +90,7 @@ export class ManagementListProjectsComponent implements OnInit {
     }
 
     private onDeleteError(projectError: any) {
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Project delete error',
             detail: 'There were error(s) deleting the project: ' + projectError.msg

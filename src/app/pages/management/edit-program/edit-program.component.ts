@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
 import { map } from 'rxjs/operators';
 
 import { APIError, User, Program } from '../../../../biosys-core/interfaces/api.interfaces';
@@ -27,7 +27,7 @@ export class EditProgramComponent implements OnInit {
     public messages: Message[] = [];
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
-        private confirmationService: ConfirmationService) {
+                private messageService: MessageService, private confirmationService: ConfirmationService) {
     }
 
     ngOnInit() {
@@ -75,12 +75,26 @@ export class EditProgramComponent implements OnInit {
     public save() {
         if (this.program.id) {
             this.apiService.updateProgram(this.program).subscribe(
-                () => this.router.navigate([EditProgramComponent.PROGRAMS_URL, {'programSaved': true}]),
+                () => {
+                    this.router.navigate([EditProgramComponent.PROGRAMS_URL]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Program saved',
+                        detail: `The program ${this.program.name} was saved`
+                    });
+                },
                 (errors: APIError) => this.programErrors = errors.msg
             );
         } else {
             this.apiService.createProgram(this.program).subscribe(
-                () => this.router.navigate([EditProgramComponent.PROGRAMS_URL, {'programSaved': true}]),
+                () => {
+                    this.router.navigate([EditProgramComponent.PROGRAMS_URL]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Program created',
+                        detail: `The program ${this.program.name} was created`
+                    });
+                },
                 (errors: APIError) => this.programErrors = errors.msg
             );
         }
@@ -105,7 +119,7 @@ export class EditProgramComponent implements OnInit {
     }
 
     private onDeleteError(errors: any) {
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Program delete error',
             detail: 'There were error(s) deleting the program: ' + errors.msg

@@ -5,6 +5,9 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
+import { ToastModule} from 'primeng/toast';
+import { MessageService } from 'primeng/primeng';
+
 import { BiosysCoreModule } from '../biosys-core/biosys-core.module';
 import { APIService } from '../biosys-core/services/api.service';
 import { AuthService } from '../biosys-core/services/auth.service';
@@ -38,6 +41,7 @@ import { TeamMemberGuard } from './shared/guards/team-member.guard';
         BrowserAnimationsModule,
         HttpClientModule,
         RouterModule.forRoot(routes),
+        ToastModule,
         BiosysCoreModule,
         SharedModule,
         LoginModule,
@@ -47,6 +51,7 @@ import { TeamMemberGuard } from './shared/guards/team-member.guard';
         ViewModule
     ],
     providers: [
+        MessageService,
         APIService,
         {
             provide: AuthService,

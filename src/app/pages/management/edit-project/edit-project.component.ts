@@ -2,18 +2,19 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
 
 import {
-    APIError, User, Project, Site, Dataset, ModelChoice, Program, ProjectMedia
+    APIError, User, Project, Site, Dataset, ModelChoice, Program, ProjectMedia, Media
 } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
-import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
 import { environment } from '../../../../environments/environment';
 
 import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
+import { from } from 'rxjs/index';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
     moduleId: module.id,
@@ -30,7 +31,6 @@ export class EditProjectComponent implements OnInit {
     @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
 
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
     public TEMPLATE_LATLNG_URL: string = environment.server + '/download/templates/site/lat-long';
     public TEMPLATE_EASTNORTH_URL: string = environment.server + '/download/templates/site/easting-northing';
     public selectedSites: Site[] = [];
@@ -47,15 +47,12 @@ export class EditProjectComponent implements OnInit {
     public datamTypeChoices: SelectItem[];
     public custodianChoices: SelectItem[];
     public projectErrors: any = {};
-    public messages: Message[] = [];
-    public fileAttachments: ProjectMedia[] = [{
-        file: 'Some file',
-        created: '14/08/2018',
-        last_modified: '16/08/2018',
-    }];
+    public projectMedia: ProjectMedia[] = [];
+    public isUploadingMedia = false;
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
-        private confirmationService: ConfirmationService, private sanitizer: DomSanitizer) {
+        private confirmationService: ConfirmationService, private messageService: MessageService,
+                private sanitizer: DomSanitizer) {
     }
 
     ngOnInit() {
@@ -83,6 +80,10 @@ export class EditProjectComponent implements OnInit {
                     this.siteAttributeKeys = sites.length > 0 ? this.extractSiteAttributeKeys(sites[0]) : [];
                 },
                 (error: APIError) => console.log('error.msg', error.msg)
+            );
+
+            this.apiService.getProjectMedia(+params['projId']).subscribe(
+                (projectMedia: ProjectMedia[]) => this.projectMedia = projectMedia
             );
         }
 
@@ -132,36 +133,30 @@ export class EditProjectComponent implements OnInit {
         }
 
         if ('siteSaved' in params) {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Site saved',
                 detail: 'The site was saved'
             });
         } else if ('datasetSaved' in params) {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Dataset saved',
                 detail: 'The dataset was saved'
             });
         } else if ('siteDeleted' in params) {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Site deleted',
                 detail: 'The site was deleted'
             });
         } else if ('datasetDeleted' in params) {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Dataset deleted',
                 detail: 'The dataset was deleted'
             });
         }
-
-        // for some reason the growls won't disappear if messages populated during init, so need
-        // to set a timeout to remove
-        setTimeout(() => {
-            this.messages = [];
-        }, DEFAULT_GROWL_LIFE);
     }
 
     public getProgramLabel(value: number): string {
@@ -291,7 +286,7 @@ export class EditProjectComponent implements OnInit {
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
-        this.messages.push({
+        this.messageService.add({
             severity: 'success',
             summary: 'Dataset deleted',
             detail: 'The dataset was deleted'
@@ -299,7 +294,7 @@ export class EditProjectComponent implements OnInit {
     }
 
     private onDeleteDatasetError(error: APIError) {
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Dataset delete error',
             detail: 'There were error(s) deleting the dataset: ' + error.msg
@@ -332,7 +327,7 @@ export class EditProjectComponent implements OnInit {
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
-        this.messages.push({
+        this.messageService.add({
             severity: 'success',
             summary: 'Site(s) deleted',
             detail: 'The site(s) was deleted'
@@ -340,10 +335,61 @@ export class EditProjectComponent implements OnInit {
     }
 
     private onDeleteSiteError(error: APIError) {
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Site delete error',
             detail: 'There were error(s) deleting the site(s): ' + error.msg
+        });
+    }
+
+    public onUploadMedia(files: File[]) {
+        this.isUploadingMedia = true;
+        from(files).pipe(
+            mergeMap((file: any) => this.apiService.uploadProjectMediaBinary(this.project.id, file))
+        ).subscribe(
+            (pm: ProjectMedia) => {
+                this.projectMedia.push(pm);
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'File Attachment Uploaded',
+                    detail: `The file ${pm.file.substring(pm.file.lastIndexOf('/') + 1)} was uploaded`
+                });
+            },
+            (error: APIError) => {
+                this.isUploadingMedia = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error Uploading File Attachment',
+                    detail: error.msg as string
+                });
+            },
+            () => this.isUploadingMedia = false
+        );
+    }
+
+    public onDeleteMedia(media: Media) {
+        this.confirmationService.confirm({
+            message: `Are you sure that you want to delete the file ${media.file.substring(media.file.
+                lastIndexOf('/') + 1)}`,
+            accept: () => this.apiService.deleteProjectMedia(this.project.id, media.id).subscribe(
+                    () => {
+                        this.projectMedia.splice(this.projectMedia.map(
+                            (pm: ProjectMedia) => pm.id
+                            ).indexOf(media.id),
+                            1
+                        );
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'File Attachment Deleted',
+                            detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`
+                        });
+                    },
+                (error: APIError) => this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error Deleting File Attachment',
+                        detail: error.msg as string
+                    })
+                )
         });
     }
 }

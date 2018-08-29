@@ -3,7 +3,7 @@ import { APIError, Program, Project, User } from '../../../../biosys-core/interf
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, Message, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
@@ -15,16 +15,14 @@ import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 })
 
 export class ListProgramsComponent implements OnInit {
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-
     public breadcrumbItems: any = [];
     public programs: Program[];
-    public messages: Message[] = [];
 
     private allUsers: { [id: number]: User } = {};
 
     constructor(private apiService: APIService, private authService: AuthService, private router: Router,
-                private route: ActivatedRoute, private confirmationService: ConfirmationService) {
+                private route: ActivatedRoute, private messageService: MessageService,
+                private confirmationService: ConfirmationService) {
     }
 
     ngOnInit() {
@@ -44,20 +42,6 @@ export class ListProgramsComponent implements OnInit {
         this.breadcrumbItems = [
             {label: 'Manage - Programs'}
         ];
-
-        if ('programSaved' in params) {
-            this.messages.push({
-                severity: 'success',
-                summary: 'Program saved',
-                detail: 'The program was saved'
-            });
-        } else if ('programDeleted' in params) {
-            this.messages.push({
-                severity: 'success',
-                summary: 'Program deleted',
-                detail: 'The program was deleted'
-            });
-        }
     }
     public formatDataEngineers(userIds: number[]): string {
         return userIds
@@ -86,7 +70,7 @@ export class ListProgramsComponent implements OnInit {
             (error: APIError) => console.log('error.msg', error.msg)
         );
 
-        this.messages.push({
+        this.messageService.add({
             severity: 'success',
             summary: 'Program deleted',
             detail: 'The program was deleted'
@@ -94,7 +78,7 @@ export class ListProgramsComponent implements OnInit {
     }
 
     private onDeleteError(programError: any) {
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Program delete error',
             detail: 'There were error(s) deleting the program: ' + programError.msg
