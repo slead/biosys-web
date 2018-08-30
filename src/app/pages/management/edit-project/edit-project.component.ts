@@ -131,32 +131,6 @@ export class EditProjectComponent implements OnInit {
                 (error: APIError) => console.log('error.msg', error.msg)
             );
         }
-
-        if ('siteSaved' in params) {
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Site saved',
-                detail: 'The site was saved'
-            });
-        } else if ('datasetSaved' in params) {
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Dataset saved',
-                detail: 'The dataset was saved'
-            });
-        } else if ('siteDeleted' in params) {
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Site deleted',
-                detail: 'The site was deleted'
-            });
-        } else if ('datasetDeleted' in params) {
-            this.messageService.add({
-                severity: 'success',
-                summary: 'Dataset deleted',
-                detail: 'The dataset was deleted'
-            });
-        }
     }
 
     public getProgramLabel(value: number): string {

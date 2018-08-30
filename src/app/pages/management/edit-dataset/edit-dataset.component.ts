@@ -147,7 +147,7 @@ export class EditDatasetComponent implements OnInit {
         if (this.ds.id) {
             this.apiService.updateDataset(this.ds).subscribe(
                 () => {
-                    this.router.navigate([this.completeUrl, {'datasetSaved': true}]);
+                    this.router.navigate([this.completeUrl]);
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Dataset saved',
@@ -159,7 +159,7 @@ export class EditDatasetComponent implements OnInit {
         } else {
             this.apiService.createDataset(this.ds).subscribe(
                 () => {
-                    this.router.navigate([this.completeUrl, {'datasetSaved': true}]);
+                    this.router.navigate([this.completeUrl]);
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Dataset created',

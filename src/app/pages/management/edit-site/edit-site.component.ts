@@ -106,7 +106,14 @@ export class EditSiteComponent implements OnInit {
             );
         } else {
             this.apiService.createSite(this.site).subscribe(
-                () => this.router.navigate([this.completeUrl, {'siteSaved': true}]),
+                () => {
+                    this.router.navigate([this.completeUrl]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Site created',
+                        detail: 'The site was created'
+                    });
+                },
                 (errors: APIError) => this.siteErrors = errors.msg
             );
         }

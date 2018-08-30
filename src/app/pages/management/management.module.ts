@@ -3,11 +3,9 @@ import { CommonModule } from '@angular/common';
 
 import {
     InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule,
-    ConfirmationService, PanelModule, FileUploadModule, DialogModule, MultiSelectModule, CheckboxModule,
-    MessageModule
+    ConfirmationService, FileUploadModule, DialogModule, MultiSelectModule, CheckboxModule, MessageModule
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
-import { DataViewModule } from 'primeng/dataview'; // may get moved back to primeng/primeng at some point
 
 import { SharedModule } from '../../shared/shared.module';
 
@@ -29,14 +27,12 @@ import { ListProgramsComponent } from './list-programs/list-programs.component';
         DropdownModule,
         GrowlModule,
         ConfirmDialogModule,
-        PanelModule,
         FileUploadModule,
         DialogModule,
         MultiSelectModule,
         CheckboxModule,
         MessageModule,
-        TableModule,
-        DataViewModule
+        TableModule
     ],
     declarations: [ListProgramsComponent, ManagementListProjectsComponent, EditProgramComponent,
         EditProjectComponent, EditDatasetComponent, EditSiteComponent, UploadSitesComponent],
