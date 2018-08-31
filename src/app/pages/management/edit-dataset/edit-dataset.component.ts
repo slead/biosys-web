@@ -10,8 +10,6 @@ import { formatAPIError } from '../../../../biosys-core/utils/functions';
 
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 
-import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
-
 import { ConfirmationService, FileUpload, Message, MessageService, SelectItem } from 'primeng/primeng';
 
 import { JsonEditorComponent } from '../../../shared/jsoneditor/jsoneditor.component';
