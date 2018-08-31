@@ -4,6 +4,7 @@ import { Message } from 'primeng/primeng';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import '../../../../lib/leaflet.latlng-graticule';
+import '../../../../lib/leaflet.loading';
 
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
@@ -16,6 +17,7 @@ import {
     getOverlayLayers
 } from '../../../shared/utils/maputils';
 import { EditRecordsTableComponent } from '../../../shared/edit-records-table/edit-records-table.component';
+
 
 @Component({
     moduleId: module.id,
@@ -63,6 +65,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     private map: L.Map;
     private markers: L.MarkerClusterGroup;
+    private loading: L.Loading;
     private markersByRecordId: object;
 
     constructor(private apiService: APIService, private  authService: AuthService, private router: Router,
@@ -72,8 +75,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public ngOnInit() {
         const params = this.route.snapshot.params;
 
-        this.projId = Number(params['projId']);
-        this.datasetId = Number(params['datasetId']);
+        this.projId = +params['projId'];
+        this.datasetId = +params['datasetId'];
 
         this.apiService.getProjectById(this.projId)
         .subscribe(
@@ -149,6 +152,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
         L.latlngGraticule().addTo(this.map);
 
+        this.loading = L.loading({
+            labelText: 'Loading Records'
+        }).addTo(this.map);
+
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
@@ -165,6 +172,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         if (this.dataset.type === 'generic') {
             return;
         }
+
+        this.loading.start();
 
         this.apiService.getRecordsByDatasetId(this.datasetId, {fields: ['id', 'geometry']})
         .subscribe(
@@ -189,7 +198,11 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                     }
                 }
             },
-            (error: APIError) => console.log('error.msg', error.msg)
+            (error: APIError) => {
+                console.log('error.msg', error.msg);
+                this.loading.stop();
+            },
+            () => this.loading.stop()
         );
     }
 
