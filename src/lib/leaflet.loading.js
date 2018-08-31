@@ -8,6 +8,7 @@ L.Loading = L.Layer.extend({
         labelText: 'Loading',
         labelColor: '#FFFFFF',
         labelSize: '16px',
+        started: true,
         spinnerOptions: {
             color: '#FFFFFF'
         }
@@ -33,6 +34,10 @@ L.Loading = L.Layer.extend({
             this._label.style.color = this.options.labelColor;
             this._label.style.fontSize = this.options.labelSize;
             this._labelContainer.appendChild(this._label);
+        }
+
+        if (!this.options.started) {
+            this.stop();
         }
     },
 

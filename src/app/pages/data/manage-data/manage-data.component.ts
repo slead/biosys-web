@@ -173,6 +173,8 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             return;
         }
 
+        this.loading.start();
+
         this.apiService.getRecordsByDatasetId(this.datasetId, {fields: ['id', 'geometry']})
         .subscribe(
             (records: Record[]) => {
