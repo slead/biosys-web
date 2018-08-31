@@ -1,8 +1,12 @@
-# Biosys Client
+# Biosys Web
+
+## Requirements
+
+* nodejs v8.11.4 or later
 
 ## Installation
 
-The Biosys Client is build on AngularJS. To use the commands below, you need to globally install Angular-CLI:
+The Biosys Client is build on Angular. To use the commands below, you need to globally install Angular-CLI:
 
 ```bash
 npm install -g @angular/cli
@@ -11,7 +15,20 @@ npm install -g @angular/cli
 This project contains submodules. To clone both the project and submodules, use:
 
 ```bash
-git clone --recurse-submodules https://github.com/gaiaresources/koala-watch
+git clone --recurse-submodules https://github.com/gaiaresources/biosys-web
+```
+
+**Note:** If you already have the project cloned and are updating to the latest version, you'll also need to update the submodules. Use:
+
+```bash
+git pull
+git submodule update --remote --recursive
+```
+
+Then install dependant packages:
+
+```bash
+npm install
 ```
 
 ## Development server
@@ -34,7 +51,7 @@ To build the project for UAT, use:
 ng build --configuration=dbca-uat --prod
  ```
 
-The build artifacts will be stored in the `dist/` directory.
+The build artifacts will be stored in the `dist/` directory, which are then to be copied to your UAT server.
 
 ### Build for production
 
@@ -44,7 +61,7 @@ To build the project for production, use:
 ng build --configuration=dbca-prod --prod
  ```
 
-The build artifacts will be stored in the `dist/` directory.
+The build artifacts will be stored in the `dist/` directory, which are then to be copied to your production server.
 
 ## Running unit tests
 
