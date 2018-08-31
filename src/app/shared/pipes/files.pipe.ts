@@ -60,18 +60,18 @@ export class FileNamePipe implements PipeTransform {
     name: 'fileSize'
 })
 export class FileSizePipe implements PipeTransform {
-    transform(bytes: number = 0, precision: number = 2 ): string {
-        if ( isNaN( parseFloat( String(bytes) )) || ! isFinite( bytes ) ) {
+    transform(bytes: number = 0, precision: number = 2): string {
+        if (isNaN( parseFloat( String(bytes) )) || ! isFinite( bytes )) {
             return '?';
         }
 
         let unit = 0;
 
-        while ( bytes >= 1024 ) {
+        while (bytes >= 1024) {
             bytes /= 1024;
             unit++;
         }
 
-        return bytes.toFixed( + precision ) + ' ' + FILE_SIZE_UNITS[ unit ];
+        return bytes.toFixed(+precision) + ' ' + FILE_SIZE_UNITS[ unit ];
     }
 }

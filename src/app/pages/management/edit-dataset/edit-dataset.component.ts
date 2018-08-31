@@ -259,9 +259,8 @@ export class EditDatasetComponent implements OnInit {
                 this.apiService.deleteDatasetMedia(this.ds.id, media.id).subscribe(
                     () => {
                         this.datasetMedia.splice(this.datasetMedia.map(
-                        (dm: DatasetMedia) => dm.id
-                        ).indexOf(media.id),
-                        1
+                            (dm: DatasetMedia) => dm.id
+                            ).indexOf(media.id), 1
                         );
                         this.messageService.add({
                             severity: 'success',

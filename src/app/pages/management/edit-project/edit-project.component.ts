@@ -348,9 +348,8 @@ export class EditProjectComponent implements OnInit {
             accept: () => this.apiService.deleteProjectMedia(this.project.id, media.id).subscribe(
                     () => {
                         this.projectMedia.splice(this.projectMedia.map(
-                            (pm: ProjectMedia) => pm.id
-                            ).indexOf(media.id),
-                            1
+                                (pm: ProjectMedia) => pm.id
+                            ).indexOf(media.id), 1
                         );
                         this.messageService.add({
                             severity: 'success',
