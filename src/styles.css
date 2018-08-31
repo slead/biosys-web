@@ -159,9 +159,3 @@ table td {
 .ui-toast .ui-toast-message.ui-toast-message-error .ui-toast-close-icon {
     color: #ffffff;
 }
-
-.black-background {
-    height: 100%;
-    width: 100%;
-    background-color: #000000;
-}

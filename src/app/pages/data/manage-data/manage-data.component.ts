@@ -198,10 +198,11 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                     }
                 }
             },
-            (error: APIError) => console.log('error.msg', error.msg),
-            () => {
+            (error: APIError) => {
+                console.log('error.msg', error.msg);
                 this.loading.stop();
-            }
+            },
+            () => this.loading.stop()
         );
     }
 
