@@ -1,4 +1,4 @@
-# Biosys Client
+# Biosys Web
 
 ## Requirements
 
