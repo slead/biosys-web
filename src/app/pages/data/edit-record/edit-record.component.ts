@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, SelectItem, Message, FileUpload } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
-import { APIError, Project, Dataset, Record, Media } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Project, Dataset, Record, RecordMedia } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { pyDateFormatToMomentDateFormat } from '../../../../biosys-core/utils/functions';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
@@ -86,7 +86,7 @@ export class EditRecordComponent implements OnInit {
                     );
 
                     this.apiService.getRecordMedia(recordId).subscribe(
-                        (media: Media[]) => this.imagesMetadata = media.map((image: Media) => ({
+                        (media: RecordMedia[]) => this.imagesMetadata = media.map((image: RecordMedia) => ({
                             source: image.file,
                             alt: image.file.substring(image.file.lastIndexOf('/') + 1),
                             title: image.file.substring(image.file.lastIndexOf('/') + 1)
@@ -196,7 +196,7 @@ export class EditRecordComponent implements OnInit {
         from(event.files).pipe(
             mergeMap((file: any) => this.apiService.uploadRecordMediaBinary(this.record.id, file))
         ).subscribe({
-            next: (image: Media) => newImagesMetadata.push({
+            next: (image: RecordMedia) => newImagesMetadata.push({
                 source: image.file,
                 alt: image.file.substring(image.file.lastIndexOf('/') + 1),
                 title: image.file.substring(image.file.lastIndexOf('/') + 1)

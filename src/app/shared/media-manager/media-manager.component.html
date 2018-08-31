@@ -1,0 +1,91 @@
+<p-dataView [value]="mediaList" emptyMessage="No media uploaded" [loading]="isLoading">
+    <p-header>
+        <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+    </p-header>
+    <ng-template let-media pTemplate="listItem">
+        <div class="row ml-1 mr-1 p-2" style="border-bottom: 1px solid #d9d9d9">
+            <div class="col-1">
+                <img *ngIf="!((media.file | isImageFile) || (media.file | isVideoFile))"
+                     src="{{ media.file | fileIconUrl }}" />
+                <a *ngIf="media.file | isImageFile" href="" (click)="onThumbnailClicked(media.file)">
+                    <img src="{{ media.file }}" width="100%"/>
+                </a>
+                <a *ngIf="media.file | isVideoFile" href="" (click)="onThumbnailClicked(media.file)">
+                    <img src="{{ media.file | fileIconUrl }}" />
+                </a>
+            </div>
+            <div class="col-4">
+                {{ media.file | fileName }}
+                <p>
+                    <a [href]="media.file" target="_blank">Click to download</a>
+                </p>
+            </div>
+            <div class="col-3">
+                <strong>Created:</strong>
+                {{ media.created | date | pyDateFormatToAngularDateFormat }}
+            </div>
+            <div class="col-3">
+                <strong>Size:</strong>
+                {{ media.filesize | fileSize}}
+            </div>
+            <div class="col-1">
+                <button class="float-right" pButton type="button" icon="fa fa-trash" (click)="onDeleteClicked(media)">
+                </button>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template let-media pTemplate="gridItem">
+        <p-card [style]="{width: '265px', height: '250px', margin: '6px'}">
+            <div class="row">
+                <div class="col text-center">
+                    <img *ngIf="!((media.file | isImageFile) || (media.file | isVideoFile))"
+                         src="{{ media.file | fileIconUrl }}" />
+                    <a  *ngIf="media.file | isImageFile" href="" (click)="onThumbnailClicked(media.file)">
+                        <img src="{{ media.file }}" height="50px"/>
+                    </a>
+                    <a *ngIf="media.file | isVideoFile" href="" (click)="onThumbnailClicked(media.file)">
+                        <img src="{{ media.file | fileIconUrl }}" />
+                    </a>
+                </div>
+            </div>
+            <div class="row row-buffer">
+                <div class="col text-center">
+                    <span [innerHtml]="media.file | fileName | truncate: 25"></span>
+                    <p>
+                        <a [href]="media.file" target="_blank">Click to download</a>
+                    </p>
+                </div>
+            </div>
+            <div class="row row-buffer">
+                <div class="col">
+                    <strong>Created:</strong> {{ media.created | date | pyDateFormatToAngularDateFormat }}
+                </div>
+            </div>
+            <div class="row row-buffer">
+                <div class="col">
+                    <strong>Size:</strong> {{ media.filesize | fileSize }}
+                </div>
+            </div>
+            <div class="text-center">
+                <button pButton type="button" icon="fa fa-trash" (click)="onDeleteClicked(media)"></button>
+            </div>
+        </p-card>
+    </ng-template>
+    <p-footer>
+        <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+        <button type="button" class="ml-1 float-right" pButton icon="fa fa-plus" label="Add"
+                (click)="showUploadMediaDialog = true"></button>
+    </p-footer>
+</p-dataView>
+
+<p-dialog header="Upload Media" [modal]="true" [(visible)]="showUploadMediaDialog" dismissableMask="true"
+          (onHide)="fileUpload.clear()">
+    <p-fileUpload #fileUpload customUpload="true" (uploadHandler)="onUploadMedia($event)" multiple="true">
+    </p-fileUpload>
+</p-dialog>
+
+<p-dialog *ngIf="previewDialogSource" [header]="previewDialogSource | fileName" [modal]="true"
+          [(visible)]="showPreviewDialog" dismissableMask="true">
+    <img *ngIf="previewDialogSource | isImageFile" [src]="previewDialogSource" />
+    <video *ngIf="previewDialogSource | isVideoFile" [src]="previewDialogSource" controls></video>
+</p-dialog>

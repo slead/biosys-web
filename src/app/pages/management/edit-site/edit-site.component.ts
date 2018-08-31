@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ConfirmationService, Message } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService } from 'primeng/primeng';
 
 import { APIError, Project, Site } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
@@ -21,19 +21,14 @@ export class EditSiteComponent implements OnInit {
     @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
 
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-
     public site: Site = <Site>{};
     public siteErrors: any = {};
-    public messages: Message[] = [];
     public additionalAttributes: string[][] = [['', '']];
 
     private completeUrl: string;
 
-    constructor(private apiService: APIService,
-                private router: Router,
-                private route: ActivatedRoute,
-                private confirmationService: ConfirmationService) {
+    constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
+                private messageService: MessageService, private confirmationService: ConfirmationService) {
     }
 
     ngOnInit() {
@@ -55,7 +50,9 @@ export class EditSiteComponent implements OnInit {
                 (site: Site) => {
                     this.site = site;
                     if (this.site.attributes) {
-                        this.additionalAttributes = Object.keys(this.site.attributes).map((k) => [k, this.site.attributes[k]]);
+                        this.additionalAttributes = Object.keys(this.site.attributes).map(
+                            (k) => [k, this.site.attributes[k]]
+                        );
                     }
                     this.breadcrumbItems.push({label: this.site.code ? this.site.code : this.site.name});
                 },
@@ -97,12 +94,26 @@ export class EditSiteComponent implements OnInit {
 
         if (this.site.id) {
             this.apiService.updateSite(this.site).subscribe(
-                () => this.router.navigate([this.completeUrl, {'siteSaved': true}]),
+                () => {
+                    this.router.navigate([this.completeUrl]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Site saved',
+                        detail: 'The site was saved'
+                    });
+                },
                 (errors: APIError) => this.siteErrors = errors.msg
             );
         } else {
             this.apiService.createSite(this.site).subscribe(
-                () => this.router.navigate([this.completeUrl, {'siteSaved': true}]),
+                () => {
+                    this.router.navigate([this.completeUrl]);
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Site created',
+                        detail: 'The site was created'
+                    });
+                },
                 (errors: APIError) => this.siteErrors = errors.msg
             );
         }
@@ -122,11 +133,16 @@ export class EditSiteComponent implements OnInit {
     }
 
     private onDeleteSuccess(site: Site) {
-        this.router.navigate([this.completeUrl, {'siteDeleted': true}]);
+        this.router.navigate([this.completeUrl]);
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Site deleted',
+            detail: 'The site was deleted'
+        });
     }
 
     private onDeleteError(recordErrors: any) {
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Site delete error',
             detail: 'There were error(s) deleting the site'

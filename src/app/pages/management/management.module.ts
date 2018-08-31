@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule, ConfirmationService,
-    FileUploadModule, DialogModule, MultiSelectModule, CheckboxModule, MessageModule } from 'primeng/primeng';
+import {
+    InputTextModule, InputTextareaModule, ButtonModule, DropdownModule, GrowlModule, ConfirmDialogModule,
+    ConfirmationService, FileUploadModule, DialogModule, MultiSelectModule, CheckboxModule, MessageModule
+} from 'primeng/primeng';
 import { TableModule } from 'primeng/table'; // may get moved back to primeng/primeng at some point
 
 import { SharedModule } from '../../shared/shared.module';
