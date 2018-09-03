@@ -41,6 +41,7 @@ export class EditDatasetComponent implements OnInit {
     public displayHelp = false;
     public datasetMedia: DatasetMedia[] = [];
     public isUploadingMedia = false;
+    public inferDatasetType = true;
 
     private completeUrl: string;
 
@@ -110,7 +111,7 @@ export class EditDatasetComponent implements OnInit {
         this.completeUrl = '/management/projects/edit-project/' + projId;
     }
 
-    public onUpload(event: any) {
+    public onInferUpload(event: any) {
         const response: any = JSON.parse(event.xhr.response);
         this.ds.name = response.name;
         this.ds.type = response.type;
@@ -119,16 +120,17 @@ export class EditDatasetComponent implements OnInit {
         this.editor.set(<JSON>this.ds.data_package);
     }
 
-    public onUploadBeforeSend(event: any) {
+    public onInferBeforeSend(event: any) {
         const xhr = event.xhr;
 
         const authToken = this.authService.getAuthToken();
         if (authToken) {
             xhr.setRequestHeader('Authorization', 'Token ' + authToken);
         }
+        event.formData.append('infer_dataset_type', this.inferDatasetType);
     }
 
-    public onError(event: any) {
+    public onInferError(event: any) {
         const response = JSON.parse(event.xhr.response);
 
         if ('errors' in response) {

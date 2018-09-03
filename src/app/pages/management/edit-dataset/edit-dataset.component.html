@@ -67,12 +67,18 @@
             <label class="field-label">Infer from file</label>
             <p class="font-italic text-muted">xlsx or CSV</p>
         </div>
-        <div class="col-8">
-            <p-fileUpload name="file" [url]="apiService.getInferDatasetURL()" (onUpload)="onUpload($event)"
-                          (onBeforeSend)="onUploadBeforeSend($event)" (onError)="onError($event)"
+        <div class="col-5">
+            <p-fileUpload name="file" [url]="apiService.getInferDatasetURL()" (onUpload)="onInferUpload($event)"
+                          (onBeforeSend)="onInferBeforeSend($event)" (onError)="onInferError($event)"
                           accept=".csv,.xlsx,.xls">
             </p-fileUpload>
             <div class="text-danger" [innerHTML]="dsErrors['non_field_errors']"></div>
+        </div>
+        <div class="col-3">
+            <p-checkbox label="Infer dataset type" [(ngModel)]="inferDatasetType" binary="true"></p-checkbox>
+            <div class="font-italic text-muted small">Uncheck if you want a generic dataset,
+                otherwise assumptions will be made on the dataset type based on your column names.
+                See the help on the right to understand the different types of datasets.</div>
         </div>
         <div class="col-2">
             <button pButton label="Help" icon="fa fa-question-circle" (click)="displayHelp = true"></button>
