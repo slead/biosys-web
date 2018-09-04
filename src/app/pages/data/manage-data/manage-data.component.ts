@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute, Data } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Message } from 'primeng/primeng';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
