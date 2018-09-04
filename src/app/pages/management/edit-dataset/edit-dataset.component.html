@@ -74,7 +74,7 @@
             </p-fileUpload>
             <div class="text-danger" [innerHTML]="dsErrors['non_field_errors']"></div>
         </div>
-        <div class="col-3">
+        <div class="col-4">
             <p-checkbox label="Infer dataset type" [(ngModel)]="inferDatasetType" binary="true"></p-checkbox>
             <div class="font-italic text-muted small">
                 Uncheck if you want a generic dataset, otherwise assumptions will be made on the dataset
@@ -82,8 +82,8 @@
                 right to understand the different types of datasets.
             </div>
         </div>
-        <div class="col-2">
-            <button pButton label="Help" icon="fa fa-question-circle" (click)="displayHelp = true"></button>
+        <div class="col-1">
+            <button pButton label="Help" (click)="displayHelp = true"></button>
         </div>
     </div>
     <hr>

@@ -1,7 +1,12 @@
 import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
     EventEmitter, SimpleChange } from '@angular/core';
 import {
-    DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers
+    DEFAULT_CENTER,
+    DEFAULT_MARKER_ICON,
+    DEFAULT_ZOOM,
+    getDefaultBaseLayer,
+    getGeometryBoundsFromExtent,
+    getOverlayLayers
 } from '../utils/maputils';
 import * as L from 'leaflet';
 import 'leaflet-draw';
@@ -26,6 +31,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public drawFeatureTypes: [string] = [] as [string];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
+    @Input() public bounds: GeoJSON.BBox;
     @Output() public geometryChanged =
         new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();
 
@@ -96,6 +102,10 @@ export class FeatureMapComponent implements OnInit, OnChanges {
             layers: [getDefaultBaseLayer()]
         });
 
+        if (this.bounds) {
+            this.map.fitBounds(getGeometryBoundsFromExtent(this.bounds));
+        }
+
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: '', lngFirst: true, separator: ', '}).addTo(this.map);
@@ -134,6 +144,14 @@ export class FeatureMapComponent implements OnInit, OnChanges {
                         {icon: DEFAULT_MARKER_ICON});
                     this.drawnFeatures.addLayer(marker);
                     this.drawnFeatureType = 'point';
+                }
+            }
+        }
+
+        if (changes['bounds']) {
+            if (this.initialised) {
+                if (this.bounds) {
+                    this.map.fitBounds(getGeometryBoundsFromExtent(this.bounds));
                 }
             }
         }

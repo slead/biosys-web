@@ -4,6 +4,8 @@ export const DEFAULT_ZOOM = 4;
 
 export const DEFAULT_CENTER: L.LatLng = L.latLng([-27, 121]);
 
+export const DEFAULT_BOUNDS_SIZE = 100000;
+
 export const DEFAULT_MARKER_ICON: L.Icon = L.icon({
   iconRetinaUrl: 'css/images/marker-icon-2x.png',
   iconUrl: 'css/images/marker-icon.png',
@@ -82,6 +84,12 @@ export function getOverlayLayers(): any {
         })
     };
 }
-/**
- * Created by tony on 15/06/17.
- */
+
+export function getGeometryBoundsFromExtent(extent: GeoJSON.BBox): L.LatLngBounds {
+    return L.latLngBounds(L.latLng(extent[1], extent[2]), L.latLng(extent[3], extent[0]));
+}
+
+export function getExtentFromPoint(point: GeoJSON.Point): GeoJSON.BBox {
+    return JSON.parse(`[${L.latLng(point.coordinates[1], point.coordinates[0]).
+        toBounds(DEFAULT_BOUNDS_SIZE).toBBoxString()}]`);
+}

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, Data } from '@angular/router';
 import { Message } from 'primeng/primeng';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
@@ -13,10 +13,11 @@ import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
 import { FileuploaderComponent } from '../../../shared/fileuploader/fileuploader.component';
 import {
-    DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ROW_LIMIT, DEFAULT_ZOOM, getDefaultBaseLayer,
+    DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ROW_LIMIT, DEFAULT_ZOOM, getDefaultBaseLayer, getGeometryBoundsFromExtent,
     getOverlayLayers
 } from '../../../shared/utils/maputils';
 import { EditRecordsTableComponent } from '../../../shared/edit-records-table/edit-records-table.component';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 
 
 @Component({
@@ -34,7 +35,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         'application/vnd.ms-excel',
         'application/vnd.msexcel'
     ];
-    private static DATETIME_FORMAT = 'DD/MM/YYYY H:mm:ss';
 
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
@@ -78,28 +78,32 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.projId = +params['projId'];
         this.datasetId = +params['datasetId'];
 
-        this.apiService.getProjectById(this.projId)
-        .subscribe(
-            (project: Project) => this.breadcrumbItems.splice(1, 0, {
-                label: project.name,
-                routerLink: ['/data/projects/' + this.projId + '/datasets']
-            }),
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+        forkJoin(this.apiService.getProjectById(this.projId), this.apiService.getDatasetById(this.datasetId)).subscribe(
+            (result: [Project, Dataset]) => {
+                const project = result[0];
+                this.dataset = result[1];
 
-        this.apiService.getDatasetById(this.datasetId).
-        toPromise()
-        .then(
-            (dataset: Dataset) => {
-                this.dataset = dataset;
+                this.breadcrumbItems.push({
+                    label: project.name,
+                    routerLink: ['/data/projects/' + this.projId + '/datasets']
+                }, {
+                    label: this.dataset.name
+                });
 
-                this.breadcrumbItems.push({label: this.dataset.name});
-                if (dataset.type !== 'generic') {
-                    this.initMap();
+                if (this.dataset.type !== 'generic') {
+                    if (this.dataset.extent) {
+                        this.initMap(getGeometryBoundsFromExtent(this.dataset.extent));
+                    } else if (project.extent) {
+                        this.initMap(getGeometryBoundsFromExtent(project.extent));
+                    } else {
+                        this.initMap();
+                    }
+
+                    this.loadRecordMarkers();
                 }
             },
             (error: APIError) => console.log('error.msg', error.msg)
-        ).then(() => this.loadRecordMarkers());
+        );
 
         this.uploadURL = this.apiService.getRecordsUploadURL(this.datasetId);
 
@@ -136,12 +140,24 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         sessionStorage.setItem('pageState' + this.datasetId, JSON.stringify(this.pageState));
     }
 
-    private initMap() {
-        this.map = L.map('map', {
-            zoom: this.pageState.mapZoom,
-            center: this.pageState.mapPosition,
+    private initMap(bounds?: L.LatLngBounds) {
+        let mapOptions = {
             layers: [getDefaultBaseLayer()]
-        });
+        };
+
+        // if there is no bounds from project, use default zoom / center
+        if (!bounds) {
+            mapOptions = Object.assign(mapOptions, {
+                zoom: this.pageState.mapZoom,
+                center: this.pageState.mapPosition
+            });
+        }
+
+        this.map = L.map('map', mapOptions);
+
+        if (bounds) {
+            this.map.fitBounds(bounds);
+        }
 
         this.markers = L.markerClusterGroup();
         this.markers.addTo(this.map);
@@ -162,7 +178,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private recordToLatLng(record: Record): L.LatLng {
         let result;
         if (record.geometry) {
-            const coord: GeoJSON.Position = record.geometry.coordinates as GeoJSON.Position;
+            const coord: GeoJSON.Position = (record.geometry as GeoJSON.Point).coordinates as GeoJSON.Position;
             result = L.GeoJSON.coordsToLatLng([coord[0], coord[1]]);
         }
         return result;
