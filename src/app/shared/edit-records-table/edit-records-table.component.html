@@ -60,19 +60,19 @@
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td>
-                <span *ngIf="rowData.locked">{{ rowData.id }}</span>
-                <a *ngIf="!rowData.locked" [routerLink]="getEditRecordRoute(rowData.id)">
-                    {{ rowData.id }}
+                <span *ngIf="rowData._locked">{{ rowData._id }}</span>
+                <a *ngIf="!rowData._locked" [routerLink]="getEditRecordRoute(rowData._id)">
+                    {{ rowData._id }}
                 </a>
             </td>
             <td align="center">
-                <p-checkbox [(ngModel)]="rowData.validated" binary="true" [disabled]="rowData.locked"
-                            (onChange)="onRecordValidatedChanged($event, rowData.id)"></p-checkbox>
+                <p-checkbox [(ngModel)]="rowData._validated" binary="true" [disabled]="rowData._locked"
+                            (onChange)="onRecordValidatedChanged($event, rowData._id)"></p-checkbox>
             </td>
-            <td>{{ rowData.locked }}</td>
+            <td>{{ rowData._locked }}</td>
             <!-- have editable cells if record not locked -->
             <ng-container
-                    *ngFor="let field of !rowData.locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+                    *ngFor="let field of !rowData._locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
                 <td *ngIf="!(field | isHiddenField)" [pEditableColumn]="rowData" [pEditableColumnField]="field.name">
                     <p-cellEditor>
                         <ng-template pTemplate="input">
@@ -99,16 +99,16 @@
                 </td>
             </ng-container>
             <!-- just show record values (non-editable) if record locked -->
-            <ng-container *ngFor="let field of rowData.locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+            <ng-container *ngFor="let field of rowData._locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
                 <td *ngIf="!(field | isHiddenField)">
                     {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
                         pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
                 </td>
             </ng-container>
-            <td>{{ rowData.file_name }}</td>
-            <td>{{ rowData.row }}</td>
-            <td>{{ rowData.created }}</td>
-            <td>{{ rowData.last_modified }}</td>
+            <td>{{ rowData._file_name }}</td>
+            <td>{{ rowData._row }}</td>
+            <td>{{ rowData._created }}</td>
+            <td>{{ rowData._last_modified }}</td>
         </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
