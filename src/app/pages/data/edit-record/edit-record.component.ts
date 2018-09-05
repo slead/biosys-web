@@ -113,7 +113,7 @@ export class EditRecordComponent implements OnInit {
                     {label: record.id ? 'Edit Record' : 'Create Record'}
                 );
 
-                if (record.id && dataset.type !== 'generic') {
+                if (record.geometry) {
                     this.extent = getExtentFromPoint(record.geometry as GeoJSON.Point);
                 } else if (dataset.extent) {
                     this.extent = dataset.extent;
