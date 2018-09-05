@@ -4,15 +4,19 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ConfirmationService, SelectItem, Message, FileUpload } from 'primeng/primeng';
 import * as moment from 'moment/moment';
 
+import { from } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs/internal/Observable';
+import { of } from 'rxjs/internal/observable/of';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+
 import { APIError, Project, Dataset, Record, RecordMedia } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { pyDateFormatToMomentDateFormat } from '../../../../biosys-core/utils/functions';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
-
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
-import { from } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
 import { getDefaultValue } from '../../../shared/utils/functions';
+import { getExtentFromPoint } from '../../../shared/utils/maputils';
 
 
 @Component({
@@ -30,6 +34,7 @@ export class EditRecordComponent implements OnInit {
     public dropdownItems: any = {};
 
     public record: Record;
+    public extent: GeoJSON.BBox;
     public dataset: Dataset;
     public childDataset: Dataset;
     public imagesMetadata: object[] = [];
@@ -42,75 +47,96 @@ export class EditRecordComponent implements OnInit {
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
                 private confirmationService: ConfirmationService) {
+        this.breadcrumbItems = [
+            {label: 'Enter Records - Projects', routerLink: ['/data/projects']},
+        ];
     }
 
     ngOnInit() {
         const params = this.route.snapshot.params;
 
-        const projId: number = Number(params['projId']);
-        const datasetId: number = Number(params['datasetId']);
-        this.parentRecordId = Number(params['parentRecordId']);
-        this.completeUrl = params['completeUrl'] || `/data/projects/${projId}/datasets/${datasetId}`;
+        this.parentRecordId = +params['parentRecordId'];
 
-        this.apiService.getProjectById(projId).subscribe(
-            (project: Project) => this.breadcrumbItems.splice(1, 0, {
-                label: project.name,
-                routerLink: ['/data/projects/' + projId + '/datasets']
-            }),
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+        const projectObservable: Observable<Project> = this.apiService.getProjectById(+params['projId']);
+        const datasetObservable: Observable<Dataset> = this.apiService.getDatasetById(+params['datasetId']);
 
-        this.apiService.getDatasetById(datasetId).subscribe(
-            (dataset: Dataset) => {
-                this.dataset = dataset;
-                this.breadcrumbItems.splice(1, 0, {
-                    label: dataset.name,
-                    routerLink: ['/data/projects/' + projId + '/datasets/' + datasetId]
-                });
-
-                if ('recordId' in params) {
-                    const recordId = +params['recordId'];
-
-                    // TODO: refactor inner subscriptions into mergeMap
-                    this.apiService.getRecordById(recordId).subscribe(
-                        (record: Record) => {
-                            this.record = this.formatRecord(record);
-                            if (record.children && record.children.length) {
-                                this.apiService.getRecordById(record.children[0]).subscribe(
-                                    (childRecord: Record) => this.apiService.getDatasetById(childRecord.dataset).
-                                        subscribe((childDataset: Dataset) => this.childDataset = childDataset)
-                                );
-                            }
-                        },
-                        (error: APIError) => console.log('error.msg', error.msg)
-                    );
-
-                    this.apiService.getRecordMedia(recordId).subscribe(
-                        (media: RecordMedia[]) => this.imagesMetadata = media.map((image: RecordMedia) => ({
+        let recordObservable: Observable<Record>;
+        if (params.hasOwnProperty('recordId')) {
+            // fetching the record will also fetch its attached media and child dataset (if there are children)
+            recordObservable = this.apiService.getRecordById(+params['recordId']).pipe(
+                // get record media
+                mergeMap((record: Record) =>
+                    this.apiService.getRecordMedia(record.id).pipe(
+                        tap((media: RecordMedia[]) => this.imagesMetadata = media.map((image: RecordMedia) => ({
                             source: image.file,
                             alt: image.file.substring(image.file.lastIndexOf('/') + 1),
                             title: image.file.substring(image.file.lastIndexOf('/') + 1)
-                        }))
-                    );
-                } else {
+                            }))
+                        ),
+                        // with resultSelect deprecated, need to return record via map
+                        map((media: RecordMedia[]) => record)
+                    )
+                ),
+                // get record children
+                mergeMap((record: Record) => {
+                    if (record.children && record.children.length) {
+                        return this.apiService.getRecordById(record.children[0]).pipe(
+                            mergeMap((childRecord: Record) => this.apiService.getDatasetById(childRecord.dataset)),
+                            tap((childDataset: Dataset) => this.childDataset = childDataset),
+                            // with resultSelect deprecated, need to return record via map
+                            map((childDataset: Dataset) => record)
+                        );
+                    } else {
+                        return of(record);
+                    }
+                })
+            );
+        } else {
+            recordObservable = of(<Record>{
+                dataset: +params['datasetId']
+            });
+        }
+
+        forkJoin(projectObservable, datasetObservable, recordObservable).subscribe(
+            (result: [Project, Dataset, Record]) => {
+                const project = result[0];
+                const dataset = result[1];
+                const record = result[2];
+
+                this.breadcrumbItems.push({
+                    label: project.name,
+                    routerLink: [`/data/projects/${project.id}/datasets`]
+                }, {
+                    label: dataset.name,
+                    routerLink: [`/data/projects/${project.id}/datasets/${dataset.id}`]
+                },
+                    {label: record.id ? 'Edit Record' : 'Create Record'}
+                );
+
+                if (record.geometry) {
+                    this.extent = getExtentFromPoint(record.geometry as GeoJSON.Point);
+                } else if (dataset.extent) {
+                    this.extent = dataset.extent;
+                } else if (project.extent) {
+                    this.extent = project.extent;
+                }
+
+                this.completeUrl = params['completeUrl'] || `/data/projects/${project.id}/datasets/${dataset.id}`;
+
+                // if record is new, add blank data (potentially with default values)
+                if (!record.id) {
                     const data: any = {};
-                    for (const field of this.dataset.data_package.resources[0].schema.fields) {
+                    for (const field of dataset.data_package.resources[0].schema.fields) {
                         data[field['name']] = getDefaultValue(field);
                     }
 
-                    this.record = <Record> {
-                        dataset: this.dataset.id,
-                        data: data
-                    };
+                    record.data = data;
                 }
-            },
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
 
-        this.breadcrumbItems = [
-            {label: 'Enter Records - Projects', routerLink: ['/data/projects']},
-            {label: 'recordId' in params ? 'Edit Record' : 'Create Record'}
-        ];
+                this.dataset = dataset;
+                this.record = this.formatRecord(record);
+            }
+        );
     }
 
     public getDropdownOptions(fieldName: string, options: string[]): SelectItem[] {
@@ -128,7 +154,9 @@ export class EditRecordComponent implements OnInit {
                 const recordCopy = JSON.parse(JSON.stringify(this.record));
                 recordCopy.data = geometryAndData.data;
                 recordCopy.geometry = geometryAndData.geometry;
+                this.extent = getExtentFromPoint(geometryAndData.geometry as GeoJSON.Point);
                 this.record = this.formatRecord(recordCopy);
+
             },
             (error: APIError) => {}
         );
@@ -141,6 +169,7 @@ export class EditRecordComponent implements OnInit {
                 const recordCopy = JSON.parse(JSON.stringify(this.record));
                 recordCopy.data = geometryAndData.data;
                 recordCopy.geometry = geometryAndData.geometry;
+                this.extent = getExtentFromPoint(geometryAndData.geometry as GeoJSON.Point);
                 this.record = this.formatRecord(recordCopy);
             },
             (error: APIError) => {}

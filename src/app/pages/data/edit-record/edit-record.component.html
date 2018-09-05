@@ -75,7 +75,7 @@
             <div class="col-md-6" *ngIf="dataset.type !== 'generic'">
                 <label class="field-label">Location</label>
                 <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']"
-                                   (geometryChanged)="onFeatureMapGeometryChanged($event)">
+                                   (geometryChanged)="onFeatureMapGeometryChanged($event)" [bounds]="extent">
                 </biosys-featuremap>
             </div>
         </div>
