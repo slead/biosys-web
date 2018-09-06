@@ -150,7 +150,7 @@ export class EditRecordsTableComponent {
 
     public onRecordValidatedChanged(checked: boolean, id: number) {
         this.apiService.updateRecordValidated(id, checked).subscribe((record: Record) =>
-            this.flatRecords.filter((flatRecord: object) => flatRecord['id'] === id)[0]['validated'] = record.validated);
+            this.flatRecords.filter((flatRecord: object) => flatRecord['_id'] === id)[0]['validated'] = record.validated);
     }
 
     public onRowEditInit(event: any) {
@@ -159,9 +159,9 @@ export class EditRecordsTableComponent {
 
     public onRowEditComplete(event: any) {
         const data: any = JSON.parse(JSON.stringify(event.data));
-        const id: number = data.id;
+        const id: number = data._id;
 
-        for (const key of ['created', 'file_name', 'geometry', 'id', 'last_modified', 'row', 'validated', 'locked']) {
+        for (const key of ['_created', '_file_name', '_geometry', '_id', '_last_modified', '_row', '_validated', '_locked']) {
             delete data[key];
         }
 
@@ -179,7 +179,7 @@ export class EditRecordsTableComponent {
             (error: APIError) => {
                 // revert data
                 if (this.previousRowData) {
-                    const flatRecord = this.flatRecords.filter((fr: object) => fr['id'] === id)[0];
+                    const flatRecord = this.flatRecords.filter((fr: object) => fr['_id'] === id)[0];
                     for (const prop in this.previousRowData) {
                         if (this.previousRowData.hasOwnProperty(prop)) {
                             flatRecord[prop] = this.previousRowData[prop];
@@ -206,7 +206,7 @@ export class EditRecordsTableComponent {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete selected records?',
             accept: () => {
-                this.apiService.deleteRecords(this._dataset.id, this.selectedRecords.map(sr => sr['id']))
+                this.apiService.deleteRecords(this._dataset.id, this.selectedRecords.map(sr => sr['_id']))
                     .subscribe(
                         () => this.onDeleteRecordsSuccess(),
                         (error: APIError) => this.onDeleteRecordError(error)
@@ -262,14 +262,14 @@ export class EditRecordsTableComponent {
 
     private formatFlatRecords(records: Record[]): object[] {
         const flatRecords = records.map((r: Record) => Object.assign({
-            id: r.id,
-            validated: r.validated,
-            locked: r.locked,
-            file_name: r.source_info ? r.source_info.file_name : 'Manually created',
-            row: r.source_info ? r.source_info.row : '',
-            created: moment(r.created).format(EditRecordsTableComponent.DATETIME_FORMAT),
-            last_modified: moment(r.last_modified).format(EditRecordsTableComponent.DATETIME_FORMAT),
-            geometry: r.geometry
+            _id: r.id,
+            _validated: r.validated,
+            _locked: r.locked,
+            _file_name: r.source_info ? r.source_info.file_name : 'Manually created',
+            _row: r.source_info ? r.source_info.row : '',
+            _created: moment(r.created).format(EditRecordsTableComponent.DATETIME_FORMAT),
+            _last_modified: moment(r.last_modified).format(EditRecordsTableComponent.DATETIME_FORMAT),
+            _geometry: r.geometry
         }, r.data));
 
         for (const field of this._dataset.data_package.resources[0].schema.fields) {
