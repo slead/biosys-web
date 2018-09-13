@@ -27,7 +27,6 @@ import { formatUserFullName } from '../../../biosys-core/utils/functions';
 export class HomeComponent implements OnInit {
     public projects: Project[];
     public statistic: Statistic;
-    public userString = '';
     public user: User;
 
     private map: L.Map;
@@ -35,7 +34,6 @@ export class HomeComponent implements OnInit {
     constructor(private apiService: APIService, private authService: AuthService) {
         this.authService.getCurrentUser().subscribe((user: User) => {
             this.user = user;
-            this.userString = formatUserFullName(user);
         });
     }
 
@@ -85,7 +83,7 @@ export class HomeComponent implements OnInit {
                     popupContent += '<p class="mt-1 mb-0">' + project.description + '</p>';
                 }
                 if (this.user && project.custodians.indexOf(this.user.id) > -1) {
-                    popupContent += '<p class="mt-1"><a href="#/management/projects/edit-project/' + project.id +
+                    popupContent += '<p class="mt-1"><a href="#/administration/projects/edit-project/' + project.id +
                         '">Project Details</a></p>';
                 }
                 marker.bindPopup(popupContent);

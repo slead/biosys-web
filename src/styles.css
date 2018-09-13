@@ -348,3 +348,10 @@ table td {
 .ui-toast .ui-toast-message.ui-toast-message-error .ui-toast-close-icon {
     color: #ffffff;
 }
+
+.submitting-spinner {
+    width: 26px;
+    height: 26px;
+    float: right;
+    margin-right: 5px;
+}

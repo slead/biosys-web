@@ -73,7 +73,7 @@ export class EditRecordsTableComponent {
     public getEditRecordRoute(recordId) {
         const isChild = !!this.parentRecord;
         const endPoint = isChild ? 'child-record' : 'record';
-        const datasetPath = `/data/projects/${this._dataset.project}/datasets/${this._dataset.id}`;
+        const datasetPath = `/data-management/projects/${this._dataset.project}/datasets/${this._dataset.id}`;
         const path = `${datasetPath}/${endPoint}/${recordId}`;
         const params = {};
         if (isChild) {
@@ -82,7 +82,7 @@ export class EditRecordsTableComponent {
         let completeUrl = datasetPath;
         if (isChild) {
             // should point back to the edit parent url
-            completeUrl = `/data/projects/${this._dataset.project}/datasets/${this.parentRecord.dataset}/record/
+            completeUrl = `/data-management/projects/${this._dataset.project}/datasets/${this.parentRecord.dataset}/record/
                 ${this.parentRecord.id}`;
         }
         params['completeUrl'] = completeUrl;
@@ -199,7 +199,7 @@ export class EditRecordsTableComponent {
     }
 
     public add() {
-        this.router.navigate([`/data/projects/${this.dataset.project}/datasets/${this.dataset.id}/create-record/`]);
+        this.router.navigate([`/data-management/projects/${this.dataset.project}/datasets/${this.dataset.id}/create-record/`]);
     }
 
     public confirmDeleteSelectedRecords() {
