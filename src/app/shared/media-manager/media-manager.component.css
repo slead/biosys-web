@@ -1,0 +1,13 @@
+a {
+    color: #0275d8;
+    font-size: 14px;
+    font-style: italic;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.row-buffer {
+    margin-bottom: 15px;
+}

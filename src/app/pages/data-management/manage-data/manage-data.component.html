@@ -1,0 +1,67 @@
+<div class="container">
+    <biosys-header></biosys-header>
+    <biosys-navbar></biosys-navbar>
+    <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
+    <p-growl [value]="messages" [life]="DEFAULT_GROWL_LIFE"></p-growl>
+    <div class="row mt-1">
+        <div class="col-md">
+            <h3>Records for {{dataset?.name}}</h3>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="{{ !dataset || dataset.type === 'generic' ? 'col-md-12' : 'col-md-4' }} ">
+            <p *ngIf="dataset?.type !== 'generic';else noGeometry">
+                All records for the current dataset can be accessed through the interactive map or by searching the
+                records table below. For the interactive map, you may need to zoom to the appropriate level by clicking
+                on the group marker to access the individual markers. You can also select a particular record to edit
+                by clicking on the Record ID in the records table or click Add to add a new record.
+            </p>
+            <ng-template #noGeometry>
+                <p>
+                    All records for the current dataset can be found by searching the records table below. You
+                    can select a particular record to edit by clicking on the Record ID in the records table or click
+                    Add to add a new record.
+                </p>
+            </ng-template>
+            <p>
+                To upload numerous records, use the upload tool at the bottom of the page.
+            </p>
+        </div>
+        <div class="col-md-8" *ngIf="dataset?.type !== 'generic'">
+            <div id="map">
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md">
+            <h4>Records Table</h4>
+            <biosys-edit-records-table [dataset]="dataset" [(pageState)]="pageState"
+                                       (recordsDeleted)="onRecordsDeleted()"
+                                       (recordChanged)="onRecordChanged($event)">
+            </biosys-edit-records-table>
+        </div>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col-md">
+            <h4>Upload records</h4>
+            <p>Select one or more Excel (xlxs) or CSV files to upload records for the {{ dataset ? dataset.name + ' ' : ''}}dataset</p>
+            <biosys-expandablemessages [value]="uploadErrorMessages" [maxItems]="5"></biosys-expandablemessages>
+            <biosys-expandablemessages [value]="uploadWarningMessages" [maxItems]="5"></biosys-expandablemessages>
+            <biosys-fileuploader name="file" [url]="uploadURL" accept=".csv,.xlsx"
+                                 (onUpload)="onUpload($event)" (onError)="onUploadError($event)"
+                                 (onSelect)="onUploadSelect($event)" (onBeforeSend)="onUploadBeforeSend($event)"
+                                 (onBeforeUpload)="onBeforeUpload($event)" [loading]="isUploading"
+                                 [showCancelButton]="false">
+                <ng-template pTemplate="content">
+                    <p-checkbox styleClass="mr-3" label="Create Sites" [(ngModel)]="uploadCreateSites" binary="true"
+                                pTooltip="Sites that doesn't exist will be created on the fly with the provided code.">
+                    </p-checkbox>
+                    <p-checkbox label="Delete Existing Records" [(ngModel)]="uploadDeleteExistingRecords" binary="true"
+                                pTooltip="If selected, previous records for this dataset will be deleted.">
+                    </p-checkbox>
+                </ng-template>
+            </biosys-fileuploader>
+        </div>
+    </div>
+</div>
+<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>

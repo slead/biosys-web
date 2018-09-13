@@ -1,4 +1,6 @@
 import * as L from 'leaflet';
+import { LayerGroup } from 'leaflet';
+import { Map } from 'leaflet';
 
 declare var module: NodeModule;
 interface NodeModule {
@@ -11,4 +13,12 @@ declare module 'leaflet' {
     }
 
     function latlngGraticule(options?: any): L.Layer;
+
+    function loading(options?: any): L.Loading;
+
+    class Loading extends L.Layer {
+        start();
+
+        stop();
+    }
 }

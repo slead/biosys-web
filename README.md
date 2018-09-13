@@ -1,30 +1,96 @@
-# Biosys Client
+# Biosys Web
 
-The Biosys Client is build on AngularJS. To use the commands below, you need to globally install Angular-CLI:
+## Requirements
 
-`npm install -g @angular/cli`
+* nodejs v8.11.4 or later
+
+## Installation
+
+The Biosys Client is build on Angular. To use the commands below, you need to globally install Angular-CLI:
+
+```bash
+npm install -g @angular/cli
+```
+
+This project contains submodules. To clone both the project and submodules, use:
+
+```bash
+git clone --recurse-submodules https://github.com/gaiaresources/biosys-web
+```
+
+**Note:** If you already have the project cloned and are updating to the latest version, you'll also need to update the submodules. Use:
+
+```bash
+git pull
+git submodule update --remote --recursive
+```
+
+Then install dependant packages:
+
+```bash
+npm install
+```
 
 ## Development server
 
-Run `ng serve` for a development server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+To run a development server, use: 
 
-## Build for UAT
+```bash
+ng serve
+``` 
 
-Run `ng build --env=uat --prod --build-optimizer` to build the project for UAT. The build artifacts will be stored in the `dist/` directory.
+Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files.
 
-## Build for production
+## DBCA Builds
 
-Run `ng build --env=prod --prod --build-optimizer` to build the project for production. The build artifacts will be stored in the `dist/` directory.
+### Build for UAT
+
+To build the project for UAT, use: 
+
+```bash
+ng build --configuration=dbca-uat --prod
+ ```
+
+The build artifacts will be stored in the `dist/` directory, which are then to be copied to your UAT server.
+
+### Build for production
+
+To build the project for production, use: 
+
+```bash
+ng build --configuration=dbca-prod --prod
+ ```
+
+The build artifacts will be stored in the `dist/` directory, which are then to be copied to your production server.
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+To execute the unit tests via [Karma](https://karma-runner.github.io), use:
+
+```bash
+ng test
+```
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+To execute the end-to-end tests via [Protractor](http://www.protractortest.org/), use:
+
+```bash
+ng e2e
+```
+
+Before running the tests make sure you are serving the app via:
+ 
+```bash 
+ng serve
+```
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+To get more help on the Angular CLI use:
+
+```bash
+ng help
+```
+
+Alternatively read the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).

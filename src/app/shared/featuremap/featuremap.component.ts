@@ -1,11 +1,17 @@
 import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
     EventEmitter, SimpleChange } from '@angular/core';
-import { DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ZOOM, getDefaultBaseLayer, getOverlayLayers }
-    from '../../shared/utils';
+import {
+    DEFAULT_CENTER,
+    DEFAULT_MARKER_ICON,
+    DEFAULT_ZOOM,
+    getDefaultBaseLayer,
+    getGeometryBoundsFromExtent,
+    getOverlayLayers
+} from '../utils/maputils';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-mouse-position';
-import '../../../lib/leaflet.latlng-graticule'
+import '../../../lib/leaflet.latlng-graticule';
 
 @Directive({
     selector: 'biosys-marker'
@@ -25,13 +31,16 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     @Input() public drawFeatureTypes: [string] = [] as [string];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
-    @Output() public onGeometryChanged = new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();
+    @Input() public bounds: GeoJSON.BBox;
+    @Output() public geometryChanged =
+        new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();
+
     @ContentChildren(MarkerDirective)
     set markers(markers: QueryList<MarkerDirective>) {
         markers.forEach((marker: MarkerDirective) => {
             if (marker.geometry) {
-                let coord: GeoJSON.Position = marker.geometry.coordinates as GeoJSON.Position;
-                let leafletMarker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                const coord: GeoJSON.Position = marker.geometry.coordinates as GeoJSON.Position;
+                const leafletMarker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
                     {icon: this.extraMarkerIcon});
                 leafletMarker.bindPopup(marker.popupText);
                 leafletMarker.on('mouseover', function () {
@@ -93,6 +102,10 @@ export class FeatureMapComponent implements OnInit, OnChanges {
             layers: [getDefaultBaseLayer()]
         });
 
+        if (this.bounds) {
+            this.map.fitBounds(getGeometryBoundsFromExtent(this.bounds));
+        }
+
         L.control.layers(null, getOverlayLayers()).addTo(this.map);
 
         L.control.mousePosition({emptyString: '', lngFirst: true, separator: ', '}).addTo(this.map);
@@ -117,20 +130,28 @@ export class FeatureMapComponent implements OnInit, OnChanges {
             this.drawnFeatures.clearLayers();
             if (this.geometry) {
                 if (this.geometry.type === 'LineString') {
-                    let polyline: L.Polyline = L.polyline(L.GeoJSON.coordsToLatLngs(this.geometry.coordinates));
+                    const polyline: L.Polyline = L.polyline(L.GeoJSON.coordsToLatLngs(this.geometry.coordinates));
                     this.drawnFeatures.addLayer(polyline);
                     this.drawnFeatureType = 'polyline';
                 } else if (this.geometry.type === 'Polygon') {
-                    let coords: GeoJSON.Position[] = this.geometry.coordinates[0] as GeoJSON.Position[];
-                    let polygon: L.Polygon = L.polygon(L.GeoJSON.coordsToLatLngs(coords));
+                    const coords: GeoJSON.Position[] = this.geometry.coordinates[0] as GeoJSON.Position[];
+                    const polygon: L.Polygon = L.polygon(L.GeoJSON.coordsToLatLngs(coords));
                     this.drawnFeatures.addLayer(polygon);
                     this.drawnFeatureType = 'polygon';
                 } else if (this.geometry.type === 'Point') {
-                    let coord: GeoJSON.Position = this.geometry.coordinates as GeoJSON.Position;
-                    let marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
+                    const coord: GeoJSON.Position = this.geometry.coordinates as GeoJSON.Position;
+                    const marker: L.Marker = L.marker(L.GeoJSON.coordsToLatLng([coord[0], coord[1]]),
                         {icon: DEFAULT_MARKER_ICON});
                     this.drawnFeatures.addLayer(marker);
                     this.drawnFeatureType = 'point';
+                }
+            }
+        }
+
+        if (changes['bounds']) {
+            if (this.initialised) {
+                if (this.bounds) {
+                    this.map.fitBounds(getGeometryBoundsFromExtent(this.bounds));
                 }
             }
         }
@@ -147,7 +168,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
     }
 
     public getFeatureGeometry(): GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon {
-        let geom: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon = null;
+        const geom: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon = null;
 
         if (this.drawnFeatures.getLayers().length > 0) {
             if (this.drawnFeatureType === 'polygon' || this.drawnFeatureType === 'rectangle') {
@@ -167,10 +188,10 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         this.drawnFeatures.addLayer(e.layer);
         this.drawnFeatureType = e.layerType;
 
-        this.onGeometryChanged.emit(this.getFeatureGeometry());
+        this.geometryChanged.emit(this.getFeatureGeometry());
     }
 
     private onFeatureEdited(e: any) {
-        this.onGeometryChanged.emit(this.getFeatureGeometry());
+        this.geometryChanged.emit(this.getFeatureGeometry());
     }
 }

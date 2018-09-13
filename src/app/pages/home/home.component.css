@@ -12,12 +12,12 @@ ul {
     padding: 0 0 0 8px;
 }
 
-h2 {
+h2, h5 {
     display: inline-block;
 }
 
 .card-block {
-    padding-bottom: 0px;
+    padding-bottom: 0;
 }
 
 .main-section {

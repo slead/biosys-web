@@ -1,14 +1,14 @@
 import { Routes } from '@angular/router';
-import { LoginRoutes } from './pages/login/index';
-import { HomeRoutes } from './pages/home/index';
-import { ManagementListProjectsRoutes } from './pages/management/list-projects/list-projects.routes';
-import { DataListProjectsRoutes } from './pages/data/list-projects/list-projects.routes';
-import { ViewRecordsRoutes } from './pages/view/view-records/view-records.routes';
+import { AccountsRoutes } from './pages/accounts/accounts.routes';
+import { HomeRoutes } from './pages/home/home.routes';
+import { AdministrationRoutes } from './pages/administration/administration.routes';
+import { DataListProjectsRoutes } from './pages/data-management/list-projects/list-projects.routes';
+import { ViewRecordsRoutes } from './pages/data-view-export/view-records/view-records.routes';
 
 export const routes: Routes = [
-    ...LoginRoutes,
+    ...AccountsRoutes,
     ...HomeRoutes,
-    ...ManagementListProjectsRoutes,
+    ...AdministrationRoutes,
     ...DataListProjectsRoutes,
     ...ViewRecordsRoutes
 ];

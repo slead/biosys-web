@@ -1,0 +1,133 @@
+<p>
+    Use the table below to view and edit records. You can edit a record on a dedicated page by clicking the record ID
+    of a particular record. Alternatively, edit a records value directly in the table by clicking the table cell it is
+    contained in and then press enter when complete. <strong>Note:</strong> you can only edit records that have not
+    been <em>locked</em>.
+</p>
+<p-table #table [value]="flatRecords" autoLayout="true"
+         resizableColumns="true" columnResizeMode="expand"
+         [scrollable]="true" [style.width]="getRecordsTableWidth()"
+         [(selection)]="selectedRecords"
+         (onEditInit)="onRowEditInit($event)" (onEditComplete)="onRowEditComplete($event)"
+         [paginator]="true" [rows]="pageState ? pageState['rowLimit'] : 10" [rowsPerPageOptions]="[10, 25, 50, 100]"
+         [lazy]="!!dataset" (onLazyLoad)="loadRecordsLazy($event)" [loading]="!flatRecords" [totalRecords]="totalRecords">
+    <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+            <col [style.width]="'140px' | safe: 'style'">
+            <col [style.width]="'100px' | safe: 'style'">
+            <col [style.width]="'100px' | safe: 'style'">
+            <col [style.width]="'100px' | safe: 'style'">
+            <ng-container *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                <col *ngIf="!(field | isHiddenField)" [style.width]="getRecordsTableColumnWidth(field.name)">
+            </ng-container>
+            <col [style.width]="'240px' | safe: 'style'">
+            <col [style.width]="'240px' | safe: 'style'">
+            <col [style.width]="'240px' | safe: 'style'">
+            <col [style.width]="'240px' | safe: 'style'">
+        </colgroup>
+    </ng-template>
+    <ng-template pTemplate="caption">
+        <i class="fa fa-search table-search-icon"></i>
+        <input type="text" pInputText size="50" placeholder="Search"
+               (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th>
+                Select All
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th>Record ID</th>
+            <th>
+                Validated
+            </th>
+            <th>Locked</th>
+            <ng-container *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                <th *ngIf="!(field | isHiddenField)" [pSortableColumn]="field.name">
+                    {{ field.name }}
+                    <p-sortIcon [field]="field.name"></p-sortIcon>
+                </th>
+            </ng-container>
+            <th>Source File</th>
+            <th>Source Row</th>
+            <th>Created</th>
+            <th>Last Modified</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+        <tr>
+            <td align="center">
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td>
+                <span *ngIf="rowData._locked">{{ rowData._id }}</span>
+                <a *ngIf="!rowData._locked" [routerLink]="getEditRecordRoute(rowData._id)">
+                    {{ rowData._id }}
+                </a>
+            </td>
+            <td align="center">
+                <p-checkbox [(ngModel)]="rowData._validated" binary="true" [disabled]="rowData._locked"
+                            (onChange)="onRecordValidatedChanged($event, rowData._id)"></p-checkbox>
+            </td>
+            <td>{{ rowData._locked }}</td>
+            <!-- have editable cells if record not locked -->
+            <ng-container
+                    *ngFor="let field of !rowData._locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+                <td *ngIf="!(field | isHiddenField)" [pEditableColumn]="rowData" [pEditableColumnField]="field.name">
+                    <p-cellEditor>
+                        <ng-template pTemplate="input">
+                            <span [ngSwitch]="getFieldType(field)">
+                            <input *ngSwitchCase="'text'" [type]="field.type" [(ngModel)]="rowData[field.name]"
+                                    [style.width]="'100%' | safe: 'style'">
+                            <p-calendar *ngSwitchCase="'datetime'"
+                                        dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+                                        [(ngModel)]="rowData[field.name]" appendTo="body"
+                                        [inputStyle]="{width: '100%'}">
+                            </p-calendar>
+                            <p-dropdown *ngSwitchCase="'select'" [placeholder]="'Select a ' + field.name.toLowerCase()"
+                                        [options]="getDropdownOptions(field.name, field.constraints.enum)"
+                                        [(ngModel)]="rowData[field.name]" [style.width]="'100%' | safe: 'style'"
+                                        appendTo="body">
+                            </p-dropdown>
+                            </span>
+                        </ng-template>
+                        <ng-template pTemplate="output">
+                            {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
+                                pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
+                        </ng-template>
+                    </p-cellEditor>
+                </td>
+            </ng-container>
+            <!-- just show record values (non-editable) if record locked -->
+            <ng-container *ngFor="let field of rowData._locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
+                <td *ngIf="!(field | isHiddenField)">
+                    {{ getFieldType(field) === 'datetime' ? (rowData[field.name] | date:(field.format |
+                        pyDateFormatToAngularDateFormat)) : rowData[field.name] }}
+                </td>
+            </ng-container>
+            <td>{{ rowData._file_name }}</td>
+            <td>{{ rowData._row }}</td>
+            <td>{{ rowData._created }}</td>
+            <td>{{ rowData._last_modified }}</td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td [attr.colspan]="dataset?.data_package?.resources[0]?.schema?.fields.length + 8">
+                {{ flatRecords?.length > 0 ? '' : 'No records found' }}
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+        <div class="ui-helper-clearfix">
+            <button type="button" pButton icon="fa fa-trash" class="float-left" label="Delete Selected"
+                    (click)="confirmDeleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length">
+            </button>
+            <button type="button" pButton icon="fa fa-trash" class="float-left" label="Delete All"
+                    (click)="confirmDeleteAllRecords()">
+            </button>
+            <button type="button" pButton icon="fa fa-plus" class="float-right" label="Add" (click)="add()">
+            </button>
+        </div>
+    </ng-template>
+</p-table>

@@ -2,7 +2,7 @@ import { Component, OnInit, ElementRef, Input } from '@angular/core';
 
 import { JsonEditorOptions } from './jsoneditor.options';
 
-let JSONEditor = require('jsoneditor');
+const JSONEditor = require('jsoneditor');
 
 @Component({
     selector: 'biosys-json-editor',
@@ -11,10 +11,10 @@ let JSONEditor = require('jsoneditor');
 export class JsonEditorComponent implements OnInit {
     public editor: any;
 
-    @Input('options')
+    @Input()
     private options: JsonEditorOptions;
 
-    @Input('data')
+    @Input()
     private data: Object;
 
     constructor(private rootElement: ElementRef) {

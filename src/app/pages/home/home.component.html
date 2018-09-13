@@ -4,25 +4,24 @@
     <div class="row mt-1">
         <div class="col">
             <h2>Welcome to Biosys</h2>
-            <span *ngIf="user" class="float-right mt-2">Logged in as {{user.first_name}} {{user.last_name}}</span>
         </div>
     </div>
     <div class="row mt-1 main-section">
         <div class="col-3">
-            <a routerLink="/management/projects">
+            <a *ngIf="user?.is_admin || user?.is_data_engineer" routerLink="/administration/projects">
                 <div class="card mb-2">
                     <div class="card-block">
-                        <h5 class="card-title text-center">Manage Projects / Sites / Datasets</h5>
+                        <h5 class="card-title text-center">Administer Projects / Sites / Datasets</h5>
                     </div>
-                    <img class="card-img-bottom" src="/assets/img/project.jpg">
+                    <img class="card-img-bottom" src="./assets/img/project.jpg">
                 </div>
             </a>
-            <a routerLink="/data/projects">
+            <a routerLink="/data-management/projects">
                 <div class="card mb-2">
                     <div class="card-block">
                         <h5 class="card-title text-center">Create / Import / Edit / Delete Records</h5>
                     </div>
-                    <img class="card-img-bottom" src="/assets/img/data.jpg">
+                    <img class="card-img-bottom" src="./assets/img/data.jpg">
                 </div>
             </a>
             <a routerLink="/view">
@@ -30,7 +29,7 @@
                     <div class="card-block">
                         <h5 class="card-title text-center">View and Export Records</h5>
                     </div>
-                    <img class="card-img-bottom" src="/assets/img/export.jpg">
+                    <img class="card-img-bottom" src="./assets/img/export.jpg">
                 </div>
             </a>
         </div>
@@ -45,16 +44,40 @@
                 </div>
                 <div *ngIf="statistic" class="card-block">
                     <h5>Projects</h5>
-                    <p>Total number of projects: {{ statistic.projects.total }}</p>
+                    <span class="float-right">Total: {{ statistic.projects.total }}</span>
                     <hr>
                     <h5>Sites</h5>
-                    <p>Total number of sites: {{ statistic.sites.total }}</p>
+                    <span class="float-right">Total: {{ statistic.sites.total }}</span>
+                    <hr>
+                    <h5>Datasets</h5>
+                    <span class="float-right">Total: {{ statistic.datasets.total }}</span>
+                    <p class="small">
+                        Generic datasets:
+                        <span class="float-right">{{ statistic.datasets.generic.total }}</span>
+                    </p>
+                    <p class="small">
+                        Observation datasets:
+                        <span class="float-right">{{ statistic.datasets.observation.total }}</span>
+                    </p>
+                    <p class="small">
+                        Species datasets:
+                        <span class="float-right">{{ statistic.datasets.speciesObservation.total }}</span>
+                    </p>
                     <hr>
                     <h5>Records</h5>
-                    <p>Total number of records: {{ statistic.records.total }}</p>
-                    <p class="small">Number of generic records: {{ statistic.records.generic.total }}</p>
-                    <p class="small">Number of observation records: {{ statistic.records.observation.total }}</p>
-                    <p class="small">Number of species records: {{ statistic.records.speciesObservation.total }}</p>
+                    <span class="float-right">Total: {{ statistic.records.total }}</span>
+                    <p class="small">
+                        Generic records:
+                        <span class="float-right">{{ statistic.records.generic.total }}</span>
+                    </p>
+                    <p class="small">
+                        Observation records:
+                        <span class="float-right">{{ statistic.records.observation.total }}</span>
+                    </p>
+                    <p class="small">
+                        Species records:
+                        <span class="float-right">{{ statistic.records.speciesObservation.total }}</span>
+                    </p>
                 </div>
             </div>
         </div>

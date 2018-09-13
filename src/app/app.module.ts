@@ -4,17 +4,33 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import { routes } from './app.routes';
-import { LoginModule } from './pages/login/login.module';
-import { HomeModule } from './pages/home/home.module';
-import { AuthGuard } from './shared/auth.guard';
-import { ApiInterceptor } from './shared/api.interceptor';
+
+import { ToastModule} from 'primeng/toast';
+import { MessageService } from 'primeng/primeng';
+
+import { BiosysCoreModule } from '../biosys-core/biosys-core.module';
+import { APIService } from '../biosys-core/services/api.service';
+import { AuthService } from '../biosys-core/services/auth.service';
+import { ApiInterceptor } from '../biosys-core/services/api.interceptor';
+
 import { SharedModule } from './shared/shared.module';
-import * as management from './pages/management/index';
-import * as data from './pages/data/index';
-import * as view from './pages/view/index';
 
 import { AppComponent } from './app.component';
+import { routes } from './app.routes';
+
+import { SSOAuthService } from './shared/services/sso-auth.service';
+import { SSOAuthGuard } from './shared/guards/sso-auth.guard';
+
+import { AccountsModule } from './pages/accounts/accounts.module';
+import { HomeModule } from './pages/home/home.module';
+import { DataManagementModule } from './pages/data-management/data-management.module';
+import { AdministrationModule } from './pages/administration/administration.module';
+import { DataViewExportModule } from './pages/data-view-export/data-view-export.module';
+import { environment } from '../environments/environment';
+import { AuthGuard } from './shared/guards/auth.guard';
+import { AdminGuard } from './shared/guards/admin.guard';
+import { DataEngineerGuard } from './shared/guards/data-engineer.guard';
+import { TeamMemberGuard } from './shared/guards/team-member.guard';
 
 @NgModule({
     declarations: [
@@ -25,21 +41,29 @@ import { AppComponent } from './app.component';
         BrowserAnimationsModule,
         HttpClientModule,
         RouterModule.forRoot(routes),
+        ToastModule,
+        BiosysCoreModule,
         SharedModule,
-        LoginModule,
+        AccountsModule,
         HomeModule,
-        management.ManagementListProjectsModule,
-        management.EditProjectModule,
-        management.EditDatasetModule,
-        management.UploadSitesModule,
-        management.EditSiteModule,
-        data.DataListProjectsModule,
-        data.ListDatasetsModule,
-        data.ManageDataModule,
-        data.EditRecordModule,
-        view.ViewRecordsModule
+        AdministrationModule,
+        DataManagementModule,
+        DataViewExportModule
     ],
     providers: [
+        MessageService,
+        APIService,
+        {
+            provide: AuthService,
+            useClass: !!environment['useSSOAuth'] ? SSOAuthService : AuthService
+        },
+        {
+            provide: AuthGuard,
+            useClass: !!environment['useSSOAuth'] ? SSOAuthGuard : AuthGuard
+        },
+        AdminGuard,
+        DataEngineerGuard,
+        TeamMemberGuard,
         {
             provide: LocationStrategy,
             useClass: HashLocationStrategy
@@ -48,8 +72,7 @@ import { AppComponent } from './app.component';
             provide: HTTP_INTERCEPTORS,
             useClass: ApiInterceptor,
             multi: true
-        },
-        AuthGuard
+        }
     ],
     bootstrap: [AppComponent]
 })

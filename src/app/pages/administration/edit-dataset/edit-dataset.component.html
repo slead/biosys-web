@@ -1,0 +1,159 @@
+<div class="container">
+    <biosys-header></biosys-header>
+    <biosys-navbar></biosys-navbar>
+    <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
+    <div class="row mt-1">
+        <div class="col-md">
+            <div class="ui-fluid">
+                <h3 *ngIf="ds.id">Edit Dataset</h3>
+                <h3 *ngIf="!ds.id">Create Dataset</h3>
+                <p *ngIf="ds.id">
+                    Edit the dataset by changing the details below. Fields marked with a <strong>*</strong> are
+                    required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill
+                    the fields.
+                </p>
+                <p *ngIf="!ds.id">
+                    Create the dataset by entering the details below. Fields marked with a <strong>*</strong> are
+                    required. You can also directly upload a file
+                    containing headings and data in columns and the dataset will be inferred from that data and prefill
+                    the fields.
+                </p>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Name *</label></div>
+                    <div class="col-md-4">
+                        <input type="text" pInputText [(ngModel)]="ds.name"/>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['name']}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Code</label></div>
+                    <div class="col-md-4">
+                        <input type="text" pInputText [(ngModel)]="ds.code"/>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['code']}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Description</label></div>
+                    <div class="col-md-4">
+                        <textarea pInputTextarea rows="7" [(ngModel)]="ds.description"></textarea>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['description']}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Type *</label></div>
+                    <div class="col-md-4">
+                        <p-dropdown [options]="typeChoices" [(ngModel)]="ds.type" [autoWidth]="false">
+                        </p-dropdown>
+                    </div>
+                    <div class="col-md-4 text-danger">{{dsErrors['type']}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-2"><label class="field-label">Data Package *</label></div>
+                    <div class="col-md-8">
+                        <div style="height:500px">
+                            <biosys-json-editor id="dataPackage" [options]="editorOptions"
+                                                [(data)]="ds.data_package"></biosys-json-editor>
+                        </div>
+                        <div class="text-danger" [innerHTML]="dsErrors['data_package']"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row mt-3 mb-3">
+        <div class="col-md-2">
+            <label class="field-label">Infer from file</label>
+            <p class="font-italic text-muted">xlsx or CSV</p>
+        </div>
+        <div class="col-5">
+            <p-fileUpload name="file" [url]="apiService.getInferDatasetURL()" (onUpload)="onInferUpload($event)"
+                          (onBeforeSend)="onInferBeforeSend($event)" (onError)="onInferError($event)"
+                          accept=".csv,.xlsx,.xls">
+            </p-fileUpload>
+            <div class="text-danger" [innerHTML]="dsErrors['non_field_errors']"></div>
+        </div>
+        <div class="col-4">
+            <p-checkbox label="Infer dataset type" [(ngModel)]="inferDatasetType" binary="true"></p-checkbox>
+            <div class="font-italic text-muted small">
+                Uncheck if you want a generic dataset, otherwise assumptions will be made on the dataset
+                type based on your column names and certain fields will be required. See the help on the
+                right to understand the different types of datasets.
+            </div>
+        </div>
+        <div class="col-1">
+            <button pButton label="Help" (click)="displayHelp = true"></button>
+        </div>
+    </div>
+    <hr>
+    <div class="row mt-3 mb-3">
+        <div class="col-4">
+            <button pButton icon="fa fa-trash" (click)="confirmDelete($event)" label="Delete"></button>
+            <button pButton icon="fa fa-trash" (click)="confirmDeleteRecords($event)" label="Delete Records"></button>
+        </div>
+        <div class="col-4">
+            <button pButton icon="fa fa-close" label="Cancel" (click)="cancel()"></button>
+            <button pButton icon="fa fa-check" label="Save" (click)="save()"></button>
+        </div>
+    </div>
+    <hr>
+    <!-- file attachments -->
+    <div *ngIf="ds.id" class="row mt-5 mb-5">
+        <div class="col-md">
+            <h4>File Attachments</h4>
+            <biosys-media-manager [mediaList]="datasetMedia" (uploadMedia)="onUploadMedia($event)"
+                                  (deleteMedia)="onDeleteMedia($event)" [isLoading]="isUploadingMedia">
+            </biosys-media-manager>
+        </div>
+    </div>
+</div>
+<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+<p-dialog header="Inferring Schemas" [(visible)]="displayHelp" modal="modal" width="1000" dismissableMask="true">
+    <h4>Inferring a schema from your data</h4>
+    <p>
+        BioSys needs a "schema" to define your dataset. The schema provides BioSys the detailed information it needs to
+        understand your data structure, and any rules for validating data, creating look-ups, etc. A schema can be
+        written to accept any dataset, so it's highly flexible. But we don't expect users to write their own schema
+        (though the specs are <a href="https://frictionlessdata.io/specs/table-schema/" target="_blank">here</a>
+        if you're interested)! In future versions, we'll make it much easier to define your data. In the meantime, we're
+        providing the following help.
+    </p>
+    <p>
+        For simple datasets, BioSys can create the schema for you. More complicated datasets will require assistance
+        from the <a href="mailto: paul.gioia@dbca.wa.gov.au">BioSys administrator</a>. Please don't hesitate to ask
+        for help. We really want you to lodge your data here.
+    </p>
+    <p>
+        To infer a dataset schema, click the Choose button to select either an Excel or CSV data file. Then click the
+        Upload button. If you run into any problems, contact the <a href="mailto: paul.gioia@dbca.wa.gov.au"> BioSys
+        administrator</a>. <em>Note that this process only creates the schema. To load data you need to select the Data
+        menu option, select your project and dataset, and upload records.</em>
+    </p>
+    <h5>Generic datasets</h5>
+    <p>
+        A generic dataset is one in which we make no assumptions about what's in your data. BioSys will try to
+        understand your columns and create a schema for you.
+    </p>
+    <h5>Observation datasets</h5>
+    <p>
+        An observation dataset is one containing, at the very least, location. The advantage of creating an observation
+        dataset is that you can see your data in a map, which makes it easy to spot and correct spatial outliers.
+    </p>
+    <p>
+        As long as your location fields are called <strong>Latitude</strong> and <strong>Longitude</strong>, or
+        <strong>Northing, Easting</strong> and <strong>Zone</strong>, BioSys will recognise them. An observation can
+        also have a date. If your date field is called <strong>Observation Date</strong>, BioSys will recognise it.
+    </p>
+    <h5>Species observation datasets</h5>
+    <p>
+        A species observation dataset is one that extends an observation dataset by recognising species names. If your
+        species name is stored in a single field called <strong>Species Name</strong>, BioSys will recognise it. If it’s
+        split into fields called <strong>Genus, Species, Infraspecific Rank</strong> and <strong>Infraspecific
+        Name</strong>, BioSys will also recognised it.
+    </p>
+    <p>
+        If you require more detailed definitions, please contact the <a href="mailto: paul.gioia@dbca.wa.gov.au">
+        BioSys administrator</a>.
+    </p>
+</p-dialog>

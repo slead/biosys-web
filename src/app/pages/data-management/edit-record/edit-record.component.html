@@ -1,0 +1,124 @@
+<div class="container">
+    <biosys-header></biosys-header>
+    <biosys-navbar></biosys-navbar>
+    <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
+    <p-growl [value]="messages" [life]="DEFAULT_GROWL_LIFE"></p-growl>
+    <div *ngIf="record">
+        <div class="row mt-1">
+            <div class="col">
+                <h3 *ngIf="record.id">Edit Record</h3>
+                <h3 *ngIf="!record.id">Create Record</h3>
+                <p *ngIf="record.id">Edit the record by changing the details below. Fields marked with a
+                    <strong>*</strong> are required.
+                </p>
+                <p *ngIf="!record.id">
+                    Create the record by entering the details below. Fields marked with a <strong>*</strong> are
+                    required.
+                </p>
+                <p *ngIf="dataset.type !== 'generic'">
+                    When entering or altering the record geometry, you can enter via either the geometry fields on the
+                    left such as latitude/longitude and/or easting/northing, or by placing a marker on the map on
+                    the right. Any changes to either will be reflected in the fields or the marker.
+                </p>
+            </div>
+        </div>
+        <div class="row mt-1">
+            <div class="col-md-6">
+                <div class="ui-fluid">
+                    <div class="row mt-1">
+                        <div class="col-4">
+                            <label style.font-weight="bold">
+                                Validated
+                            </label>
+                        </div>
+                        <div class="col-8">
+                            <p-checkbox [(ngModel)]="record.validated" binary="true"></p-checkbox>
+                        </div>
+                    </div>
+                    <hr>
+                    <div *ngFor="let field of dataset?.data_package?.resources[0]?.schema?.fields">
+                        <input *ngIf="field | isHiddenField; else fieldSection" type="hidden"
+                               [(ngModel)]="record.data[field.name]">
+                        <ng-template #fieldSection>
+                            <div class="row mt-1">
+                                <div class="col-4">
+                                    <label [style.font-weight]="'bold'">
+                                        {{field | fieldLabel}}
+                                        <span *ngIf="field.constraints?.required">*</span>
+                                    </label>
+                                </div>
+                                <div [ngSwitch]="field.type" class="col-8">
+                                    <div *ngSwitchCase="'date'">
+                                        <p-calendar dateFormat="{{ field.format | pyDateFormatToPrimeDateFormat }}"
+                                                    [(ngModel)]="record.data[field.name]">
+                                        </p-calendar>
+                                    </div>
+                                    <div *ngSwitchDefault>
+                                        <p-dropdown *ngIf="field.constraints?.enum"
+                                                    [placeholder]="'Select a ' + field.name.toLowerCase()"
+                                                    [options]="getDropdownOptions(field.name, field.constraints.enum)"
+                                                    [(ngModel)]="record.data[field.name]"
+                                                    [autoWidth]="false">
+                                        </p-dropdown>
+                                        <input pInputText *ngIf="!field.constraints?.enum"
+                                               [(ngModel)]="record.data[field.name]" (change)="onInputChanged($event)"/>
+                                        <div class="text-danger">
+                                            {{recordErrors[field.name]}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" *ngIf="dataset.type !== 'generic'">
+                <label class="field-label">Location</label>
+                <biosys-featuremap [isEditing]="true" [geometry]="record.geometry" [drawFeatureTypes]="['POINT']"
+                                   (geometryChanged)="onFeatureMapGeometryChanged($event)" [bounds]="extent">
+                </biosys-featuremap>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3">
+            <div class="col-2">
+                <button pButton icon="fa fa-trash" (click)="confirmDelete()" label="Delete"></button>
+            </div>
+            <div class="col-4">
+                <button pButton icon="fa fa-close" label="Cancel" (click)="cancel()"></button>
+                <button pButton icon="fa fa-check" (click)="save()" label="Save"></button>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="childDataset">
+        <hr>
+        <h4>
+            Sub-Records
+        </h4>
+        <biosys-edit-records-table [dataset]="childDataset" [parentRecord]="record">
+        </biosys-edit-records-table>
+    </div>
+    <div>
+        <hr>
+        <h4>
+            Images
+        </h4>
+        <div class="row mt-3 mb-3">
+            <div class="col-8 offset-2">
+                <biosys-galleria [images]="imagesMetadata" panelWidth="100%" panelHeight="600" [showCaption]="false"
+                                 [autoPlay]="false">
+                </biosys-galleria>
+            </div>
+        </div>
+        <h5>
+            Upload Image(s)
+        </h5>
+        <div class="row mt-3 mb-3">
+            <div class="col-12">
+                <p-fileUpload customUpload="true" (uploadHandler)="onUploadMedia($event)" multiple="true">
+
+                </p-fileUpload>
+            </div>
+        </div>
+    </div>
+</div>
+<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>

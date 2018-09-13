@@ -35,8 +35,12 @@ testem.log
 
 # e2e
 /e2e/*.js
+!/e2e/protractor.conf.js
 /e2e/*.map
 
 # System Files
 .DS_Store
 Thumbs.db
+
+# local dev files
+/local

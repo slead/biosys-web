@@ -11,15 +11,32 @@ table td {
   vertical-align: top;
 }
 
+.ui-button {
+    margin-right: 5px;
+}
+
 .ui-breadcrumb {
   border: none;
   background: none;
 }
 
+/*noinspection ALL*/
 .ui-breadcrumb .ui-state-active {
   border: none;
   color: #000000;
   background: none;
+}
+
+.ui-menubar ul {
+    width: 100%;
+}
+
+.ui-menuitem:last-child {
+    float: right;
+}
+
+.ui-menu-parent .ui-menuitem:last-child {
+    float: none;
 }
 
 .ui-menuitem .ui-state-active {
@@ -28,7 +45,7 @@ table td {
 }
 
 .ui-chkbox-label {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   margin-right: 15px;
 }
 
@@ -83,4 +100,258 @@ table td {
     left: 50%;
     top: 25%;
     z-index: 2;
+}
+
+.ui-table-caption {
+    padding: .25em .5em;
+    text-align: left;
+    font-weight: bold;
+}
+
+.table-search-icon {
+    margin: 4px 4px 0 0;
+}
+
+/* not in cupertino theme at time of writing */
+.ui-messages {
+    padding: 1em;
+    margin: 1em 0;
+}
+
+.ui-messages.ui-messages-info {
+    background-color: #7fbcec;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-messages.ui-messages-info .ui-messages-icon {
+    color: #212121;
+}
+
+.ui-messages.ui-messages-info .ui-messages-close {
+    color: #212121;
+}
+
+.ui-messages.ui-messages-success {
+    background-color: #57bb3b;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-messages.ui-messages-success .ui-messages-icon {
+    color: #212121;
+}
+
+.ui-messages.ui-messages-success .ui-messages-close {
+    color: #212121;
+}
+
+.ui-messages.ui-messages-warn {
+    background-color: #ffe399;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-messages.ui-messages-warn .ui-messages-icon {
+    color: #212121;
+}
+
+.ui-messages.ui-messages-warn .ui-messages-close {
+    color: #212121;
+}
+
+.ui-messages.ui-messages-error {
+    background-color: #ff0000;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-messages.ui-messages-error .ui-messages-icon {
+    color: #212121;
+}
+
+.ui-messages.ui-messages-error .ui-messages-close {
+    color: #212121;
+}
+
+.ui-messages .ui-messages-close {
+    top: .25em;
+    right: .5em;
+    font-size: 1.5em;
+}
+
+.ui-messages .ui-messages-icon {
+    font-size: 2em;
+}
+
+.ui-message {
+    padding: 0.429em;
+    margin: 0;
+}
+
+.ui-message.ui-message-info {
+    background-color: #7fbcec;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-message.ui-message-info .ui-message-icon {
+    color: #212121;
+}
+
+.ui-message.ui-message-success {
+    background-color: #57bb3b;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-message.ui-message-success .ui-message-icon {
+    color: #212121;
+}
+
+.ui-message.ui-message-warn {
+    background-color: #ffe399;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-message.ui-message-warn .ui-message-icon {
+    color: #212121;
+}
+
+.ui-message.ui-message-error {
+    background-color: #ff0000;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-message.ui-message-error .ui-message-icon {
+    color: #212121;
+}
+
+.ui-message .ui-message-icon {
+    font-size: 1.25em;
+}
+
+.ui-message .ui-message-text {
+    font-size: 1em;
+}
+
+.ui-growl {
+    top: 70px;
+}
+
+.ui-growl .ui-growl-item-container {
+    margin: 0 0 1em 0;
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+}
+
+.ui-growl .ui-growl-item-container .ui-growl-item {
+    padding: 1em;
+}
+
+.ui-growl .ui-growl-item-container .ui-growl-item .ui-growl-message {
+    margin: 0 0 0 4em;
+}
+
+.ui-growl .ui-growl-item-container .ui-growl-item .ui-growl-image {
+    font-size: 2.571em;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-info {
+    background-color: #7fbcec;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-info .ui-growl-image {
+    color: #212121;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-success {
+    background-color: #57bb3b;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-success .ui-growl-image {
+    color: #212121;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-warn {
+    background-color: #ffe399;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-warn .ui-growl-image {
+    color: #212121;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-error {
+    background-color: #f8b7bd;
+    border: 0 none;
+    color: #ff0000;
+}
+
+.ui-growl .ui-growl-item-container.ui-growl-message-error .ui-growl-image {
+    color: #212121;
+}
+
+.ui-toast .ui-toast-message {
+    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+    margin: 0 0 1em 0;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-info .ui-toast-close-icon {
+    background-color: #7fbcec;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-info .ui-toast-close-icon {
+    color: #212121;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-success {
+    background-color: #57bb3b;
+    border: 0 none;
+    color: #ffffff;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-success .ui-toast-close-icon {
+    color: #ffffff;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-warn {
+    background-color: #ffe399;
+    border: 0 none;
+    color: #212121;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-warn .ui-toast-close-icon {
+    color: #212121;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-error {
+    background-color: #ff0000;
+    border: 0 none;
+    color: #ffffff;
+}
+
+.ui-toast .ui-toast-message.ui-toast-message-error .ui-toast-close-icon {
+    color: #ffffff;
+}
+
+.submitting-spinner {
+    width: 26px;
+    height: 26px;
+    float: right;
+    margin-right: 5px;
 }
