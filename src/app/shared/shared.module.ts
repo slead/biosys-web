@@ -40,7 +40,7 @@ import { IsImageFilePipe, IsVideoFilePipe, FileIconUrlPipe, FileNamePipe, FileSi
     exports: [CommonModule, FormsModule, RouterModule, BiosysCoreModule, HeaderComponent, JsonEditorComponent,
         NavbarComponent, BreadcrumbsComponent, EditRecordsTableComponent, ExpandableMessagesComponent,
         FeatureMapComponent, FileuploaderComponent, GalleriaComponent, MediaManagerComponent, MarkerDirective,
-        PyToPrimeDateFormatConversionPipe, SafePipe, IsHiddenFieldPipe, DefaultValuePipe, FieldLabelPipe,
+        PyToPrimeDateFormatConversionPipe, SafePipe, IsHiddenFieldPipe, DefaultValuePipe, FieldLabelPipe
     ]
 })
 export class SharedModule {

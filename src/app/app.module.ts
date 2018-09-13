@@ -21,11 +21,11 @@ import { routes } from './app.routes';
 import { SSOAuthService } from './shared/services/sso-auth.service';
 import { SSOAuthGuard } from './shared/guards/sso-auth.guard';
 
-import { LoginModule } from './pages/login/login.module';
+import { AccountsModule } from './pages/accounts/accounts.module';
 import { HomeModule } from './pages/home/home.module';
-import { DataModule } from './pages/data/data.module';
-import { ManagementModule } from './pages/management/management.module';
-import { ViewModule } from './pages/view/view.module';
+import { DataManagementModule } from './pages/data-management/data-management.module';
+import { AdministrationModule } from './pages/administration/administration.module';
+import { DataViewExportModule } from './pages/data-view-export/data-view-export.module';
 import { environment } from '../environments/environment';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { AdminGuard } from './shared/guards/admin.guard';
@@ -44,11 +44,11 @@ import { TeamMemberGuard } from './shared/guards/team-member.guard';
         ToastModule,
         BiosysCoreModule,
         SharedModule,
-        LoginModule,
+        AccountsModule,
         HomeModule,
-        ManagementModule,
-        DataModule,
-        ViewModule
+        AdministrationModule,
+        DataManagementModule,
+        DataViewExportModule
     ],
     providers: [
         MessageService,

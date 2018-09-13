@@ -4,20 +4,19 @@
     <div class="row mt-1">
         <div class="col">
             <h2>Welcome to Biosys</h2>
-            <span *ngIf="userString" class="float-right mt-2">Logged in as {{ userString }} </span>
         </div>
     </div>
     <div class="row mt-1 main-section">
         <div class="col-3">
-            <a *ngIf="user?.is_admin || user?.is_data_engineer" routerLink="/management/projects">
+            <a *ngIf="user?.is_admin || user?.is_data_engineer" routerLink="/administration/projects">
                 <div class="card mb-2">
                     <div class="card-block">
-                        <h5 class="card-title text-center">Manage Projects / Sites / Datasets</h5>
+                        <h5 class="card-title text-center">Administer Projects / Sites / Datasets</h5>
                     </div>
                     <img class="card-img-bottom" src="./assets/img/project.jpg">
                 </div>
             </a>
-            <a routerLink="/data/projects">
+            <a routerLink="/data-management/projects">
                 <div class="card mb-2">
                     <div class="card-block">
                         <h5 class="card-title text-center">Create / Import / Edit / Delete Records</h5>
