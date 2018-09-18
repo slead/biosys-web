@@ -1,16 +1,19 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
-import { SelectItem, LazyLoadEvent } from 'primeng/primeng';
+import { SelectItem, LazyLoadEvent, MessageService } from 'primeng/primeng';
 import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
 import { mergeMap } from 'rxjs/operators';
-import { from ,  forkJoin } from 'rxjs';
+import { from, forkJoin, of } from 'rxjs';
 
-import { APIError, Dataset, Record, RecordResponse } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Dataset, Record, RecordResponse, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
+import { AuthService } from '../../../../biosys-core/services/auth.service';
+import { Observable } from 'rxjs/internal/Observable';
+import { P } from '@angular/core/src/render3';
 
 
 @Component({
@@ -45,6 +48,8 @@ export class ViewRecordsComponent implements OnInit {
     public speciesName: string;
     public fileType = 'csv';
 
+    public canChangeLockedState = false;
+    public lockRecordsOnExport = true;
     public isLocking = false;
 
     private recordParams: any = {};
@@ -52,7 +57,8 @@ export class ViewRecordsComponent implements OnInit {
     @ViewChild('recordsTable')
     public table: Table;
 
-    constructor(private apiService: APIService, private sanitizer: DomSanitizer) {
+    constructor(private apiService: APIService, private authService: AuthService,
+                private messageService: MessageService, private sanitizer: DomSanitizer) {
     }
 
     ngOnInit() {
@@ -80,6 +86,10 @@ export class ViewRecordsComponent implements OnInit {
             (species: string[]) => this.speciesDropdownItems =
                 this.speciesDropdownItems.concat(species.map(s => ({'label': s, 'value': s}))),
             (error: APIError) => console.log('error.msg', error.msg)
+        );
+
+        this.authService.getCurrentUser().subscribe(
+            (user: User) => this.canChangeLockedState = user.is_admin || user.is_data_engineer
         );
 
         this.breadcrumbItems = [
@@ -136,7 +146,6 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     public selectDataset(event: any) {
-        console.log('here');
         this.filter();
     }
 
@@ -186,30 +195,79 @@ export class ViewRecordsComponent implements OnInit {
     }
 
     public export() {
-        this.apiService.exportRecords(this.dateStart, this.dateEnd, this.speciesName, this.selectedDataset.id,
-            this.fileType).subscribe(
-            resp => {
-                const timeStamp = moment().format('YYYY-MM-DD-HHmmss');
-                const extension = this.fileType;
-                const fileName = `export_${timeStamp}.${extension}`;
-                saveAs(resp, fileName);
-            },
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+        const exportObservable: Observable<object> = this.apiService.exportRecords(this.dateStart, this.dateEnd,
+            this.speciesName, this.selectedDataset.id, this.fileType);
+
+        const saveBlob = function(blob: Blob) {
+            const timeStamp = moment().format('YYYY-MM-DD-HHmmss');
+            const extension = this.fileType;
+            const fileName = `export_${timeStamp}.${extension}`;
+            saveAs(blob, fileName);
+        }.bind(this);
+
+        if (this.lockRecordsOnExport) {
+            const lockingObservalble = this.apiService.getRecordsByDatasetId(this.selectedDataset.id,
+                    JSON.parse(JSON.stringify(this.recordParams))).pipe(
+                mergeMap((records: Record[]) => from(records).pipe(
+                    mergeMap((record: Record) => this.apiService.updateRecordLocked(record.id, true))
+                ))
+            );
+
+            this.isLocking = true;
+
+            forkJoin(exportObservable, lockingObservalble).subscribe(
+                (results: [Blob, any]) => saveBlob(results[0]),
+                (error: APIError) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Export error',
+                        detail: `There were error(s) when exporting / locking: ${error.msg}`
+                    });
+                    this.isLocking = false;
+                },
+                () => {
+                    if (this.lockRecordsOnExport) {
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Export success',
+                            detail: `There records were successfully exported and have now been locked`
+                        });
+
+                        this.isLocking = false;
+                        this.filter();
+                    }
+                }
+            );
+        } else {
+            exportObservable.subscribe(
+                (blob: Blob) => saveBlob(blob),
+                (error: APIError) => {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Export error',
+                        detail: `There were error(s) when exporting: ${error.msg}`
+                    });
+                }
+            );
+        }
     }
 
-    public markAsLocked() {
+    public changeFilteredRecordsLockedState(locked: boolean) {
         const params = JSON.parse(JSON.stringify(this.recordParams));
 
         this.isLocking = true;
         this.apiService.getRecordsByDatasetId(this.selectedDataset.id, params).pipe(
             // map((recordResponse: RecordResponse) => recordResponse.results),
             mergeMap((records: Record[]) => from(records).pipe(
-                mergeMap((record: Record) => this.apiService.updateRecordLocked(record.id, true))
+                mergeMap((record: Record) => this.apiService.updateRecordLocked(record.id, locked))
             ))
         ).subscribe({
             error: (error: APIError) => {
-                console.log('error.msg', error.msg);
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Locking error',
+                    detail: `There were error(s) when locking: ${error.msg}`
+                });
                 this.isLocking = false;
             },
             complete: () => this.isLocking = false
