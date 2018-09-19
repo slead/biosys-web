@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { fieldMatchValidator } from '../../../shared/utils/form-validators';
+import { APIError } from '../../../../biosys-core/interfaces/api.interfaces';
+import { formatAPIError } from '../../../../biosys-core/utils/functions';
 
 @Component({
     selector: 'biosys-reset-password',
@@ -13,6 +15,7 @@ import { fieldMatchValidator } from '../../../shared/utils/form-validators';
 export class ResetPasswordComponent {
     public resetPasswordForm: FormGroup;
     public isPasswordReset = false;
+    public serverErrors: object;
 
     private uid: string;
     private token: string;
@@ -34,7 +37,8 @@ export class ResetPasswordComponent {
         event.preventDefault();
 
         this.apiService.resetPassword(this.uid, this.token, this.resetPasswordForm.value['password']).subscribe(
-            () => this.isPasswordReset = true
+            () => this.isPasswordReset = true,
+            (apiError: APIError) => this.serverErrors = formatAPIError(apiError)
         );
     }
 }
