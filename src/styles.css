@@ -11,6 +11,10 @@ table td {
   vertical-align: top;
 }
 
+input {
+    max-height: 34px;
+}
+
 .ui-button {
     margin-right: 5px;
 }
