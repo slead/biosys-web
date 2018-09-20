@@ -11,6 +11,10 @@ table td {
   vertical-align: top;
 }
 
+input {
+    max-height: 34px;
+}
+
 .right-buffer {
     margin-right: 10px;
 }
