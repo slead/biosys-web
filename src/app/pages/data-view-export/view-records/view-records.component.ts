@@ -226,16 +226,14 @@ export class ViewRecordsComponent implements OnInit {
                     this.isLocking = false;
                 },
                 () => {
-                    if (this.lockRecordsOnExport) {
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Export success',
-                            detail: `There records were successfully exported and have now been locked`
-                        });
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Export success',
+                        detail: `There records were successfully exported and have now been locked`
+                    });
 
-                        this.isLocking = false;
-                        this.filter();
-                    }
+                    this.isLocking = false;
+                    this.filter();
                 }
             );
         } else {
