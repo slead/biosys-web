@@ -6,10 +6,12 @@ import { ConfirmationService, LazyLoadEvent, Message, SelectItem } from 'primeng
 import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 
-import { APIError, Dataset, Record, RecordResponse } from '../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Dataset, Record, RecordResponse, User } from '../../../biosys-core/interfaces/api.interfaces';
 import { pyDateFormatToMomentDateFormat } from '../../../biosys-core/utils/functions';
 import { APIService } from '../../../biosys-core/services/api.service';
+import { AuthService } from '../../../biosys-core/services/auth.service';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../biosys-core/utils/consts';
+
 
 @Component({
     selector: 'biosys-edit-records-table',
@@ -30,6 +32,7 @@ export class EditRecordsTableComponent {
     public totalRecords = 0;
     public dropdownItems: any = {};
     public messages: Message[] = [];
+    public canChangeLockedState = false;
 
     @Input()
     public pageState: object;
@@ -67,7 +70,10 @@ export class EditRecordsTableComponent {
     private previousRowData: any;
 
     constructor(private apiService: APIService, private router: Router, private sanitizer: DomSanitizer,
-                private confirmationService: ConfirmationService) {
+                private confirmationService: ConfirmationService, authService: AuthService) {
+        authService.getCurrentUser().subscribe(
+            (user: User) => this.canChangeLockedState = user.is_admin || user.is_data_engineer
+        );
     }
 
     public getEditRecordRoute(recordId) {
@@ -150,7 +156,16 @@ export class EditRecordsTableComponent {
 
     public onRecordValidatedChanged(checked: boolean, id: number) {
         this.apiService.updateRecordValidated(id, checked).subscribe((record: Record) =>
-            this.flatRecords.filter((flatRecord: object) => flatRecord['_id'] === id)[0]['validated'] = record.validated);
+            this.flatRecords.filter(
+                (flatRecord: object) => flatRecord['_id'] === id)[0]['_validated'] = record.validated
+            );
+    }
+
+    public onRecordLockedChanged(checked: boolean, id: number) {
+        this.apiService.updateRecordLocked(id, checked).subscribe( (record: Record) =>
+            this.flatRecords.filter(
+                (flatRecord: object) => flatRecord['_id'] === id)[0]['_locked'] = record.locked
+        );
     }
 
     public onRowEditInit(event: any) {

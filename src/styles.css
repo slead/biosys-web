@@ -15,8 +15,8 @@ input {
     max-height: 34px;
 }
 
-.ui-button {
-    margin-right: 5px;
+.right-buffer {
+    margin-right: 10px;
 }
 
 .ui-breadcrumb {

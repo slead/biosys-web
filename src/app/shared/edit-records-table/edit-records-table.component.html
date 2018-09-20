@@ -69,7 +69,11 @@
                 <p-checkbox [(ngModel)]="rowData._validated" binary="true" [disabled]="rowData._locked"
                             (onChange)="onRecordValidatedChanged($event, rowData._id)"></p-checkbox>
             </td>
-            <td>{{ rowData._locked }}</td>
+            <td [align]="canChangeLockedState ? 'center' : 'left'">
+                <span *ngIf="!canChangeLockedState">{{ rowData._locked }}</span>
+                <p-checkbox *ngIf="canChangeLockedState" [(ngModel)]="rowData._locked" binary="true"
+                            (onChange)="onRecordLockedChanged($event, rowData._id)"></p-checkbox>
+            </td>
             <!-- have editable cells if record not locked -->
             <ng-container
                     *ngFor="let field of !rowData._locked ? dataset?.data_package?.resources[0]?.schema?.fields : []">
@@ -120,7 +124,7 @@
     </ng-template>
     <ng-template pTemplate="summary">
         <div class="ui-helper-clearfix">
-            <button type="button" pButton icon="fa fa-trash" class="float-left" label="Delete Selected"
+            <button type="button" pButton icon="fa fa-trash" class="float-left right-buffer" label="Delete Selected"
                     (click)="confirmDeleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length">
             </button>
             <button type="button" pButton icon="fa fa-trash" class="float-left" label="Delete All"
