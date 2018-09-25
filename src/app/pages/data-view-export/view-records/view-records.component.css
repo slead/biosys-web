@@ -1,3 +1,7 @@
 .data-table-container {
     overflow-x: auto;
 }
+
+span.filter-buffer {
+    margin: 15px;
+}

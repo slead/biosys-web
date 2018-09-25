@@ -43,7 +43,7 @@ export class ViewRecordsComponent implements OnInit {
     public projectId: number;
     public dateStart: Date;
     public dateEnd: Date;
-    public validatedOny = false;
+    public validatedOny = true;
     public includeLocked = false;
     public speciesName: string;
     public fileType = 'csv';

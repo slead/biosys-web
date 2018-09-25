@@ -23,14 +23,19 @@
                                 [(ngModel)]="dateStart" dateFormat="dd/mm/yy">
                     </p-calendar>
                     <p-calendar placeholder="End Date" (onSelect)="filter()" [(ngModel)]="dateEnd" yearNavigator="true"
-                                yearRange="2000:2020" dateFormat="dd/mm/yy" [inputStyle]="{width: '120px'}">
+                                yearRange="2000:2020" dateFormat="dd/mm/yy" [inputStyle]="{width: '120px'}"
+                                [style]="{float: 'right'}">
                     </p-calendar>
                 </div>
-                <div class="col-4 text-center">
-                    Validated Only
-                    <p-checkbox (onChange)="filter()" [(ngModel)]="validatedOny" binary="true"></p-checkbox>
-                    Include Locked
-                    <p-checkbox (onChange)="filter()" [(ngModel)]="includeLocked" binary="true"></p-checkbox>
+                <div class="col-4" style="padding-top: 4px">
+                    <span class="filter-buffer">
+                        Validated Only
+                        <p-checkbox (onChange)="filter()" [(ngModel)]="validatedOny" binary="true"></p-checkbox>
+                    </span>
+                    <span class="filter-buffer">
+                        Include Locked
+                        <p-checkbox (onChange)="filter()" [(ngModel)]="includeLocked" binary="true" ></p-checkbox>
+                    </span>
                 </div>
                 <div class="col-2">
                     <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems"
