@@ -77,8 +77,8 @@ L.Loading = L.Layer.extend({
         this._modal.style.display = 'None';
     },
 
-    _resize(size) {
-        var labelMargin = size.y * 0.5 + this._spinner.opts.length + this._spinner.opts.width +
+    _resize: function(size) {
+        const labelMargin = size.y * 0.5 + this._spinner.opts.length + this._spinner.opts.width +
             this._spinner.opts.radius;
 
         this._modal.style.width = size.x + 'px';
