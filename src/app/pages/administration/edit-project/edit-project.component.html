@@ -63,7 +63,7 @@
                             <div class="col-md-8">
                                 <label [hidden]="isEditing"
                                        *ngIf="project.datum">{{getDatumLabel(project.datum)}}</label>
-                                <p-dropdown [hidden]="!isEditing" [options]="datamTypeChoices"
+                                <p-dropdown [hidden]="!isEditing" [options]="datumTypeChoices"
                                             [(ngModel)]="project.datum" [autoWidth]="false">
                                 </p-dropdown>
                                 <div [hidden]="!isEditing" class="text-danger">{{projectErrors['datum']}}</div>

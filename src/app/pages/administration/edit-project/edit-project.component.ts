@@ -2,18 +2,19 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/primeng';
 
 import {
     APIError, User, Project, Site, Dataset, ModelChoice, Program, ProjectMedia, Media
 } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
+import { AuthService } from '../../../../biosys-core/services/auth.service';
 
 import { environment } from '../../../../environments/environment';
 
 import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
-import { from } from 'rxjs/index';
+import { from, forkJoin } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 @Component({
@@ -44,14 +45,16 @@ export class EditProjectComponent implements OnInit {
     public datasets: Dataset[];
     public isEditing: boolean;
     public programChoices: SelectItem[];
-    public datamTypeChoices: SelectItem[];
+    public datumTypeChoices: SelectItem[];
     public custodianChoices: SelectItem[];
     public projectErrors: any = {};
     public projectMedia: ProjectMedia[] = [];
     public isUploadingMedia = false;
+    public user: User;
 
-    constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
-        private confirmationService: ConfirmationService, private messageService: MessageService,
+    constructor(private apiService: APIService, private authService: AuthService,
+                private router: Router, private route: ActivatedRoute,
+                private confirmationService: ConfirmationService, private messageService: MessageService,
                 private sanitizer: DomSanitizer) {
     }
 
@@ -87,22 +90,31 @@ export class EditProjectComponent implements OnInit {
             );
         }
 
-        this.apiService.getPrograms()
-            .subscribe(
-                (programs: Program[]) => this.programChoices = programs.map((program: Program) => ({
-                        label: program.name,
-                        value: program.id
-                    })
-                ),
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
+        // fetch authorized program list
+        forkJoin(
+            this.authService.getCurrentUser(),
+            this.apiService.getPrograms()
+
+        ).subscribe((data) => {
+            this.user = data[0];
+            const allPrograms = data[1];
+            let allowedPrograms = [];
+            if (this.user.is_admin) {
+                allowedPrograms = allPrograms;
+            } else {
+               allowedPrograms = allPrograms.filter( (p: Program) => p.data_engineers.includes(this.user.id));
+            }
+            this.programChoices = allowedPrograms.map((program: Program) => ({
+                label: program.name,
+                value: program.id
+            }));
+        });
 
         this.apiService.getModelChoices('project', 'datum')
             .subscribe(
-                (choices: ModelChoice[]) => this.datamTypeChoices = choices.
-                    map((choice: ModelChoice) => ({
-                            label: choice.display_name,
-                            value: choice.value
+                (choices: ModelChoice[]) => this.datumTypeChoices = choices.map((choice: ModelChoice) => ({
+                        label: choice.display_name,
+                        value: choice.value
                     })
                 ),
                 (error: APIError) => console.log('error.msg', error.msg)
@@ -142,11 +154,11 @@ export class EditProjectComponent implements OnInit {
     }
 
     public getDatumLabel(value: string): string {
-        if (!this.datamTypeChoices) {
+        if (!this.datumTypeChoices) {
             return '';
         }
 
-        return this.datamTypeChoices.filter(choice => choice.value === value).pop().label;
+        return this.datumTypeChoices.filter(choice => choice.value === value).pop().label;
     }
 
     public getSiteTableWidth(): any {
@@ -245,10 +257,10 @@ export class EditProjectComponent implements OnInit {
             message: 'Are you sure that you want to delete all selected sites?',
             accept: () => {
                 this.apiService.deleteSites(this.project.id, this.selectedSites.map((site: Site) => site.id))
-                .subscribe(
-                    () => this.onDeleteSitesSuccess(),
-                    (error: APIError) => this.onDeleteSiteError(error)
-                );
+                    .subscribe(
+                        () => this.onDeleteSitesSuccess(),
+                        (error: APIError) => this.onDeleteSiteError(error)
+                    );
             }
         });
     }
@@ -343,26 +355,25 @@ export class EditProjectComponent implements OnInit {
 
     public onDeleteMedia(media: Media) {
         this.confirmationService.confirm({
-            message: `Are you sure that you want to delete the file ${media.file.substring(media.file.
-                lastIndexOf('/') + 1)}`,
+            message: `Are you sure that you want to delete the file ${media.file.substring(media.file.lastIndexOf('/') + 1)}`,
             accept: () => this.apiService.deleteProjectMedia(this.project.id, media.id).subscribe(
-                    () => {
-                        this.projectMedia.splice(this.projectMedia.map(
-                                (pm: ProjectMedia) => pm.id
-                            ).indexOf(media.id), 1
-                        );
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'File Attachment Deleted',
-                            detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`
-                        });
-                    },
+                () => {
+                    this.projectMedia.splice(this.projectMedia.map(
+                        (pm: ProjectMedia) => pm.id
+                        ).indexOf(media.id), 1
+                    );
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'File Attachment Deleted',
+                        detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`
+                    });
+                },
                 (error: APIError) => this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error Deleting File Attachment',
-                        detail: error.msg as string
-                    })
-                )
+                    severity: 'error',
+                    summary: 'Error Deleting File Attachment',
+                    detail: error.msg as string
+                })
+            )
         });
     }
 }
