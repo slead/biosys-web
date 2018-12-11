@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/primeng';
 
 import {
     APIError, User, Project, Site, Dataset, ModelChoice, Program, ProjectMedia, Media
@@ -50,6 +50,7 @@ export class EditProjectComponent implements OnInit {
     public projectErrors: any = {};
     public projectMedia: ProjectMedia[] = [];
     public isUploadingMedia = false;
+    public user: User;
 
     constructor(private apiService: APIService, private authService: AuthService,
                 private router: Router, private route: ActivatedRoute,
@@ -89,16 +90,25 @@ export class EditProjectComponent implements OnInit {
             );
         }
 
-        this.apiService.getPrograms()
-        // TODO: limit the program to the one the user is allowed to.
-            .subscribe(
-                (programs: Program[]) => this.programChoices = programs.map((program: Program) => ({
-                        label: program.name,
-                        value: program.id
-                    })
-                ),
-                (error: APIError) => console.log('error.msg', error.msg)
-            );
+        // fetch authorized program list
+        forkJoin(
+            this.authService.getCurrentUser(),
+            this.apiService.getPrograms()
+
+        ).subscribe((data) => {
+            this.user = data[0];
+            const allPrograms = data[1];
+            let allowedPrograms = [];
+            if (this.user.is_admin) {
+                allowedPrograms = allPrograms;
+            } else {
+               allowedPrograms = allPrograms.filter( (p: Program) => p.data_engineers.includes(this.user.id));
+            }
+            this.programChoices = allowedPrograms.map((program: Program) => ({
+                label: program.name,
+                value: program.id
+            }));
+        });
 
         this.apiService.getModelChoices('project', 'datum')
             .subscribe(
