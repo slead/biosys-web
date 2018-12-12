@@ -97,13 +97,14 @@ Alternatively read the [Angular CLI README](https://github.com/angular/angular-c
 
 
 ## Deployments
-####  Staging (EC2 instance)
+####  Staging (EC2 instance: https://staging.gaiaresources.com.au))
+assumes you have a ssh config name staging-config
 ```bash
 npm run build -- --configuration=staging --prod
 scp -rp ./dist/biosys-web/* staging-biosys:/srv/sites/biosys/biosys-web/
 ```
 
-### OEH UAT (S3 bucket)
+### OEH Koala Watch UAT (S3 bucket: https://uat-koalawatch.gaiaresources.com.au )
 assumes that you have aws cli installed and that you have a aws profile called oeh.
 ```bash
 npm run build -- --configuration=oeh-uat --prod
