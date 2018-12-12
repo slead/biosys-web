@@ -94,7 +94,6 @@ export class EditProjectComponent implements OnInit {
         forkJoin(
             this.authService.getCurrentUser(),
             this.apiService.getPrograms()
-
         ).subscribe((data) => {
             this.user = data[0];
             const allPrograms = data[1];
@@ -102,12 +101,16 @@ export class EditProjectComponent implements OnInit {
             if (this.user.is_admin) {
                 allowedPrograms = allPrograms;
             } else {
-               allowedPrograms = allPrograms.filter( (p: Program) => p.data_engineers.includes(this.user.id));
+                allowedPrograms = allPrograms.filter((p: Program) => p.data_engineers.includes(this.user.id));
             }
             this.programChoices = allowedPrograms.map((program: Program) => ({
                 label: program.name,
                 value: program.id
             }));
+            // initial value of program
+            if (this.programChoices.length > 0 ) {
+                this.project.program = this.project.program || this.programChoices[0].value;
+            }
         });
 
         this.apiService.getModelChoices('project', 'datum')

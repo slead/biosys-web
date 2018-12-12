@@ -94,3 +94,19 @@ ng help
 ```
 
 Alternatively read the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+## Deployments
+####  Staging (EC2 instance: https://staging.gaiaresources.com.au))
+assumes you have a ssh config name staging-biosys
+```bash
+npm run build -- --configuration=staging --prod
+scp -rp ./dist/biosys-web/* staging-biosys:/srv/sites/biosys/biosys-web/
+```
+
+### OEH Koala Watch UAT (S3 bucket: https://uat-koalawatch.gaiaresources.com.au )
+assumes that you have aws cli installed and that you have an aws profile called oeh.
+```bash
+npm run build -- --configuration=oeh-uat --prod
+aws --profile oeh s3 cp ./dist/biosys-web s3://uat-koalawatch.gaiaresources.com.au --region ap-southeast-2 --recursive
+```
