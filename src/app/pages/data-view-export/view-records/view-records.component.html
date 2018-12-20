@@ -171,7 +171,7 @@
                     </div>
                 </div>
                 <div class="row mt-1">
-                    <div class="col-3 offset-9">
+                    <div *ngIf="canChangeLockedState" class="col-3 offset-9">
                         <p-progressSpinner *ngIf="isLocking" animationDuration="1s"
                                            [style]="{width: '26px', height: '26px'}">
                         </p-progressSpinner>
