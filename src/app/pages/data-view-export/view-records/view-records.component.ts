@@ -49,7 +49,7 @@ export class ViewRecordsComponent implements OnInit {
     public fileType = 'csv';
 
     public canChangeLockedState = false;
-    public lockRecordsOnExport = true;
+    public lockRecordsOnExport = false;
     public isLocking = false;
 
     private recordParams: any = {};
