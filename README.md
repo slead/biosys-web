@@ -110,3 +110,10 @@ assumes that you have aws cli installed and that you have an aws profile called 
 npm run build -- --configuration=oeh-uat --prod
 aws --profile oeh s3 cp ./dist/biosys-web s3://uat-koalawatch.gaiaresources.com.au --region ap-southeast-2 --recursive
 ```
+
+### OEH Koala Watch PROD (S3 bucket: https://koalawatch.gaiaresources.com.au )
+assumes that you have aws cli installed and that you have an aws profile called oeh.
+```bash
+npm run build -- --configuration=oeh-prod --prod
+aws --profile oeh s3 cp ./dist/biosys-web s3://koalawatch.gaiaresources.com.au --region ap-southeast-2 --recursive
+```
