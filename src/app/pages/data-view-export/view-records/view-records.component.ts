@@ -89,11 +89,7 @@ export class ViewRecordsComponent implements OnInit {
         );
 
         this.authService.getCurrentUser().subscribe(
-            (user: User) => {
-                                this.canChangeLockedState = user.is_admin || user.is_data_engineer;
-                                console.log('just changed the locked state to:');
-                                console.log(this.canChangeLockedState);
-                            }
+            (user: User) => { this.canChangeLockedState = user.is_admin || user.is_data_engineer; }
         );
 
         this.breadcrumbItems = [
