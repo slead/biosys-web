@@ -43,7 +43,7 @@ export class ViewRecordsComponent implements OnInit {
     public projectId: number;
     public dateStart: Date;
     public dateEnd: Date;
-    public validatedOny = true;
+    public validatedOnly = true;
     public includeLocked = false;
     public speciesName: string;
     public fileType = 'csv';
@@ -89,7 +89,7 @@ export class ViewRecordsComponent implements OnInit {
         );
 
         this.authService.getCurrentUser().subscribe(
-            (user: User) => this.canChangeLockedState = user.is_admin || user.is_data_engineer
+            (user: User) => { this.canChangeLockedState = user.is_admin || user.is_data_engineer; }
         );
 
         this.breadcrumbItems = [
@@ -117,7 +117,7 @@ export class ViewRecordsComponent implements OnInit {
                 this.dateEnd.toISOString();
         }
 
-        if (this.validatedOny) {
+        if (this.validatedOnly) {
             datasetParams['record__validated'] = this.recordParams['validated'] = true;
         }
 
@@ -196,7 +196,7 @@ export class ViewRecordsComponent implements OnInit {
 
     public export() {
         const exportObservable: Observable<object> = this.apiService.exportRecords(this.dateStart, this.dateEnd,
-            this.speciesName, this.selectedDataset.id, this.fileType);
+            this.speciesName, this.selectedDataset.id, this.fileType, this.validatedOnly, this.includeLocked);
 
         const saveBlob = function(blob: Blob) {
             const timeStamp = moment().format('YYYY-MM-DD-HHmmss');
