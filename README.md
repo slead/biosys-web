@@ -117,3 +117,17 @@ assumes that you have aws cli installed and that you have an aws profile called 
 npm run build -- --configuration=oeh-prod --prod
 aws --profile oeh s3 cp ./dist/biosys-web s3://koalawatch.gaiaresources.com.au --region ap-southeast-2 --recursive
 ```
+
+### OEH Mount Kaputar Snails and Slug UAT (S3 bucket: https://uat-mksas.gaiaresources.com.au )
+assumes that you have aws cli installed and that you have an aws profile called mksas.
+```bash
+npm run build -- --configuration=mksas-uat --prod
+aws --profile mksas s3 cp ./dist/biosys-web s3://uat-mksas.gaiaresources.com.au --region ap-southeast-2 --recursive
+```
+
+### OEH Mount Kaputar Snails and Slug Prod (S3 bucket: https://mksas.gaiaresources.com.au )
+assumes that you have aws cli installed and that you have an aws profile called mksas.
+```bash
+npm run build -- --configuration=mksas-prod --prod
+aws --profile mksas s3 cp ./dist/biosys-web s3://mksas.gaiaresources.com.au --region ap-southeast-2 --recursive
+```
