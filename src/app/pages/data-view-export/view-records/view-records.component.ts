@@ -113,6 +113,8 @@ export class ViewRecordsComponent implements OnInit {
         }
 
         if (this.dateEnd) {
+            // set time to 23h59m59s to include the whole day in search
+            this.dateEnd.setHours(23, 59, 59);
             datasetParams['record__datetime__lte'] = this.recordParams['datetime__lte'] =
                 this.dateEnd.toISOString();
         }
