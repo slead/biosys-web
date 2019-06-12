@@ -284,7 +284,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         // use the file list of uploader instead of the file list given in the event so we can add/remove to it.
         const files: File[] = this.uploader.files;
         let file: File = files.pop();
-        // strangely on Windows the Blob.type (or file.blob here) is empty
+        // strangely on Windows the Blob.type (or file.type here) is empty
         // infer the mime type from the file extension
         if (!file.type) {
             const fileName = file.name;
