@@ -283,12 +283,37 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         // check file type (the last in the list)
         // use the file list of uploader instead of the file list given in the event so we can add/remove to it.
         const files: File[] = this.uploader.files;
-        const file: File = files.pop();
-        if (ManageDataComponent.ACCEPTED_TYPES.indexOf(file.type) === -1) {
+        let file: File = files.pop();
+        // strangely on Windows the Blob.type (or file.blob here) is empty
+        // infer the mime type from the file extension
+        if (!file.type) {
+            const fileName = file.name;
+            let type = 'text/csv'; // assume default
+            if (fileName.toLowerCase().endsWith('.xlsx')) {
+                type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            }
+            // because the type is read-only we cannot set it, we need to create a new File
+            // but wait! File constructor is not supported by IE11 and Edge.
+            // https://developer.mozilla.org/en-US/docs/Web/API/File
+            // Needs to use a pure Blob in this case
+            if (typeof File === 'function') {
+                file = new File([file], fileName, {type: type});
+            } else {
+                // but the Blob will not have a file name
+                file = new Blob([file], {type: type}) as File;
+                if (typeof window.navigator.msSaveBlob !== undefined) {
+                    // Edge
+                    // add file name?
+                    // Taken from https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/9551546/
+                    window.navigator.msSaveBlob(file, fileName);
+                }
+            }
+        }
+        if (file.type && ManageDataComponent.ACCEPTED_TYPES.indexOf(file.type) === -1) {
             this.uploadErrorMessages.push({
                 severity: 'error',
                 summary: 'Wrong file type',
-                detail: 'It must be an Excel (.xlsx) or a csv file.'
+                detail: `It must be an Excel (.xlsx) or a csv file. File type: ${file.type}. File name: ${file.name}`
             });
         } else {
             // put back the file in the list
