@@ -6,10 +6,11 @@
 
 ## Installation
 
-The Biosys Client is build on Angular. To use the commands below, you need to globally install Angular-CLI:
-
+The Biosys Client is build on Angular. To use the commands below, you need to globally install Angular-CLI v6.
+Note: the use installation of the angular CLI is not mandatory. All the ng CLI command can be done through npm commands.
+Optional
 ```bash
-npm install -g @angular/cli
+npm install -g @angular/cli@6.1.4
 ```
 
 This project contains submodules. To clone both the project and submodules, use:
@@ -36,7 +37,7 @@ npm install
 To run a development server, use: 
 
 ```bash
-ng serve
+npm start
 ``` 
 
 Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files.
@@ -48,17 +49,17 @@ Navigate to [http://localhost:4200/](http://localhost:4200/). The app will autom
 To build the project for UAT, use: 
 
 ```bash
-ng build --configuration=dbca-uat --prod
+npm run build -- --configuration=dbca-uat --prod
  ```
 
 The build artifacts will be stored in the `dist/` directory, which are then to be copied to your UAT server.
 
 ### Build for production
 
-To build the project for production, use: 
+To build the project for production (DBCA for example), use: 
 
 ```bash
-ng build --configuration=dbca-prod --prod
+npm run build -- --configuration=dbca-prod --prod
  ```
 
 The build artifacts will be stored in the `dist/` directory, which are then to be copied to your production server.
@@ -68,7 +69,7 @@ The build artifacts will be stored in the `dist/` directory, which are then to b
 To execute the unit tests via [Karma](https://karma-runner.github.io), use:
 
 ```bash
-ng test
+npm run test
 ```
 
 ## Running end-to-end tests
@@ -76,28 +77,32 @@ ng test
 To execute the end-to-end tests via [Protractor](http://www.protractortest.org/), use:
 
 ```bash
-ng e2e
+npm run e2e
 ```
 
 Before running the tests make sure you are serving the app via:
  
 ```bash 
-ng serve
+npm start
 ```
+
+Any other ng command can be issued through npm with:
+```
+npm run ng -- [ng-params]
 
 ## Further help
 
-To get more help on the Angular CLI use:
+Ex: to get more help on the Angular CLI use:
 
 ```bash
-ng help
+npm run ng -- help
 ```
 
 Alternatively read the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
 
 ## Deployments
-####  Staging (EC2 instance: https://staging.gaiaresources.com.au))
+####  Gaia Staging (EC2 instance: https://staging.gaiaresources.com.au))
 assumes you have a ssh config name staging-biosys
 ```bash
 npm run build -- --configuration=staging --prod
