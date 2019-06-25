@@ -3,6 +3,7 @@ import { LoginComponent } from './login/login.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { AdminOnlyComponent } from './admin-only/admin-only.component';
 
 export const AccountsRoutes: Route[] = [
     {
@@ -20,5 +21,9 @@ export const AccountsRoutes: Route[] = [
     {
         path: 'reset-password/:uid/:token',
         component: ResetPasswordComponent
+    },
+    {
+        path: 'admin-only',
+        component: AdminOnlyComponent
     }
 ];

@@ -31,10 +31,12 @@ import { AuthGuard } from './shared/guards/auth.guard';
 import { AdminGuard } from './shared/guards/admin.guard';
 import { DataEngineerGuard } from './shared/guards/data-engineer.guard';
 import { TeamMemberGuard } from './shared/guards/team-member.guard';
+import { AdminOnlyComponent } from './pages/accounts/admin-only/admin-only.component';
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        AdminOnlyComponent
     ],
     imports: [
         BrowserModule,
