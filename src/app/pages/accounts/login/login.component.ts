@@ -35,6 +35,7 @@ export class LoginComponent {
                 const isAppAdminOnly = environment.hasOwnProperty('adminOnly') && environment['adminOnly'];
                 const forbidden = isAppAdminOnly && !(user.is_admin  || user.is_data_engineer);
                 if (forbidden) {
+                    this.authService.logout();
                     this.router.navigate(['/admin-only']);
                 } else {
                     this.router.navigate(['/']);
