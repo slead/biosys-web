@@ -7,4 +7,5 @@ export const environment = {
     production: false,
     server: 'http://localhost:8000',
     apiExtension: '/api/',
+    adminOnly: false,  // special case/hack, if true prevents anyone except admin and data-engineer to access the app after login.
 };

@@ -31,6 +31,7 @@ export class LoginComponent {
             (user: User) => {
                 // 25/06/2019: a little hack to prevent public users registered through a mobile app like koala or slug to access the app.
                 // this is a temp solution waiting for the update of the server's permission model.
+                // TODO: remove that once the server permission model has been updated.
                 const isAppAdminOnly = environment.hasOwnProperty('adminOnly') && environment['adminOnly'];
                 const forbidden = isAppAdminOnly && !(user.is_admin  || user.is_data_engineer);
                 if (forbidden) {
