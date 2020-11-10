@@ -10,7 +10,7 @@
         <div class="col-3">
             <a *ngIf="user?.is_admin || user?.is_data_engineer" routerLink="/administration/projects">
                 <div class="card mb-2">
-                    <div class="card-block">
+                    <div class="card-block p-2">
                         <h5 class="card-title text-center">Administer Projects / Sites / Datasets</h5>
                     </div>
                     <img class="card-img-bottom" src="./assets/img/project.jpg">
@@ -18,7 +18,7 @@
             </a>
             <a routerLink="/data-management/projects">
                 <div class="card mb-2">
-                    <div class="card-block">
+                    <div class="card-block p-2">
                         <h5 class="card-title text-center">Create / Import / Edit / Delete Records</h5>
                     </div>
                     <img class="card-img-bottom" src="./assets/img/data.jpg">
@@ -26,7 +26,7 @@
             </a>
             <a routerLink="/view">
                 <div class="card mb-2">
-                    <div class="card-block">
+                    <div class="card-block p-2">
                         <h5 class="card-title text-center">View and Export Records</h5>
                     </div>
                     <img class="card-img-bottom" src="./assets/img/export.jpg">
@@ -39,10 +39,10 @@
         </div>
         <div class="col-3">
             <div class="card statistics-card">
-                <div class="card-header">
+                <div class="card-header p-2">
                     Biosys summary
                 </div>
-                <div *ngIf="statistic" class="card-block">
+                <div *ngIf="statistic" class="card-block p-2">
                     <h5>Projects</h5>
                     <span class="float-right">Total: {{ statistic.projects.total }}</span>
                     <hr>

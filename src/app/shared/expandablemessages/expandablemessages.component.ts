@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Messages } from 'primeng/primeng';
+import {Messages} from 'primeng/messages';
 
 @Component({
   selector: 'biosys-expandablemessages',

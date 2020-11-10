@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message } from 'primeng/primeng';
+import {Message, MessageService} from 'primeng/api';
+import { forkJoin } from 'rxjs';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import '../../../../lib/leaflet.latlng-graticule';
@@ -17,7 +18,6 @@ import {
     getOverlayLayers
 } from '../../../shared/utils/maputils';
 import { EditRecordsTableComponent } from '../../../shared/edit-records-table/edit-records-table.component';
-import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 
 
 @Component({
@@ -48,7 +48,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     public projId: number;
     public datasetId: number;
     public dataset: Dataset;
-    public messages: Message[] = [];
     public uploadURL: string;
     public isUploading = false;
     public uploadCreateSites = false;
@@ -69,7 +68,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private markersByRecordId: object;
 
     constructor(private apiService: APIService, private  authService: AuthService, private router: Router,
-                private route: ActivatedRoute) {
+                private route: ActivatedRoute, private messageService: MessageService) {
     }
 
     public ngOnInit() {
@@ -111,32 +110,30 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             {label: 'Data Management - Projects', routerLink: '/data-management/projects'}
         ];
 
-        if ('recordSaved' in params) {
-            this.messages.push({
+        if (params.hasOwnProperty('recordSaved')) {
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Record saved',
-                detail: 'The record was saved'
+                detail: 'The record was saved',
+                key: 'mainToast'
             });
-        } else if ('recordDeleted' in params) {
-            this.messages.push({
+        } else if (params.hasOwnProperty('recordDeleted')) {
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Record deleted',
-                detail: 'The record was deleted'
+                detail: 'The record was deleted',
+                key: 'mainToast'
             });
         }
-
-        // for some reason the growls won't disappear if messages populated during init, so need
-        // to set a timeout to remove
-        setTimeout(() => {
-            this.messages = [];
-        }, DEFAULT_GROWL_LIFE);
     }
 
     public ngOnDestroy() {
         if (this.map) {
             this.pageState.mapZoom = this.map.getZoom();
             this.pageState.mapPosition = this.map.getCenter();
+            this.map.remove();
         }
+
         sessionStorage.setItem('pageState' + this.datasetId, JSON.stringify(this.pageState));
     }
 
@@ -328,7 +325,6 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         let totalErrors = 0;
         let totalWarnings = 0;
 
-        this.messages = [];
         this.uploadErrorMessages = [];
         this.uploadWarningMessages = [];
 
@@ -355,35 +351,38 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             }
         }
         if (totalErrors > 0) {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'error',
                 summary: 'Error uploading records',
-                detail: 'There were ' + totalErrors + ' error(s) uploading the records file. See details below.'
+                detail: 'There were ' + totalErrors + ' error(s) uploading the records file. See details below.',
+                key: 'mainToast'
             });
         } else if (totalWarnings > 0) {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'warn',
                 summary: 'Records uploaded with some warnings',
-                detail: 'The records were accepted but there were ' + totalWarnings + ' warning(s). See details below.'
+                detail: 'The records were accepted but there were ' + totalWarnings + ' warning(s). See details below.',
+                key: 'mainToast'
             });
         } else {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Upload successful',
-                detail: '' + totalRecords + ' records were successfully uploaded'
+                detail: '' + totalRecords + ' records were successfully uploaded',
+                key: 'mainToast'
             });
         }
     }
 
     private showUpdateError(error: APIError) {
-        this.messages = [];
         error.msg['data'].forEach((err: string) => {
             let field, message;
             [field, message] = err.split('::');
-            this.messages.push({
+            this.messageService.add({
                 severity: 'error',
                 summary: 'Error on ' + field,
-                detail: message
+                detail: message,
+                key: 'mainToast'
             });
         });
     }

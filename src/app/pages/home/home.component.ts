@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { APIService } from '../../../biosys-core/services/api.service';
 
@@ -12,7 +12,6 @@ import * as L from 'leaflet';
 import 'leaflet-mouse-position';
 import '../../../lib/leaflet.latlng-graticule';
 import { AuthService } from '../../../biosys-core/services/auth.service';
-import { formatUserFullName } from '../../../biosys-core/utils/functions';
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -24,7 +23,7 @@ import { formatUserFullName } from '../../../biosys-core/utils/functions';
     styleUrls: ['home.component.css'],
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
     public projects: Project[];
     public statistic: Statistic;
     public user: User;
@@ -37,7 +36,7 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.apiService.getProjects().subscribe(
             (projects: Project[]) => {
                 this.projects = projects;
@@ -67,6 +66,9 @@ export class HomeComponent implements OnInit {
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
+    ngOnDestroy(): void {
+        this.map.remove();
+    }
 
     public onMapReady(map: L.Map) {
         this.map = map;

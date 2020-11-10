@@ -43,7 +43,8 @@ export class ChangePasswordComponent {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Password changed',
-                    detail: 'Your password was successfully changed'
+                    detail: 'Your password was successfully changed',
+                    key: 'mainToast'
                 });
                 this.router.navigate(['/']);
             },

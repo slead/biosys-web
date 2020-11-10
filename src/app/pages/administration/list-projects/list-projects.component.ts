@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { APIError, Program, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/primeng';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 
 @Component({
@@ -84,7 +84,8 @@ export class ManagementListProjectsComponent implements OnInit {
         this.messageService.add({
             severity: 'success',
             summary: 'Project deleted',
-            detail: 'The project was deleted'
+            detail: 'The project was deleted',
+            key: 'mainToast'
         });
     }
 
@@ -92,7 +93,8 @@ export class ManagementListProjectsComponent implements OnInit {
         this.messageService.add({
             severity: 'error',
             summary: 'Project delete error',
-            detail: 'There were error(s) deleting the project: ' + projectError.msg
+            detail: 'There were error(s) deleting the project: ' + projectError.msg,
+            key: 'mainToast'
         });
     }
 }

@@ -1,6 +1,4 @@
 import * as L from 'leaflet';
-import { LayerGroup } from 'leaflet';
-import { Map } from 'leaflet';
 
 declare var module: NodeModule;
 interface NodeModule {

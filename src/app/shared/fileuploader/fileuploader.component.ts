@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { FileUpload, DomHandler } from 'primeng/primeng';
+import {DomHandler} from 'primeng/dom';
+import {FileUpload} from 'primeng/fileupload';
 
 @Component({
     selector: 'biosys-fileuploader',

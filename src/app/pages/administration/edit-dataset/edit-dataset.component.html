@@ -43,8 +43,7 @@
                 <div class="row mb-2">
                     <div class="col-md-2"><label class="field-label">Type *</label></div>
                     <div class="col-md-4">
-                        <p-dropdown [options]="typeChoices" [(ngModel)]="ds.type" [autoWidth]="false">
-                        </p-dropdown>
+                        <p-dropdown [options]="typeChoices" [(ngModel)]="ds.type"></p-dropdown>
                     </div>
                     <div class="col-md-4 text-danger">{{dsErrors['type']}}</div>
                 </div>

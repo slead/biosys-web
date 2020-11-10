@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ConfirmationService, Message, MessageService } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService } from 'primeng/api';
 
 import { APIError, Project, Site } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
@@ -99,7 +99,8 @@ export class EditSiteComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Site saved',
-                        detail: 'The site was saved'
+                        detail: 'The site was saved',
+                        key: 'mainToast'
                     });
                 },
                 (errors: APIError) => this.siteErrors = errors.msg
@@ -111,7 +112,8 @@ export class EditSiteComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Site created',
-                        detail: 'The site was created'
+                        detail: 'The site was created',
+                        key: 'mainToast'
                     });
                 },
                 (errors: APIError) => this.siteErrors = errors.msg
@@ -137,7 +139,8 @@ export class EditSiteComponent implements OnInit {
         this.messageService.add({
             severity: 'success',
             summary: 'Site deleted',
-            detail: 'The site was deleted'
+            detail: 'The site was deleted',
+            key: 'mainToast'
         });
     }
 
@@ -145,7 +148,8 @@ export class EditSiteComponent implements OnInit {
         this.messageService.add({
             severity: 'error',
             summary: 'Site delete error',
-            detail: 'There were error(s) deleting the site'
+            detail: 'There were error(s) deleting the site',
+            key: 'mainToast'
         });
     }
 }

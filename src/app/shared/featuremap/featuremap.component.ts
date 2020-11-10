@@ -1,5 +1,7 @@
-import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
-    EventEmitter, SimpleChange } from '@angular/core';
+import {
+    OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
+    EventEmitter, SimpleChange, OnDestroy
+} from '@angular/core';
 import {
     DEFAULT_CENTER,
     DEFAULT_MARKER_ICON,
@@ -27,7 +29,7 @@ export class MarkerDirective {
     templateUrl: 'featuremap.component.html',
     styleUrls: ['featuremap.component.css'],
 })
-export class FeatureMapComponent implements OnInit, OnChanges {
+export class FeatureMapComponent implements OnInit, OnChanges, OnDestroy {
     @Input() public drawFeatureTypes: string[] = [];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
@@ -165,6 +167,10 @@ export class FeatureMapComponent implements OnInit, OnChanges {
                 }
             }
         }
+    }
+
+    ngOnDestroy(): void {
+        this.map.remove();
     }
 
     public getFeatureGeometry(): GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon {

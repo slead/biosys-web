@@ -3,7 +3,7 @@ import { APIError, Program, Project, User } from '../../../../biosys-core/interf
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/api';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 

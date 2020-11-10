@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Galleria, DomHandler  } from 'primeng/primeng';
+import {DomHandler} from 'primeng/dom';
+import {Galleria} from 'primeng/galleria';
 
 @Component({
     selector: 'biosys-galleria',

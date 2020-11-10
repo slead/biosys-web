@@ -51,7 +51,7 @@
                             <div class="col-md-8">
                                 <label [hidden]="isEditing">{{getProgramLabel(project.program)}}</label>
                                 <p-dropdown [hidden]="!isEditing" [options]="programChoices"
-                                            [(ngModel)]="project.program" [autoWidth]="false">
+                                            [(ngModel)]="project.program">
                                 </p-dropdown>
                                 <div [hidden]="!isEditing" class="text-danger">{{projectErrors['program']}}</div>
                             </div>
@@ -64,7 +64,7 @@
                                 <label [hidden]="isEditing"
                                        *ngIf="project.datum">{{getDatumLabel(project.datum)}}</label>
                                 <p-dropdown [hidden]="!isEditing" [options]="datumTypeChoices"
-                                            [(ngModel)]="project.datum" [autoWidth]="false">
+                                            [(ngModel)]="project.datum">
                                 </p-dropdown>
                                 <div [hidden]="!isEditing" class="text-danger">{{projectErrors['datum']}}</div>
                             </div>

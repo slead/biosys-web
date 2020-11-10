@@ -2,7 +2,6 @@
     <biosys-header></biosys-header>
     <biosys-navbar></biosys-navbar>
     <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
-    <p-growl [value]="messages" [life]="DEFAULT_GROWL_LIFE"></p-growl>
     <div *ngIf="record">
         <div class="row mt-1">
             <div class="col">
@@ -57,8 +56,7 @@
                                         <p-dropdown *ngIf="field.constraints?.enum"
                                                     [placeholder]="'Select a ' + field.name.toLowerCase()"
                                                     [options]="getDropdownOptions(field.name, field.constraints.enum)"
-                                                    [(ngModel)]="record.data[field.name]"
-                                                    [autoWidth]="false">
+                                                    [(ngModel)]="record.data[field.name]">
                                         </p-dropdown>
                                         <input pInputText *ngIf="!field.constraints?.enum"
                                                [(ngModel)]="record.data[field.name]" (change)="onInputChanged($event)"/>
@@ -81,11 +79,11 @@
         </div>
         <div class="row mt-3 mb-3">
             <div class="col-2">
-                <button pButton icon="fa fa-trash" (click)="confirmDelete()" label="Delete"></button>
+                <button pButton icon="fa fa-trash" (click)="confirmDelete($event)" label="Delete"></button>
             </div>
             <div class="col-4">
                 <button pButton class="right-buffer" icon="fa fa-close" label="Cancel" (click)="cancel()"></button>
-                <button pButton icon="fa fa-check" (click)="save()" label="Save"></button>
+                <button pButton icon="fa fa-check" (click)="save($event)" label="Save"></button>
             </div>
         </div>
     </div>
@@ -104,9 +102,8 @@
         </h4>
         <div class="row mt-3 mb-3">
             <div class="col-8 offset-2">
-                <biosys-galleria [images]="imagesMetadata" panelWidth="100%" panelHeight="600" [showCaption]="false"
-                                 [autoPlay]="false">
-                </biosys-galleria>
+                <p-galleria [value]="imagesMetadata" panelWidth="100%" panelHeight="600" [autoPlay]="false">
+                </p-galleria>
             </div>
         </div>
         <h5>

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
-import { SelectItem, LazyLoadEvent, MessageService } from 'primeng/primeng';
+import {LazyLoadEvent, MessageService, SelectItem} from 'primeng/api';
 import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
@@ -141,7 +141,7 @@ export class ViewRecordsComponent implements OnInit {
         if (this.selectedDataset) {
             this.recordParams['dataset__id'] = this.selectedDataset.id;
             if (this.table) {
-                this.table.reset();
+                this.table.clear();
             }
         }
     }
@@ -222,7 +222,8 @@ export class ViewRecordsComponent implements OnInit {
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Export error',
-                        detail: `There were error(s) when exporting / locking: ${error.msg}`
+                        detail: `There were error(s) when exporting / locking: ${error.msg}`,
+                        key: 'mainToast'
                     });
                     this.isLocking = false;
                 },
@@ -230,7 +231,8 @@ export class ViewRecordsComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Export success',
-                        detail: `There records were successfully exported and have now been locked`
+                        detail: `There records were successfully exported and have now been locked`,
+                        key: 'mainToast'
                     });
 
                     this.isLocking = false;
@@ -244,7 +246,8 @@ export class ViewRecordsComponent implements OnInit {
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Export error',
-                        detail: `There were error(s) when exporting: ${error.msg}`
+                        detail: `There were error(s) when exporting: ${error.msg}`,
+                        key: 'mainToast'
                     });
                 }
             );
@@ -265,7 +268,8 @@ export class ViewRecordsComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Locking error',
-                    detail: `There were error(s) when locking: ${error.msg}`
+                    detail: `There were error(s) when locking: ${error.msg}`,
+                    key: 'mainToast'
                 });
                 this.isLocking = false;
             },

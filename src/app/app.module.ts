@@ -6,7 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 import { ToastModule} from 'primeng/toast';
-import { MessageService } from 'primeng/primeng';
+import { MessageService } from 'primeng/api';
 
 import { BiosysCoreModule } from '../biosys-core/biosys-core.module';
 import { APIService } from '../biosys-core/services/api.service';
@@ -66,10 +66,6 @@ import { AdminOnlyComponent } from './pages/accounts/admin-only/admin-only.compo
         AdminGuard,
         DataEngineerGuard,
         TeamMemberGuard,
-        {
-            provide: LocationStrategy,
-            useClass: HashLocationStrategy
-        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: ApiInterceptor,

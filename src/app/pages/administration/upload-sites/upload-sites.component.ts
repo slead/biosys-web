@@ -2,8 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { APIError, Project } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
-import { Message, FileUpload } from 'primeng/primeng';
+import { Message } from 'primeng/api';
 import { Router, ActivatedRoute } from '@angular/router';
+import {FileUpload} from 'primeng/fileupload';
 
 @Component({
     moduleId: module.id,

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+
+import {MenuItem} from 'primeng/api';
+
 import { AuthService } from '../../../biosys-core/services/auth.service';
-import { MenuItem } from 'primeng/primeng';
 import { User } from '../../../biosys-core/interfaces/api.interfaces';
 import { Router } from '@angular/router';
 import { formatUserFullName } from '../../../biosys-core/utils/functions';

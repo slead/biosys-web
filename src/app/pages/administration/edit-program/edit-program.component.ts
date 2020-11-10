@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/api';
 import { map } from 'rxjs/operators';
 
 import { APIError, User, Program } from '../../../../biosys-core/interfaces/api.interfaces';
@@ -80,7 +80,8 @@ export class EditProgramComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Program saved',
-                        detail: `The program ${this.program.name} was saved`
+                        detail: `The program ${this.program.name} was saved`,
+                        key: 'mainToast'
                     });
                 },
                 (errors: APIError) => this.programErrors = errors.msg
@@ -92,7 +93,8 @@ export class EditProgramComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Program created',
-                        detail: `The program ${this.program.name} was created`
+                        detail: `The program ${this.program.name} was created`,
+                        key: 'mainToast'
                     });
                 },
                 (errors: APIError) => this.programErrors = errors.msg
@@ -122,7 +124,8 @@ export class EditProgramComponent implements OnInit {
         this.messageService.add({
             severity: 'error',
             summary: 'Program delete error',
-            detail: 'There were error(s) deleting the program: ' + errors.msg
+            detail: 'There were error(s) deleting the program: ' + errors.msg,
+            key: 'mainToast'
         });
     }
 
