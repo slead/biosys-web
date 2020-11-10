@@ -53,7 +53,7 @@ export class ViewRecordsComponent implements OnInit {
 
     private recordParams: any = {};
 
-    @ViewChild('recordsTable', { static: false })
+    @ViewChild('recordsTable')
     public table: Table;
 
     constructor(private apiService: APIService, private authService: AuthService,
