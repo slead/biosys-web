@@ -27,7 +27,7 @@ export class UploadSitesComponent implements OnInit {
     messages: Message[] = [];
     url: string = null;
     projectId: number;
-    @ViewChild(FileUpload)
+    @ViewChild(FileUpload, { static: true })
     uploader: FileUpload;
 
     constructor(private apiService: APIService,

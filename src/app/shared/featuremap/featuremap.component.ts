@@ -28,7 +28,7 @@ export class MarkerDirective {
     styleUrls: ['featuremap.component.css'],
 })
 export class FeatureMapComponent implements OnInit, OnChanges {
-    @Input() public drawFeatureTypes: [string] = [] as [string];
+    @Input() public drawFeatureTypes: string[] = [];
     @Input() public isEditing: boolean;
     @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
     @Input() public bounds: GeoJSON.BBox;

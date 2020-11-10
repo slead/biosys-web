@@ -38,10 +38,10 @@ export class ManageDataComponent implements OnInit, OnDestroy {
 
     public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
 
-    @ViewChild(EditRecordsTableComponent)
+    @ViewChild(EditRecordsTableComponent, { static: true })
     public editRecordsTableComponent: EditRecordsTableComponent;
 
-    @ViewChild(FileuploaderComponent)
+    @ViewChild(FileuploaderComponent, { static: true })
     public uploader: FileuploaderComponent;
 
     public breadcrumbItems: any = [];

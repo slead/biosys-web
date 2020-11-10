@@ -63,7 +63,7 @@ export class EditRecordsTableComponent {
     @Output()
     public pageStateChange = new EventEmitter<object>();
 
-    @ViewChild(Table)
+    @ViewChild(Table, { static: true })
     public recordsDatatable: Table;
 
     private _dataset: Dataset;

@@ -29,7 +29,7 @@ export class EditProjectComponent implements OnInit {
     private static COLUMN_WIDTH = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 700;
 
-    @ViewChild(FeatureMapComponent)
+    @ViewChild(FeatureMapComponent, { static: true })
     public featureMapComponent: FeatureMapComponent;
 
     public TEMPLATE_LATLNG_URL: string = environment.server + '/download/templates/site/lat-long';

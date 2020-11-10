@@ -18,7 +18,7 @@ import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.compo
 export class EditSiteComponent implements OnInit {
     public breadcrumbItems: any = [];
 
-    @ViewChild(FeatureMapComponent)
+    @ViewChild(FeatureMapComponent, { static: true })
     public featureMapComponent: FeatureMapComponent;
 
     public site: Site = <Site>{};

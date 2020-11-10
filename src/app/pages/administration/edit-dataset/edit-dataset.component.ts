@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+
 import { map, mergeMap } from 'rxjs/operators';
 
 import {
@@ -27,10 +28,10 @@ export class EditDatasetComponent implements OnInit {
     @Input()
     public isValid = true;
 
-    @ViewChild(JsonEditorComponent)
+    @ViewChild(JsonEditorComponent, { static: true })
     public editor: JsonEditorComponent;
 
-    @ViewChild(FileUpload)
+    @ViewChild(FileUpload, { static: true })
     public fileUpload: FileUpload;
 
     public breadcrumbItems: any = [];

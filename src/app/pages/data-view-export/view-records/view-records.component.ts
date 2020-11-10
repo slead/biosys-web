@@ -6,14 +6,13 @@ import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
 import { mergeMap } from 'rxjs/operators';
-import { from, forkJoin, of } from 'rxjs';
+import { from, forkJoin } from 'rxjs';
 
 import { APIError, Dataset, Record, RecordResponse, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 import { Observable } from 'rxjs/internal/Observable';
-import { P } from '@angular/core/src/render3';
 
 
 @Component({
@@ -54,7 +53,7 @@ export class ViewRecordsComponent implements OnInit {
 
     private recordParams: any = {};
 
-    @ViewChild('recordsTable')
+    @ViewChild('recordsTable', { static: false })
     public table: Table;
 
     constructor(private apiService: APIService, private authService: AuthService,
