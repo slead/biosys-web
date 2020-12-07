@@ -11,10 +11,6 @@ table td {
   vertical-align: top;
 }
 
-input {
-    max-height: 34px;
-}
-
 .right-buffer {
     margin-right: 10px;
 }
@@ -53,57 +49,12 @@ input {
   margin-right: 15px;
 }
 
-.ui-growl-message-success {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
-  color: #ffffff;
-}
-
-.ui-growl-message-info {
-  background-color: #186ba0;
-  border-color: #186ba0;
-  color: #ffffff;
-}
-
-.ui-growl-message-warn {
-  background-color: #FFB300;
-  border-color: #FFB300;
-  color: #ffffff;
-}
-
-.ui-growl-message-error {
-  background-color: #f44336;
-  border-color: #f44336;
-  color: #ffffff;
-}
-
 .ui-cell-data a {
   color: #2779aa;
 }
 
 .truncated {
   cursor: pointer;
-}
-
-.ui-fileupload {
-    position: relative;
-}
-
-.ui-fileupload .ui-fileupload-loading {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
-    opacity: 0.2;
-    z-index: 1;
-    border-radius: 6px;
-}
-
-.ui-fileupload .ui-fileupload-loading-content {
-    position: absolute;
-    left: 50%;
-    top: 25%;
-    z-index: 2;
 }
 
 .ui-table-caption {
@@ -241,71 +192,6 @@ input {
     font-size: 1em;
 }
 
-.ui-growl {
-    top: 70px;
-}
-
-.ui-growl .ui-growl-item-container {
-    margin: 0 0 1em 0;
-    opacity: 0.9;
-    filter: alpha(opacity=90);
-    -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-    -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-    box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
-}
-
-.ui-growl .ui-growl-item-container .ui-growl-item {
-    padding: 1em;
-}
-
-.ui-growl .ui-growl-item-container .ui-growl-item .ui-growl-message {
-    margin: 0 0 0 4em;
-}
-
-.ui-growl .ui-growl-item-container .ui-growl-item .ui-growl-image {
-    font-size: 2.571em;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-info {
-    background-color: #7fbcec;
-    border: 0 none;
-    color: #212121;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-info .ui-growl-image {
-    color: #212121;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-success {
-    background-color: #57bb3b;
-    border: 0 none;
-    color: #212121;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-success .ui-growl-image {
-    color: #212121;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-warn {
-    background-color: #ffe399;
-    border: 0 none;
-    color: #212121;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-warn .ui-growl-image {
-    color: #212121;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-error {
-    background-color: #f8b7bd;
-    border: 0 none;
-    color: #ff0000;
-}
-
-.ui-growl .ui-growl-item-container.ui-growl-message-error .ui-growl-image {
-    color: #212121;
-}
-
 .ui-toast .ui-toast-message {
     -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
     -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
@@ -358,4 +244,9 @@ input {
     height: 26px;
     float: right;
     margin-right: 5px;
+}
+
+/* this is to counter bootstrap reboot adding a botton margin to all labels */
+label {
+    margin-bottom: 0;
 }

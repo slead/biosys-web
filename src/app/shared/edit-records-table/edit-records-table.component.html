@@ -7,11 +7,11 @@
 <p-table #table [value]="flatRecords" autoLayout="true"
          resizableColumns="true" columnResizeMode="expand"
          [scrollable]="true" [style.width]="getRecordsTableWidth()"
-         [(selection)]="selectedRecords"
+         [(selection)]="selectedRecords" (onPage)="onPageChange($event)"
          (onEditInit)="onRowEditInit($event)" (onEditComplete)="onRowEditComplete($event)"
          [paginator]="true" [rows]="pageState ? pageState['rowLimit'] : 10" [rowsPerPageOptions]="[10, 25, 50, 100]"
          [lazy]="!!dataset" (onLazyLoad)="loadRecordsLazy($event)" [loading]="!flatRecords" [totalRecords]="totalRecords">
-    <ng-template pTemplate="colgroup" let-columns>
+    <ng-template pTemplate="colgroup">
         <colgroup>
             <col [style.width]="'140px' | safe: 'style'">
             <col [style.width]="'100px' | safe: 'style'">
@@ -27,9 +27,9 @@
         </colgroup>
     </ng-template>
     <ng-template pTemplate="caption">
-        <i class="fa fa-search table-search-icon"></i>
+        <i class="pi pi-search table-search-icon"></i>
         <input type="text" pInputText size="50" placeholder="Search"
-               (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+               (input)="table.filterGlobal($event.target['value'], 'contains')" style="width:auto">
     </ng-template>
     <ng-template pTemplate="header">
         <tr>
@@ -56,7 +56,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-rowData>
         <tr>
-            <td align="center">
+            <td>
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td>
@@ -65,7 +65,7 @@
                     {{ rowData._id }}
                 </a>
             </td>
-            <td align="center">
+            <td>
                 <p-checkbox [(ngModel)]="rowData._validated" binary="true" [disabled]="rowData._locked"
                             (onChange)="onRecordValidatedChanged($event, rowData._id)"></p-checkbox>
             </td>
@@ -123,14 +123,14 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="summary">
-        <div class="ui-helper-clearfix">
-            <button type="button" pButton icon="fa fa-trash" class="float-left right-buffer" label="Delete Selected"
+        <div class="d-flex">
+            <button type="button" pButton icon="pi pi-trash" class="mr-auto" label="Delete Selected"
                     (click)="confirmDeleteSelectedRecords()" [disabled]="!selectedRecords || !selectedRecords.length">
             </button>
-            <button type="button" pButton icon="fa fa-trash" class="float-left" label="Delete All"
+            <button type="button" pButton icon="pi pi-trash" class="mr-3" label="Delete All"
                     (click)="confirmDeleteAllRecords()">
             </button>
-            <button type="button" pButton icon="fa fa-plus" class="float-right" label="Add" (click)="add()">
+            <button type="button" pButton icon="pi pi-plus" label="Add" (click)="add()">
             </button>
         </div>
     </ng-template>

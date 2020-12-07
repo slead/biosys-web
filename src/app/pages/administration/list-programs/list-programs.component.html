@@ -10,9 +10,9 @@
                      [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
                      [globalFilterFields]="['name','code', 'description', 'data_engineers']">
                 <ng-template pTemplate="caption">
-                    <i class="fa fa-search table-search-icon"></i>
+                    <i class="pi pi-search table-search-icon"></i>
                     <input type="text" pInputText size="50" placeholder="Search"
-                           (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                           (input)="table.filterGlobal($event.target['value'], 'contains')" style="width:auto">
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
@@ -50,8 +50,8 @@
                             {{ rowData.description }}
                         </td>
                         <td>{{ formatDataEngineers(rowData.data_engineers) }}</td>
-                        <td align="center">
-                            <button type="button" pButton icon="fa fa-trash-o" title="Delete"
+                        <td>
+                            <button type="button" pButton icon="pi pi-trash" title="Delete"
                                     (click)="confirmDelete(rowData)"></button>
                         </td>
                     </tr>
@@ -64,9 +64,10 @@
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="summary">
-                    <div class="ui-helper-clearfix">
-                        <button type="button" pButton icon="fa fa-plus" style="float:right" label="Add"
-                                routerLink="/administration/programs/create-program"></button>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" pButton icon="pi pi-plus" label="Add"
+                                routerLink="/administration/programs/create-program">
+                        </button>
                     </div>
                 </ng-template>
             </p-table>
@@ -74,4 +75,4 @@
     </div>
 </div>
 
-<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+<p-confirmDialog header="Confirm Delete" icon="pi pi-question-circle" width="425"></p-confirmDialog>

@@ -96,7 +96,7 @@ export class EditProjectComponent implements OnInit {
             .subscribe((data) => {
                 this.user = data[0];
                 const allPrograms = data[1];
-                let allowedPrograms = [];
+                let allowedPrograms;
                 if (this.user.is_admin) {
                     allowedPrograms = allPrograms;
                 } else {
@@ -183,7 +183,7 @@ export class EditProjectComponent implements OnInit {
         const projId = this.project.id ? this.project.id : Number(this.route.snapshot.params['id']);
 
         if (projId) {
-            popupContent += '<p class="mt-1"><a href="#/administration/projects/edit-project/' + projId + '/edit-site/' +
+            popupContent += '<p class="mt-1"><a href="/administration/projects/edit-project/' + projId + '/edit-site/' +
                 site.id + '">Edit Site</a></p>';
         }
 
@@ -247,7 +247,7 @@ export class EditProjectComponent implements OnInit {
             accept: () => {
                 this.apiService.deleteDataset(dataset.id)
                     .subscribe(
-                        () => this.onDeleteDatasetSuccess(dataset),
+                        () => this.onDeleteDatasetSuccess(),
                         (error: APIError) => this.onDeleteDatasetError(error)
                     );
             }
@@ -267,7 +267,7 @@ export class EditProjectComponent implements OnInit {
         });
     }
 
-    private onDeleteDatasetSuccess(dataset: Dataset) {
+    private onDeleteDatasetSuccess() {
         this.datasets = null;
         this.apiService.getAllDatasetsForProjectID(this.project.id).subscribe(
             (datasets: Dataset[]) => this.datasets = datasets,

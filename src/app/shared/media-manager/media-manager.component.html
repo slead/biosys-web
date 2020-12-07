@@ -3,7 +3,7 @@
         <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
     </p-header>
     <ng-template let-media pTemplate="listItem">
-        <div class="row ml-1 mr-1 p-2" style="border-bottom: 1px solid #d9d9d9">
+        <div class="row no-gutters p-2">
             <div class="col-1">
                 <img *ngIf="!((media.file | isImageFile) || (media.file | isVideoFile))"
                      src="{{ media.file | fileIconUrl }}" />
@@ -14,7 +14,7 @@
                     <img src="{{ media.file | fileIconUrl }}" />
                 </a>
             </div>
-            <div class="col-4">
+            <div class="col-4 pl-1">
                 {{ media.file | fileName }}
                 <p>
                     <a [href]="media.file" target="_blank">Click to download</a>
@@ -29,7 +29,7 @@
                 {{ media.filesize | fileSize}}
             </div>
             <div class="col-1">
-                <button class="float-right" pButton type="button" icon="fa fa-trash" (click)="onDeleteClicked(media)">
+                <button class="float-right" pButton type="button" icon="pi pi-trash" (click)="onDeleteClicked(media)">
                 </button>
             </div>
         </div>
@@ -67,14 +67,17 @@
                 </div>
             </div>
             <div class="text-center">
-                <button pButton type="button" icon="fa fa-trash" (click)="onDeleteClicked(media)"></button>
+                <button pButton type="button" icon="pi pi-trash" (click)="onDeleteClicked(media)"></button>
             </div>
         </p-card>
     </ng-template>
     <p-footer>
-        <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
-        <button type="button" class="ml-1 float-right" pButton icon="fa fa-plus" label="Add"
-                (click)="showUploadMediaDialog = true"></button>
+        <div class="d-flex justify-content-between">
+            <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+            <button type="button" pButton icon="pi pi-plus" label="Add"
+                    (click)="showUploadMediaDialog = true">
+            </button>
+        </div>
     </p-footer>
 </p-dataView>
 

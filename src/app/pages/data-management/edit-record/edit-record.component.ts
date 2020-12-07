@@ -1,18 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import {ConfirmationService, SelectItem, Message, MessageService} from 'primeng/api';
-import {FileUpload} from 'primeng/fileupload';
-import {forkJoin, from, Observable, of} from 'rxjs';
-import {map, mergeMap, tap} from 'rxjs/operators';
+import { ConfirmationService, SelectItem, MessageService } from 'primeng/api';
+import { FileUpload } from 'primeng/fileupload';
+import { forkJoin, from, Observable, of } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 
+import * as GeoJSON from 'geojson';
 import * as moment from 'moment/moment';
 
 import { APIError, Project, Dataset, Record, RecordMedia } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { pyDateFormatToMomentDateFormat } from '../../../../biosys-core/utils/functions';
 import { AMBIGUOUS_DATE_PATTERN } from '../../../../biosys-core/utils/consts';
-import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { getDefaultValue } from '../../../shared/utils/functions';
 import { getExtentFromPoint } from '../../../shared/utils/maputils';
 
@@ -24,8 +24,6 @@ import { getExtentFromPoint } from '../../../shared/utils/maputils';
 })
 
 export class EditRecordComponent implements OnInit {
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-
     public breadcrumbItems: any = [];
     public recordErrors: any = {};
     public dropdownItems: any = {};
@@ -37,7 +35,7 @@ export class EditRecordComponent implements OnInit {
     public imagesMetadata: object[] = [];
     public parentRecordId: number;
 
-    @ViewChild(FileUpload, { static: true })
+    @ViewChild(FileUpload, {static: true})
     public imageUploader;
 
     private completeUrl: string;
@@ -65,9 +63,9 @@ export class EditRecordComponent implements OnInit {
                 mergeMap((record: Record) =>
                     this.apiService.getRecordMedia(record.id).pipe(
                         tap((media: RecordMedia[]) => this.imagesMetadata = media.map((image: RecordMedia) => ({
-                            source: image.file,
-                            alt: image.file.substring(image.file.lastIndexOf('/') + 1),
-                            title: image.file.substring(image.file.lastIndexOf('/') + 1)
+                                source: image.file,
+                                alt: image.file.substring(image.file.lastIndexOf('/') + 1),
+                                title: image.file.substring(image.file.lastIndexOf('/') + 1)
                             }))
                         ),
                         // with resultSelect deprecated, need to return record via map
@@ -101,12 +99,12 @@ export class EditRecordComponent implements OnInit {
                 const record = result[2];
 
                 this.breadcrumbItems.push({
-                    label: project.name,
-                    routerLink: [`/data-management/projects/${project.id}/datasets`]
-                }, {
-                    label: dataset.name,
-                    routerLink: [`/data-management/projects/${project.id}/datasets/${dataset.id}`]
-                },
+                        label: project.name,
+                        routerLink: [`/data-management/projects/${project.id}/datasets`]
+                    }, {
+                        label: dataset.name,
+                        routerLink: [`/data-management/projects/${project.id}/datasets/${dataset.id}`]
+                    },
                     {label: record.id ? 'Edit Record' : 'Create Record'}
                 );
 
@@ -146,34 +144,31 @@ export class EditRecordComponent implements OnInit {
 
     public onFeatureMapGeometryChanged(geometry: GeoJSON.GeometryObject) {
         this.apiService.recordGeometryToData(this.dataset.id, geometry, this.record.data)
-        .subscribe(
-            (geometryAndData: any) => {
-                const recordCopy = JSON.parse(JSON.stringify(this.record));
-                recordCopy.data = geometryAndData.data;
-                recordCopy.geometry = geometryAndData.geometry;
-                this.extent = getExtentFromPoint(geometryAndData.geometry as GeoJSON.Point);
-                this.record = this.formatRecord(recordCopy);
-
-            },
-            (error: APIError) => {}
-        );
+            .subscribe(
+                (geometryAndData: any) => {
+                    const recordCopy = JSON.parse(JSON.stringify(this.record));
+                    recordCopy.data = geometryAndData.data;
+                    recordCopy.geometry = geometryAndData.geometry;
+                    this.extent = getExtentFromPoint(geometryAndData.geometry as GeoJSON.Point);
+                    this.record = this.formatRecord(recordCopy);
+                }
+            );
     }
 
-    public onInputChanged(event) {
+    public onInputChanged() {
         this.apiService.recordDataToGeometry(this.dataset.id, this.record.geometry, this.record.data)
-        .subscribe(
-            (geometryAndData: any) => {
-                const recordCopy = JSON.parse(JSON.stringify(this.record));
-                recordCopy.data = geometryAndData.data;
-                recordCopy.geometry = geometryAndData.geometry;
-                this.extent = getExtentFromPoint(geometryAndData.geometry as GeoJSON.Point);
-                this.record = this.formatRecord(recordCopy);
-            },
-            (error: APIError) => {}
-        );
+            .subscribe(
+                (geometryAndData: any) => {
+                    const recordCopy = JSON.parse(JSON.stringify(this.record));
+                    recordCopy.data = geometryAndData.data;
+                    recordCopy.geometry = geometryAndData.geometry;
+                    this.extent = getExtentFromPoint(geometryAndData.geometry as GeoJSON.Point);
+                    this.record = this.formatRecord(recordCopy);
+                }
+            );
     }
 
-    public save(event: any) {
+    public save() {
         // need to use a copy because there may be Date objects within this.selectedRecord which are bound
         // to calendar elements which must remain dates
         const recordCopy = JSON.parse(JSON.stringify(this.record));
@@ -181,31 +176,30 @@ export class EditRecordComponent implements OnInit {
         // convert Date types back to string in field's specified format (or DD/MM/YYYY if unspecified)
         for (const field of this.dataset.data_package.resources[0].schema.fields) {
             if (field.type === 'date' && recordCopy.data[field.name]) {
-                recordCopy.data[field.name] = moment(recordCopy.data[field.name]).
-                    format(pyDateFormatToMomentDateFormat(field.format));
+                recordCopy.data[field.name] = moment(recordCopy.data[field.name]).format(pyDateFormatToMomentDateFormat(field.format));
             }
         }
 
         if ('id' in recordCopy) {
             this.apiService.updateRecord(recordCopy.id, recordCopy)
-            .subscribe(
-                (record: Record) => this.onSaveSuccess(record),
-                (error: APIError) => this.onSaveError(error)
-            );
+                .subscribe(
+                    () => this.onSaveSuccess(),
+                    (error: APIError) => this.onSaveError(error)
+                );
         } else {
             this.apiService.createRecord(recordCopy)
-            .subscribe(
-                (record: Record) => this.onSaveSuccess(record),
-                (error: APIError) => this.onSaveError(error)
-            );
+                .subscribe(
+                    () => this.onSaveSuccess(),
+                    (error: APIError) => this.onSaveError(error)
+                );
         }
     }
 
-    public confirmDelete(event: any) {
+    public confirmDelete() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this record?',
             accept: () => this.apiService.deleteRecord(this.record.id).subscribe(
-                (record: Record) => this.onDeleteSuccess(this.record),
+                () => this.onDeleteSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
     }
@@ -234,7 +228,7 @@ export class EditRecordComponent implements OnInit {
         });
     }
 
-    private onSaveSuccess(record: Record) {
+    private onSaveSuccess() {
         const isNewRecord = this.record.hasOwnProperty('id');
 
         this.messageService.add({
@@ -263,15 +257,15 @@ export class EditRecordComponent implements OnInit {
         });
     }
 
-    private onDeleteSuccess(record: Record) {
+    private onDeleteSuccess() {
         this.router.navigate([this.completeUrl, {'recordDeleted': true}]);
     }
 
-    private onDeleteError(error: any) {
+    private onDeleteError(error: APIError) {
         this.messageService.add({
             severity: 'error',
             summary: 'Record delete error',
-            detail: 'There were error(s) deleting the record',
+            detail: `There were error(s) deleting the record: ${error.msg}`,
             key: 'mainToast'
         });
     }

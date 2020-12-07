@@ -21,7 +21,7 @@ export class ForgotPasswordComponent {
         });
     }
 
-    public getFormControlError(controlName: string): string {
+    public getFormControlError(): string {
         if (this.forgotPasswordForm.controls['email'].hasError('required')) {
             return 'Email address required';
         } else if (this.forgotPasswordForm.controls['email'].hasError('email')) {
@@ -31,7 +31,7 @@ export class ForgotPasswordComponent {
         }
     }
 
-    public submit(event: any) {
+    public submit() {
         this.serverErrors = null;
         this.submitting = true;
 

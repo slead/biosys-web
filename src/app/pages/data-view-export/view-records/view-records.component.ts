@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
-import {LazyLoadEvent, MessageService, SelectItem} from 'primeng/api';
+import { LazyLoadEvent, MessageService, SelectItem } from 'primeng/api';
 import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
@@ -88,7 +88,9 @@ export class ViewRecordsComponent implements OnInit {
         );
 
         this.authService.getCurrentUser().subscribe(
-            (user: User) => { this.canChangeLockedState = user.is_admin || user.is_data_engineer; }
+            (user: User) => {
+                this.canChangeLockedState = user.is_admin || user.is_data_engineer;
+            }
         );
 
         this.breadcrumbItems = [
@@ -146,7 +148,7 @@ export class ViewRecordsComponent implements OnInit {
         }
     }
 
-    public selectDataset(event: any) {
+    public selectDataset() {
         this.filter();
     }
 
@@ -199,7 +201,7 @@ export class ViewRecordsComponent implements OnInit {
         const exportObservable: Observable<object> = this.apiService.exportRecords(this.dateStart, this.dateEnd,
             this.speciesName, this.selectedDataset.id, this.fileType, this.validatedOnly, this.includeLocked);
 
-        const saveBlob = function(blob: Blob) {
+        const saveBlob = function (blob: Blob) {
             const timeStamp = moment().format('YYYY-MM-DD-HHmmss');
             const extension = this.fileType;
             const fileName = `export_${timeStamp}.${extension}`;
@@ -208,7 +210,7 @@ export class ViewRecordsComponent implements OnInit {
 
         if (this.lockRecordsOnExport) {
             const lockingObservalble = this.apiService.getRecordsByDatasetId(this.selectedDataset.id,
-                    JSON.parse(JSON.stringify(this.recordParams))).pipe(
+                JSON.parse(JSON.stringify(this.recordParams))).pipe(
                 mergeMap((records: Record[]) => from(records).pipe(
                     mergeMap((record: Record) => this.apiService.updateRecordLocked(record.id, true))
                 ))
@@ -216,7 +218,7 @@ export class ViewRecordsComponent implements OnInit {
 
             this.isLocking = true;
 
-            forkJoin(exportObservable, lockingObservalble).subscribe(
+            forkJoin([exportObservable, lockingObservalble]).subscribe(
                 (results: [Blob, any]) => saveBlob(results[0]),
                 (error: APIError) => {
                     this.messageService.add({

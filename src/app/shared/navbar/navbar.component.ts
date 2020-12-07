@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import {MenuItem} from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 
 import { AuthService } from '../../../biosys-core/services/auth.service';
 import { User } from '../../../biosys-core/interfaces/api.interfaces';
@@ -27,17 +27,17 @@ export class NavbarComponent implements OnInit {
         this.items = [
             {
                 label: 'Home',
-                icon: 'fa fa-home',
+                icon: 'pi pi-home',
                 routerLink: ['/']
             },
             {
                 label: 'Data Management',
-                icon: 'fa fa-database',
+                icon: 'pi pi-desktop',
                 routerLink: ['/data-management/projects']
             },
             {
                 label: 'View and Export',
-                icon: 'fa fa-search',
+                icon: 'pi pi-search',
                 routerLink: ['/view']
             }
         ];
@@ -51,7 +51,7 @@ export class NavbarComponent implements OnInit {
             if (user.is_admin) {
                 this.items.splice(1, 0, {
                     label: 'Administration',
-                    icon: 'fa fa-university',
+                    icon: 'pi pi-globe',
                     items: [
                         {
                             label: 'Programs',
@@ -63,7 +63,7 @@ export class NavbarComponent implements OnInit {
             } else if (user.is_data_engineer) {
                 this.items.splice(1, 0, {
                     label: 'Administration',
-                    icon: 'fa fa-university',
+                    icon: 'pi pi-globe',
                     items: [
                         projectItem
                     ]
@@ -73,7 +73,7 @@ export class NavbarComponent implements OnInit {
             const accountItems: MenuItem[] = [
                 {
                     label: 'Logout',
-                    icon: 'fa fa-sign-out',
+                    icon: 'pi pi-sign-out',
                     command: () => this.logout()
                 }
             ];
@@ -81,13 +81,14 @@ export class NavbarComponent implements OnInit {
             if (!environment['useSSOAuth']) {
                 accountItems.unshift({
                     label: 'Change Password',
-                    icon: 'fa fa-key',
+                    icon: 'pi pi-key',
                     routerLink: ['/change-password']
                 });
             }
 
             this.items.push({
                 label: `Logged in as ${formatUserFullName(user)}`,
+                icon: 'pi pi-user',
                 items: accountItems
             });
         });

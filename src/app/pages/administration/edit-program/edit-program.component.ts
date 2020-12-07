@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { map } from 'rxjs/operators';
 
 import { APIError, User, Program } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
-import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
 @Component({
@@ -18,13 +17,11 @@ import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 export class EditProgramComponent implements OnInit {
     private static readonly PROGRAMS_URL = '/administration/programs';
 
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
     public breadcrumbItems: any = [];
     public program: Program = {};
     public dataEngineerChoices: SelectItem[];
 
     public programErrors: any = {};
-    public messages: Message[] = [];
 
     constructor(private apiService: APIService, private router: Router, private route: ActivatedRoute,
                 private messageService: MessageService, private confirmationService: ConfirmationService) {
@@ -64,12 +61,6 @@ export class EditProgramComponent implements OnInit {
                 (users: SelectItem[]) => this.dataEngineerChoices = users,
                 (error: APIError) => console.log('error.msg', error.msg)
             );
-
-        // for some reason the growls won't disappear if messages populated during init, so need
-        // to set a timeout to remove
-        setTimeout(() => {
-            this.messages = [];
-        }, DEFAULT_GROWL_LIFE);
     }
 
     public save() {
@@ -106,17 +97,17 @@ export class EditProgramComponent implements OnInit {
         this.router.navigate([EditProgramComponent.PROGRAMS_URL]);
     }
 
-    public confirmDelete(event: any) {
+    public confirmDelete() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this program? Warning: all related projects and records' +
-            'will also be deleted.',
+                'will also be deleted.',
             accept: () => this.apiService.deleteProgram(this.program.id).subscribe(
-                (program: Program) => this.onDeleteSuccess(this.program),
+                () => this.onDeleteSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
     }
 
-    private onDeleteSuccess(program: Program) {
+    private onDeleteSuccess() {
         this.router.navigate([EditProgramComponent.PROGRAMS_URL, {'programDeleted': true}]);
     }
 

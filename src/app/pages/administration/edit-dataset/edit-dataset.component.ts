@@ -1,5 +1,5 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { map, mergeMap } from 'rxjs/operators';
 
@@ -15,8 +15,8 @@ import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 
 import { JsonEditorComponent } from '../../../shared/jsoneditor/jsoneditor.component';
 import { JsonEditorOptions } from '../../../shared/jsoneditor/jsoneditor.options';
-import {FileUpload} from 'primeng/fileupload';
-import {from} from 'rxjs';
+import { FileUpload } from 'primeng/fileupload';
+import { from } from 'rxjs';
 
 @Component({
     moduleId: module.id,
@@ -29,10 +29,10 @@ export class EditDatasetComponent implements OnInit {
     @Input()
     public isValid = true;
 
-    @ViewChild(JsonEditorComponent, { static: true })
+    @ViewChild(JsonEditorComponent, {static: true})
     public editor: JsonEditorComponent;
 
-    @ViewChild(FileUpload, { static: true })
+    @ViewChild(FileUpload, {static: true})
     public fileUpload: FileUpload;
 
     public breadcrumbItems: any = [];
@@ -122,13 +122,7 @@ export class EditDatasetComponent implements OnInit {
         this.editor.set(<JSON>this.ds.data_package);
     }
 
-    public onInferBeforeSend(event: any) {
-        const xhr = event.xhr;
-
-        const authToken = this.authService.getAuthToken();
-        if (authToken) {
-            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
-        }
+    public onInferBeforeUpload(event: any) {
         event.formData.append('infer_dataset_type', this.inferDatasetType);
     }
 
@@ -179,11 +173,11 @@ export class EditDatasetComponent implements OnInit {
         this.router.navigate([this.completeUrl]);
     }
 
-    public confirmDelete(event: any) {
+    public confirmDelete() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this dataset?',
             accept: () => this.apiService.deleteDataset(this.ds.id).subscribe(
-                (ds: Dataset) => this.onDeleteSuccess(),
+                () => this.onDeleteSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
     }
@@ -192,7 +186,7 @@ export class EditDatasetComponent implements OnInit {
         this.router.navigate([this.completeUrl, {'datasetDeleted': true}]);
     }
 
-    public confirmDeleteRecords(event: any) {
+    public confirmDeleteRecords() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all records for this dataset?',
             accept: () => this.apiService.deleteAllRecords(this.ds.id).subscribe(

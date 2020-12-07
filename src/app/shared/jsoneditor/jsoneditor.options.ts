@@ -1,5 +1,4 @@
 export class JsonEditorOptions {
-
     public ace: Object;
     public ajv: Object;
     public onChange: Function;
@@ -25,5 +24,4 @@ export class JsonEditorOptions {
         this.search = true;
         this.indentation = 2;
     }
-
 }

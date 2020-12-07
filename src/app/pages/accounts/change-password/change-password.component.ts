@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { fieldMatchValidator } from '../../../shared/utils/form-validators';
 import { MessageService } from 'primeng/api';
@@ -30,7 +30,7 @@ export class ChangePasswordComponent {
         });
     }
 
-    public resetPassword() {
+    public resetPassword(event: Event) {
         event.preventDefault();
 
         const oldPassword = this.changePasswordForm.value['oldPassword'];

@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ConfirmationService, Message, MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { APIError, Project, Site } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 
-import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
 
 @Component({
@@ -125,16 +124,16 @@ export class EditSiteComponent implements OnInit {
         this.router.navigate([this.completeUrl]);
     }
 
-    public confirmDelete(event: any) {
+    public confirmDelete() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this site?',
             accept: () => this.apiService.deleteSite(this.site.id).subscribe(
-                (site: Site) => this.onDeleteSuccess(this.site),
+                () => this.onDeleteSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
     }
 
-    private onDeleteSuccess(site: Site) {
+    private onDeleteSuccess() {
         this.router.navigate([this.completeUrl]);
         this.messageService.add({
             severity: 'success',
@@ -144,11 +143,11 @@ export class EditSiteComponent implements OnInit {
         });
     }
 
-    private onDeleteError(recordErrors: any) {
+    private onDeleteError(error: APIError) {
         this.messageService.add({
             severity: 'error',
             summary: 'Site delete error',
-            detail: 'There were error(s) deleting the site',
+            detail: `There were error(s) deleting the site: ${error.msg}`,
             key: 'mainToast'
         });
     }

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { APIError, Project, Dataset } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
-import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -13,8 +12,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 
 export class ListDatasetsComponent implements OnInit {
-    public DATASET_TYPE_MAP: any = DATASET_TYPE_MAP;
-
     public breadcrumbItems: any = [];
     public project: Project;
     public datasets: Dataset[] = [];

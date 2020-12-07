@@ -118,7 +118,7 @@ export class FeatureMapComponent implements OnInit, OnChanges, OnDestroy {
 
         this.map.addLayer(this.drawnFeatures);
         this.map.on('draw:created', (e: any) => this.onFeatureCreated(e));
-        this.map.on('draw:edited', (e: any) => this.onFeatureEdited(e));
+        this.map.on('draw:edited', () => this.onFeatureEdited());
 
         this.drawControl = new L.Control.Draw(this.drawOptions);
 
@@ -197,7 +197,7 @@ export class FeatureMapComponent implements OnInit, OnChanges, OnDestroy {
         this.geometryChanged.emit(this.getFeatureGeometry());
     }
 
-    private onFeatureEdited(e: any) {
+    private onFeatureEdited() {
         this.geometryChanged.emit(this.getFeatureGeometry());
     }
 }

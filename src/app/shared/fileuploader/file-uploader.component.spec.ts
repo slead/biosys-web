@@ -1,20 +1,20 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExpandableMessagesComponent } from './expandablemessages.component';
+import { FileUploaderComponent } from './file-uploader.component';
 
-describe('ExpandablemessagesComponent', () => {
-  let component: ExpandableMessagesComponent;
-  let fixture: ComponentFixture<ExpandableMessagesComponent>;
+describe('FileuploaderComponent', () => {
+  let component: FileUploaderComponent;
+  let fixture: ComponentFixture<FileUploaderComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExpandableMessagesComponent ]
+      declarations: [ FileUploaderComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ExpandableMessagesComponent);
+    fixture = TestBed.createComponent(FileUploaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

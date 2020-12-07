@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { APIService } from '../../../biosys-core/services/api.service';
 
@@ -9,6 +9,7 @@ import {
 } from '../../shared/utils/maputils';
 
 import * as L from 'leaflet';
+import * as GeoJSON from 'geojson';
 import 'leaflet-mouse-position';
 import '../../../lib/leaflet.latlng-graticule';
 import { AuthService } from '../../../biosys-core/services/auth.service';
@@ -46,10 +47,10 @@ export class HomeComponent implements OnInit, OnDestroy {
         );
 
         this.apiService.getStatistics()
-        .subscribe(
-            (statistic: Statistic) => this.statistic = statistic,
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+            .subscribe(
+                (statistic: Statistic) => this.statistic = statistic,
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
 
         this.map = L.map('map', {
             zoom: DEFAULT_ZOOM,
@@ -85,7 +86,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     popupContent += '<p class="mt-1 mb-0">' + project.description + '</p>';
                 }
                 if (this.user && project.custodians.indexOf(this.user.id) > -1) {
-                    popupContent += '<p class="mt-1"><a href="#/administration/projects/edit-project/' + project.id +
+                    popupContent += '<p class="mt-1"><a href="/administration/projects/edit-project/' + project.id +
                         '">Project Details</a></p>';
                 }
                 marker.bindPopup(popupContent);

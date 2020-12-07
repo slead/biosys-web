@@ -61,14 +61,14 @@ export class ManagementListProjectsComponent implements OnInit {
             accept: () => {
                 this.apiService.deleteProject(project.id)
                     .subscribe(
-                        () => this.onDeleteSuccess(project),
+                        () => this.onDeleteSuccess(),
                         (error: APIError) => this.onDeleteError(error)
                     );
             }
         });
     }
 
-    private onDeleteSuccess(project: Project) {
+    private onDeleteSuccess() {
         if (this.user.is_admin) {
             this.apiService.getProjects().subscribe(
                 (projects: Project[]) => this.projects = projects,

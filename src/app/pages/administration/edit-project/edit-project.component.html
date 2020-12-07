@@ -105,11 +105,11 @@
                             </div>
                         </div>
                     </div>
-                    <button [hidden]="isEditing" pButton icon="fa fa-pencil-square-o" label="Edit"
+                    <button [hidden]="isEditing" pButton icon="pi pi-pencil" label="Edit"
                             (click)="editProject()"></button>
-                    <button pButton class="right-buffer" icon="fa fa-close" label="Cancel"
+                    <button pButton class="right-buffer" icon="pi pi-times" label="Cancel"
                             (click)="cancelEditProject()" [hidden]="!isEditing || !project.id"></button>
-                    <button [hidden]="!isEditing" pButton icon="fa fa-save" label="Save" (click)="saveProject()">
+                    <button [hidden]="!isEditing" pButton icon="pi pi-check" label="Save" (click)="saveProject()">
                     </button>
                 </div>
                 <!-- feature map -->
@@ -136,9 +136,9 @@
                              [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
                              [globalFilterFields]="['name', 'code', 'type', 'record_count', 'description']">
                         <ng-template pTemplate="caption">
-                            <i class="fa fa-search table-search-icon"></i>
+                            <i class="pi pi-search mr-2"></i>
                             <input type="text" pInputText size="50" placeholder="Search"
-                                   (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                                   (input)="table.filterGlobal($event.target['value'], 'contains')" style="width:auto">
                         </ng-template>
                         <ng-template pTemplate="header">
                             <tr>
@@ -182,11 +182,15 @@
                                 <td>
                                     <label [innerHtml]="rowData.description | truncate:70"></label>
                                 </td>
-                                <td align="center">
-                                    <button type="button" pButton icon="fa fa-pencil-square-o" title="Edit Records"
-                                            [routerLink]="'/data-management/projects/' + project.id + '/datasets/' + rowData.id"></button>
-                                    <button type="button" pButton icon="fa fa-trash-o" title="Delete"
+                                <td>
+                                    <div class="d-flex justify-content-around">
+                                    <button type="button" pButton icon="pi pi-pencil" title="Edit Records"
+                                            [routerLink]="'/data-management/projects/' + project.id + '/datasets/' +
+                                             rowData.id">
+                                    </button>
+                                    <button type="button" pButton icon="pi pi-trash" title="Delete"
                                             (click)="confirmDeleteDataset(rowData)"></button>
+                                    </div>
                                 </td>
                             </tr>
                         </ng-template>
@@ -198,8 +202,8 @@
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="summary">
-                            <div class="ui-helper-clearfix">
-                                <button type="button" pButton icon="fa fa-plus" style="float:right" label="Add"
+                            <div class="d-flex justify-content-end">
+                                <button type="button" pButton icon="pi pi-plus" label="Add"
                                         [routerLink]="'/administration/projects/edit-project/' + project.id +
                                         '/create-dataset'">
                                 </button>
@@ -212,12 +216,11 @@
             <div *ngIf="project.id" class="row mt-5 mb-5">
                 <div class="col-md">
                     <h4>Sites</h4>
-
                     <p-table #table [value]="flatSites" autoLayout="true" resizableColumns="true" [scrollable]="true"
                              columnResizeMode="expand" [style.width]="getSiteTableWidth()" [(selection)]="selectedSites"
                              [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
-                             [globalFilterFields]="['name', 'code', 'type', 'description'].concat(siteAttributeKeys)">
-                        <ng-template pTemplate="colgroup" let-columns>
+                             [globalFilterFields]="$any(['name', 'code', 'type', 'description'].concat(siteAttributeKeys))">
+                        <ng-template pTemplate="colgroup">
                             <colgroup>
                                 <col [style.width]="'100px' | safe: 'style'">
                                 <col [style.width]="'120px' | safe: 'style'">
@@ -229,19 +232,24 @@
                             </colgroup>
                         </ng-template>
                         <ng-template pTemplate="caption">
-                            <i class="fa fa-search table-search-icon"></i>
-                            <input type="text" pInputText size="50" placeholder="Search"
-                                   (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
-
-                            <a href="{{TEMPLATE_EASTNORTH_URL}}">
-                                <button type="button" pButton icon="fa fa-file-excel-o" style="float:right"
-                                        label="Download Site Template (east/north)"></button>
-                            </a>
-                            <a href="{{TEMPLATE_LATLNG_URL}}">
-                                <button type="button" class="ml-1" pButton icon="fa fa-file-excel-o"
-                                        style="float:right"
-                                        label="Download Site Template (lat/lng)"></button>
-                            </a>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <i class="pi pi-search mr-2"></i>
+                                    <input type="text" pInputText size="50" placeholder="Search"
+                                           (input)="table.filterGlobal($event.target['value'], 'contains')"
+                                           style="width:auto">
+                                </div>
+                                <a href="{{TEMPLATE_EASTNORTH_URL}}">
+                                    <button pButton type="button" icon="pi pi-download" role="link"
+                                            label="Site Template (east/north)" class="p-button-success">
+                                    </button>
+                                </a>
+                                <a href="{{TEMPLATE_LATLNG_URL}}">
+                                    <button pButton type="button" icon="pi pi-download" role="link"
+                                            label="Site Template (lat/lng)" class="p-button-success">
+                                    </button>
+                                </a>
+                            </div>
                         </ng-template>
                         <ng-template pTemplate="header">
                             <tr>
@@ -270,7 +278,7 @@
 
                         <ng-template pTemplate="body" let-rowData>
                             <tr>
-                                <td align="center">
+                                <td>
                                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                                 </td>
                                 <td>
@@ -293,15 +301,16 @@
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="summary">
-                            <div class="ui-helper-clearfix">
-                                <button type="button" pButton icon="fa fa-trash" style="float:left" label="Delete"
-                                        (click)="confirmDeleteSelectedSites()"
-                                        [disabled]="selectedSites.length === 0"></button>
-                                <button type="button" class="ml-1" pButton icon="fa fa-plus" style="float:right"
-                                        label="Add"
-                                        [routerLink]="'/administration/projects/edit-project/' + project.id + '/create-site'"></button>
-                                <button type="button" pButton icon="fa fa-reply" style="float:right" label="Import"
-                                        [routerLink]="'/administration/projects/edit-project/' + project.id + '/upload-sites'"></button>
+                            <div class="d-flex">
+                                <button type="button" pButton class="mr-auto" icon="pi pi-trash" label="Delete"
+                                        (click)="confirmDeleteSelectedSites()" [disabled]="selectedSites.length === 0">
+                                </button>
+                                <button type="button" class="mr-3" pButton icon="pi pi-plus" label="Add"
+                                        [routerLink]="'/administration/projects/edit-project/' + project.id + '/create-site'">
+                                </button>
+                                <button type="button" pButton icon="pi pi-upload" style="float:right" label="Import"
+                                        [routerLink]="'/administration/projects/edit-project/' + project.id + '/upload-sites'">
+                                </button>
                             </div>
                         </ng-template>
                     </p-table>
@@ -319,4 +328,4 @@
         </div>
     </div>
 </div>
-<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+<p-confirmDialog header="Confirm Delete" icon="pi pi-question-circle" width="425"></p-confirmDialog>

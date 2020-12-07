@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { APIError, Program, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 
 @Component({
@@ -15,7 +14,7 @@ export class DataListProjectsComponent implements OnInit {
     public projects: Project[] = [];
     public programNameLookup: object = {};
 
-    constructor(private apiService: APIService, private authService: AuthService, private router: Router) {
+    constructor(private apiService: APIService, private authService: AuthService) {
     }
 
     ngOnInit() {

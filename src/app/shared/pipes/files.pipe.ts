@@ -36,8 +36,8 @@ export class IsVideoFilePipe implements PipeTransform {
 export class FileIconUrlPipe implements PipeTransform {
     public transform(value: string): string {
         const fileType = value.substring(value.lastIndexOf('.') + 1);
-        const availableIconFileExtensions = IMAGE_FILE_TYPE_EXTENSIONS.concat(VIDEO_FILE_TYPE_EXTENSIONS).
-            concat(OTHER_FILE_TYPE_EXTENSIONS);
+        const availableIconFileExtensions = IMAGE_FILE_TYPE_EXTENSIONS.concat(VIDEO_FILE_TYPE_EXTENSIONS)
+            .concat(OTHER_FILE_TYPE_EXTENSIONS);
 
         if (availableIconFileExtensions.indexOf(fileType) > -1) {
             return `assets/img/fileicons/icons8-${fileType}.png`;
@@ -61,7 +61,7 @@ export class FileNamePipe implements PipeTransform {
 })
 export class FileSizePipe implements PipeTransform {
     transform(bytes: number = 0, precision: number = 2): string {
-        if (isNaN( parseFloat( String(bytes) )) || ! isFinite( bytes )) {
+        if (isNaN(parseFloat(String(bytes))) || !isFinite(bytes)) {
             return '?';
         }
 
@@ -72,6 +72,6 @@ export class FileSizePipe implements PipeTransform {
             unit++;
         }
 
-        return bytes.toFixed(+precision) + ' ' + FILE_SIZE_UNITS[ unit ];
+        return bytes.toFixed(+precision) + ' ' + FILE_SIZE_UNITS[unit];
     }
 }

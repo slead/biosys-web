@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 
 import { JsonEditorOptions } from './jsoneditor.options';
 
@@ -6,7 +6,8 @@ const JSONEditor = require('jsoneditor');
 
 @Component({
     selector: 'biosys-json-editor',
-    template: `<div></div>`,
+    template: `
+        <div></div>`,
 })
 export class JsonEditorComponent implements OnInit {
     public editor: any;
@@ -16,6 +17,8 @@ export class JsonEditorComponent implements OnInit {
 
     @Input()
     private data: Object;
+
+    @Output() dataChange = new EventEmitter<Object>();
 
     constructor(private rootElement: ElementRef) {
     }
@@ -79,6 +82,4 @@ export class JsonEditorComponent implements OnInit {
     public getText(): string {
         return this.editor.getText();
     }
-
-
 }

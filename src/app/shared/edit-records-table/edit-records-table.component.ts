@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
-import {ConfirmationService, LazyLoadEvent, Message, MessageService, SelectItem} from 'primeng/api';
+import { ConfirmationService, LazyLoadEvent, MessageService, SelectItem } from 'primeng/api';
 import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 
@@ -62,7 +62,7 @@ export class EditRecordsTableComponent {
     @Output()
     public pageStateChange = new EventEmitter<object>();
 
-    @ViewChild(Table, { static: true })
+    @ViewChild(Table, {static: true})
     public recordsDatatable: Table;
 
     private _dataset: Dataset;
@@ -158,11 +158,11 @@ export class EditRecordsTableComponent {
         this.apiService.updateRecordValidated(id, checked).subscribe((record: Record) =>
             this.flatRecords.filter(
                 (flatRecord: object) => flatRecord['_id'] === id)[0]['_validated'] = record.validated
-            );
+        );
     }
 
     public onRecordLockedChanged(checked: boolean, id: number) {
-        this.apiService.updateRecordLocked(id, checked).subscribe( (record: Record) =>
+        this.apiService.updateRecordLocked(id, checked).subscribe((record: Record) =>
             this.flatRecords.filter(
                 (flatRecord: object) => flatRecord['_id'] === id)[0]['_locked'] = record.locked
         );
@@ -191,7 +191,7 @@ export class EditRecordsTableComponent {
             (record: Record) => {
                 this.recordChanged.emit(record);
             },
-            (error: APIError) => {
+            () => {
                 // revert data
                 if (this.previousRowData) {
                     const flatRecord = this.flatRecords.filter((fr: object) => fr['_id'] === id)[0];
