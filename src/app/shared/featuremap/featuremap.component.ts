@@ -32,7 +32,7 @@ export class MarkerDirective {
 export class FeatureMapComponent implements OnInit, OnChanges, OnDestroy {
     @Input() public drawFeatureTypes: string[] = [];
     @Input() public isEditing: boolean;
-    @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
+    @Input() public geometry: GeoJSON.Geometry;
     @Input() public bounds: GeoJSON.BBox;
     @Output() public geometryChanged =
         new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();

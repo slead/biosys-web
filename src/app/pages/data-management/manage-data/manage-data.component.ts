@@ -27,10 +27,10 @@ import { EditRecordsTableComponent } from '../../../shared/edit-records-table/ed
     styleUrls: ['manage-data.component.css'],
 })
 export class ManageDataComponent implements OnInit, OnDestroy {
-    @ViewChild(EditRecordsTableComponent, {static: true})
+    @ViewChild(EditRecordsTableComponent)
     public editRecordsTableComponent: EditRecordsTableComponent;
 
-    @ViewChild(FileUploaderComponent, {static: true})
+    @ViewChild(FileUploaderComponent)
     public uploader: FileUploaderComponent;
 
     public breadcrumbItems: any = [];

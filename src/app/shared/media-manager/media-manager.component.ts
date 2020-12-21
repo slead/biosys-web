@@ -1,4 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+
+import { DataView } from 'primeng/dataview';
+
 import { Media } from '../../../biosys-core/interfaces/api.interfaces';
 
 @Component({
@@ -23,6 +26,9 @@ export class MediaManagerComponent {
     public showPreviewDialog = false;
     public previewDialogSource: string;
 
+    @ViewChild(DataView)
+    private dateView: DataView;
+
     constructor() {
     }
 
@@ -39,5 +45,9 @@ export class MediaManagerComponent {
 
     public onDeleteClicked(media: Media) {
         this.deleteMedia.emit(media);
+    }
+
+    public refresh() {
+        this.dateView.cd.detectChanges();
     }
 }

@@ -16,6 +16,7 @@ import { environment } from '../../../../environments/environment';
 
 import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
+import { MediaManagerComponent } from '../../../shared/media-manager/media-manager.component';
 
 
 @Component({
@@ -30,8 +31,11 @@ export class EditProjectComponent implements OnInit {
     private static COLUMN_WIDTH = 240;
     private static FIXED_COLUMNS_TOTAL_WIDTH = 700;
 
-    @ViewChild(FeatureMapComponent, { static: true })
+    @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
+
+    @ViewChild(MediaManagerComponent)
+    public mediaManagerComponent: MediaManagerComponent;
 
     public TEMPLATE_LATLNG_URL: string = environment.server + '/download/templates/site/lat-long';
     public TEMPLATE_EASTNORTH_URL: string = environment.server + '/download/templates/site/easting-northing';
@@ -370,6 +374,7 @@ export class EditProjectComponent implements OnInit {
                         (pm: ProjectMedia) => pm.id
                         ).indexOf(media.id), 1
                     );
+                    this.mediaManagerComponent.refresh();
                     this.messageService.add({
                         severity: 'success',
                         summary: 'File Attachment Deleted',

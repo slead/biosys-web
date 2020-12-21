@@ -17,6 +17,7 @@ import { JsonEditorComponent } from '../../../shared/jsoneditor/jsoneditor.compo
 import { JsonEditorOptions } from '../../../shared/jsoneditor/jsoneditor.options';
 import { FileUpload } from 'primeng/fileupload';
 import { from } from 'rxjs';
+import { MediaManagerComponent } from '../../../shared/media-manager/media-manager.component';
 
 @Component({
     moduleId: module.id,
@@ -29,11 +30,14 @@ export class EditDatasetComponent implements OnInit {
     @Input()
     public isValid = true;
 
-    @ViewChild(JsonEditorComponent, {static: true})
+    @ViewChild(JsonEditorComponent)
     public editor: JsonEditorComponent;
 
-    @ViewChild(FileUpload, {static: true})
+    @ViewChild(FileUpload)
     public fileUpload: FileUpload;
+
+    @ViewChild(MediaManagerComponent)
+    public mediaManagerComponent: MediaManagerComponent;
 
     public breadcrumbItems: any = [];
     public typeChoices: SelectItem[];
@@ -264,6 +268,7 @@ export class EditDatasetComponent implements OnInit {
                             (dm: DatasetMedia) => dm.id
                             ).indexOf(media.id), 1
                         );
+                        this.mediaManagerComponent.refresh();
                         this.messageService.add({
                             severity: 'success',
                             summary: 'File Attachment Deleted',

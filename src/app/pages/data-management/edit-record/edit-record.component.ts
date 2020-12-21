@@ -35,7 +35,7 @@ export class EditRecordComponent implements OnInit {
     public imagesMetadata: object[] = [];
     public parentRecordId: number;
 
-    @ViewChild(FileUpload, {static: true})
+    @ViewChild(FileUpload)
     public imageUploader;
 
     private completeUrl: string;
