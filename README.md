@@ -10,7 +10,7 @@ The Biosys Client is build on Angular. To use the commands below, you need to gl
 Note: the use installation of the angular CLI is not mandatory. All the ng CLI command can be done through npm commands.
 Optional
 ```bash
-npm install -g @angular/cli@6.1.4
+npm install -g @angular/cli@10.2.0
 ```
 
 This project contains submodules. To clone both the project and submodules, use:
@@ -82,7 +82,7 @@ npm run e2e
 
 Before running the tests make sure you are serving the app via:
  
-```bash 
+```bash
 npm start
 ```
 
