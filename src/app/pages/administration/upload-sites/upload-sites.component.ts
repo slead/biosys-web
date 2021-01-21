@@ -2,8 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { APIError, Project } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
-import { Message, FileUpload } from 'primeng/primeng';
+import { Message } from 'primeng/api';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FileUpload } from 'primeng/fileupload';
+import { ACCEPTED_TYPES } from '../../../shared/utils/consts';
 
 @Component({
     moduleId: module.id,
@@ -13,20 +15,14 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 
 export class UploadSitesComponent implements OnInit {
-    accepted_types = [
-        'text/csv',
-        'text/comma-separated-values',
-        'application/csv',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel',
-        'application/vnd.msexcel'
-    ];
+    accepted_types = ACCEPTED_TYPES;
 
-    public breadcrumbItems: any = [];
+    breadcrumbItems: any = [];
 
     messages: Message[] = [];
     url: string = null;
     projectId: number;
+
     @ViewChild(FileUpload)
     uploader: FileUpload;
 
@@ -87,16 +83,7 @@ export class UploadSitesComponent implements OnInit {
         }
     }
 
-    public onBeforeSend(event: any) {
-        const xhr = event.xhr;
-
-        const authToken = this.authService.getAuthToken();
-        if (authToken) {
-            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
-        }
-    }
-
-    onSelect(event: any) {
+    onSelect() {
         // check file type (the last in the list)
         // use the file list of uploader instead of the file list given in the event so we can add/remove to it.
         const files: File[] = this.uploader.files;

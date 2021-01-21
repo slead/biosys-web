@@ -1,35 +1,41 @@
-<div *ngIf="hasMessages()" class="ui-messages ui-widget ui-corner-all" style="display:block"
-     [ngClass]="{'ui-messages-info':(value[0].severity === 'info'),
-                    'ui-messages-warn':(value[0].severity === 'warn'),
-                    'ui-messages-error':(value[0].severity === 'error'),
-                    'ui-messages-success':(value[0].severity === 'success')}">
-    <div *ngIf="expanded" class="expander">
-        <a (click)="expanded = !expanded">
-            <strong>Truncate</strong>
-        </a>
-    </div>
-    <a href="#" class="ui-messages-close" (click)="clear($event)" *ngIf="closable">
-        <i class="fa fa-close"></i>
-    </a>
-    <span class="ui-messages-icon pi" [ngClass]="icon"></span>
-    <ul class="message-list">
-        <ng-container *ngFor="let msg of value; let i=index">
-            <li *ngIf="!maxItems || i < maxItems || expanded">
-                <span class="ui-messages-summary">{{msg.summary}}</span>
-                <span class="ui-messages-detail">{{msg.detail}}</span>
-            </li>
-        </ng-container>
-    </ul>
-    <div *ngIf="value.length > maxItems" class="expander">
-        <div *ngIf="!expanded">
-            <strong>&hellip; {{ value.length - maxItems}} more</strong>
-        </div>
-        <hr>
-        <div>
+<div *ngIf="value && value.length" class="p-messages p-component" role="alert" [ngStyle]="style" [class]="styleClass">
+    <div [ngClass]="'p-message p-message-' + value[0].severity" role="alert"
+         [@messageAnimation]="{value: 'visible', params: {showTransitionParams: showTransitionOptions, hideTransitionParams: hideTransitionOptions}}">
+        <div *ngIf="expanded" class="expander p-3">
             <a (click)="expanded = !expanded">
-                <strong *ngIf="!expanded">Show All</strong>
-                <strong *ngIf="expanded">Truncate</strong>
+                <strong>Truncate</strong>
             </a>
+        </div>
+        <div class="p-message-icon m-3 pi" [ngClass]="{'pi-info-circle': value[0].severity === 'info',
+                            'pi-check': value[0].severity === 'success',
+                            'pi-exclamation-triangle': value[0].severity === 'warn',
+                            'pi-times-circle': value[0].severity === 'error'}"></div>
+        <button pButton type="button" class="p-button-rounded float-right m-3"
+                [ngClass]="{'p-button-info': value[0].severity === 'info',
+                            'p-button-success': value[0].severity === 'success',
+                            'p-button-warning': value[0].severity === 'warn',
+                            'p-button-danger': value[0].severity === 'error'}"
+                icon="pi pi-times" (click)="clear()" *ngIf="closable">
+        </button>
+        <ul>
+            <ng-container *ngFor="let msg of value; let i=index">
+                <li *ngIf="!maxItems || i < maxItems || expanded">
+                    <span *ngIf="msg.summary" class="p-message-summary">{{msg.summary}}</span>
+                    <span *ngIf="msg.detail" class="p-message-detail">{{msg.detail}}</span>
+                </li>
+            </ng-container>
+        </ul>
+        <div *ngIf="value.length > maxItems" class="expander p-3">
+            <div *ngIf="!expanded">
+                <strong>&hellip; {{ value.length - maxItems}} more</strong>
+            </div>
+            <hr>
+            <div>
+                <a (click)="expanded = !expanded">
+                    <strong *ngIf="!expanded">Show All</strong>
+                    <strong *ngIf="expanded">Truncate</strong>
+                </a>
+            </div>
         </div>
     </div>
 </div>

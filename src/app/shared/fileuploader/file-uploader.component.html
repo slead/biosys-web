@@ -1,0 +1,51 @@
+<div [ngClass]="'p-fileupload p-fileupload-advanced p-component'" [ngStyle]="style" [class]="styleClass" *ngIf="mode === 'advanced'">
+    <div class="p-fileupload-loading p-component-overlay" *ngIf="loading"></div>
+    <div class="p-fileupload-loading-content" *ngIf="loading">
+        <i class="pi pi-spin pi-spinner p-fileupload-spinner"></i>
+    </div>
+    <div class="p-fileupload-buttonbar">
+                <span class="p-button p-component p-fileupload-choose" [ngClass]="{'p-focus': focus, 'p-disabled':disabled || isChooseDisabled()}" (focus)="onFocus()" (blur)="onBlur()" pRipple
+                      (click)="choose()" (keydown.enter)="choose()" tabindex="0">
+                    <input #advancedfileinput type="file" (change)="onFileSelect($event)" [multiple]="multiple" [accept]="accept" [disabled]="disabled || isChooseDisabled()" [attr.title]="''">
+                    <span [ngClass]="'p-button-icon p-button-icon-left'" [class]="chooseIcon"></span>
+                    <span class="p-button-label">{{chooseLabel}}</span>
+                </span>
+
+        <p-button *ngIf="!auto&&showUploadButton" type="button" [label]="uploadLabel" [icon]="uploadIcon" (onClick)="upload()" [disabled]="!hasFiles() || isFileLimitExceeded()"></p-button>
+        <p-button *ngIf="!auto&&showCancelButton" type="button" [label]="cancelLabel" [icon]="cancelIcon" (onClick)="clear()" [disabled]="!hasFiles() || uploading"></p-button>
+
+        <ng-container *ngTemplateOutlet="toolbarTemplate"></ng-container>
+    </div>
+    <div #content class="p-fileupload-content" (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <p-progressBar [value]="progress" [showValue]="false" *ngIf="hasFiles()"></p-progressBar>
+
+        <p-messages [value]="msgs" [enableService]="false"></p-messages>
+
+        <div class="p-fileupload-files" *ngIf="hasFiles()">
+            <div *ngIf="!fileTemplate">
+                <div class="p-fileupload-row" *ngFor="let file of files; let i = index;">
+                    <div><img [src]="file['objectURL']" *ngIf="isImage(file)" [width]="previewWidth" /></div>
+                    <div>{{file.name}}</div>
+                    <div>{{formatSize(file.size)}}</div>
+                    <div>
+                        <button type="button" icon="pi pi-times" pButton (click)="remove($event,i)" [disabled]="uploading"></button>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="fileTemplate">
+                <ng-template ngFor [ngForOf]="files" [ngForTemplate]="fileTemplate"></ng-template>
+            </div>
+        </div>
+        <ng-container *ngTemplateOutlet="contentTemplate; context: {$implicit: files}"></ng-container>
+    </div>
+</div>
+<div class="p-fileupload p-fileupload-basic p-component" *ngIf="mode === 'basic'">
+    <p-messages [value]="msgs" [enableService]="false"></p-messages>
+    <span [ngClass]="{'p-button p-component p-fileupload-choose': true, 'p-fil(eupload-choose-selected': hasFiles(),'p-focus': focus, 'p-disabled':disabled}"
+          [ngStyle]="style" [class]="styleClass" (mouseup)="onBasicUploaderClick()" (keydown)="onBasicUploaderClick()" tabindex="0" pRipple>
+                <span class="p-button-icon p-button-icon-left pi" [ngClass]="hasFiles()&&!auto ? uploadIcon : chooseIcon"></span>
+                <span class="p-button-label">{{auto ? chooseLabel : hasFiles() ? files[0].name : chooseLabel}}</span>
+                <input #basicfileinput type="file" [accept]="accept" [multiple]="multiple" [disabled]="disabled"
+                       (change)="onFileSelect($event)" *ngIf="!hasFiles()" (focus)="onFocus()" (blur)="onBlur()">
+            </span>
+</div>

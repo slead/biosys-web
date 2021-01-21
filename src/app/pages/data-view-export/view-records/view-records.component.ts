@@ -1,19 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
-import { SelectItem, LazyLoadEvent, MessageService } from 'primeng/primeng';
+import { LazyLoadEvent, MessageService, SelectItem } from 'primeng/api';
 import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 import { saveAs } from 'file-saver';
 import { mergeMap } from 'rxjs/operators';
-import { from, forkJoin, of } from 'rxjs';
+import { from, forkJoin } from 'rxjs';
 
 import { APIError, Dataset, Record, RecordResponse, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { DATASET_TYPE_MAP } from '../../../../biosys-core/utils/consts';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 import { Observable } from 'rxjs/internal/Observable';
-import { P } from '@angular/core/src/render3';
 
 
 @Component({
@@ -89,7 +88,9 @@ export class ViewRecordsComponent implements OnInit {
         );
 
         this.authService.getCurrentUser().subscribe(
-            (user: User) => { this.canChangeLockedState = user.is_admin || user.is_data_engineer; }
+            (user: User) => {
+                this.canChangeLockedState = user.is_admin || user.is_data_engineer;
+            }
         );
 
         this.breadcrumbItems = [
@@ -142,12 +143,12 @@ export class ViewRecordsComponent implements OnInit {
         if (this.selectedDataset) {
             this.recordParams['dataset__id'] = this.selectedDataset.id;
             if (this.table) {
-                this.table.reset();
+                this.table.clear();
             }
         }
     }
 
-    public selectDataset(event: any) {
+    public selectDataset() {
         this.filter();
     }
 
@@ -200,7 +201,7 @@ export class ViewRecordsComponent implements OnInit {
         const exportObservable: Observable<object> = this.apiService.exportRecords(this.dateStart, this.dateEnd,
             this.speciesName, this.selectedDataset.id, this.fileType, this.validatedOnly, this.includeLocked);
 
-        const saveBlob = function(blob: Blob) {
+        const saveBlob = function (blob: Blob) {
             const timeStamp = moment().format('YYYY-MM-DD-HHmmss');
             const extension = this.fileType;
             const fileName = `export_${timeStamp}.${extension}`;
@@ -209,7 +210,7 @@ export class ViewRecordsComponent implements OnInit {
 
         if (this.lockRecordsOnExport) {
             const lockingObservalble = this.apiService.getRecordsByDatasetId(this.selectedDataset.id,
-                    JSON.parse(JSON.stringify(this.recordParams))).pipe(
+                JSON.parse(JSON.stringify(this.recordParams))).pipe(
                 mergeMap((records: Record[]) => from(records).pipe(
                     mergeMap((record: Record) => this.apiService.updateRecordLocked(record.id, true))
                 ))
@@ -217,13 +218,14 @@ export class ViewRecordsComponent implements OnInit {
 
             this.isLocking = true;
 
-            forkJoin(exportObservable, lockingObservalble).subscribe(
+            forkJoin([exportObservable, lockingObservalble]).subscribe(
                 (results: [Blob, any]) => saveBlob(results[0]),
                 (error: APIError) => {
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Export error',
-                        detail: `There were error(s) when exporting / locking: ${error.msg}`
+                        detail: `There were error(s) when exporting / locking: ${error.msg}`,
+                        key: 'mainToast'
                     });
                     this.isLocking = false;
                 },
@@ -231,7 +233,8 @@ export class ViewRecordsComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Export success',
-                        detail: `There records were successfully exported and have now been locked`
+                        detail: `There records were successfully exported and have now been locked`,
+                        key: 'mainToast'
                     });
 
                     this.isLocking = false;
@@ -245,7 +248,8 @@ export class ViewRecordsComponent implements OnInit {
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Export error',
-                        detail: `There were error(s) when exporting: ${error.msg}`
+                        detail: `There were error(s) when exporting: ${error.msg}`,
+                        key: 'mainToast'
                     });
                 }
             );
@@ -266,7 +270,8 @@ export class ViewRecordsComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Locking error',
-                    detail: `There were error(s) when locking: ${error.msg}`
+                    detail: `There were error(s) when locking: ${error.msg}`,
+                    key: 'mainToast'
                 });
                 this.isLocking = false;
             },

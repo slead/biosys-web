@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { MenuItem } from 'primeng/primeng';
+
+import { MenuItem } from 'primeng/api';
 
 /**
  * This class represents the lazy loaded HomeComponent.

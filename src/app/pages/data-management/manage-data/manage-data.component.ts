@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Message } from 'primeng/primeng';
+import { MessageService } from 'primeng/api';
+import { forkJoin } from 'rxjs';
 import * as L from 'leaflet';
+import * as GeoJSON from 'geojson';
 import 'leaflet.markercluster';
 import '../../../../lib/leaflet.latlng-graticule';
 import '../../../../lib/leaflet.loading';
@@ -9,15 +11,13 @@ import '../../../../lib/leaflet.loading';
 import { APIService } from '../../../../biosys-core/services/api.service';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 import { APIError, Project, Dataset, Record } from '../../../../biosys-core/interfaces/api.interfaces';
-import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 
-import { FileuploaderComponent } from '../../../shared/fileuploader/fileuploader.component';
+import { FileUploaderComponent } from '../../../shared/fileuploader/file-uploader.component';
 import {
     DEFAULT_CENTER, DEFAULT_MARKER_ICON, DEFAULT_ROW_LIMIT, DEFAULT_ZOOM, getDefaultBaseLayer, getGeometryBoundsFromExtent,
     getOverlayLayers
 } from '../../../shared/utils/maputils';
 import { EditRecordsTableComponent } from '../../../shared/edit-records-table/edit-records-table.component';
-import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 
 
 @Component({
@@ -27,34 +27,20 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
     styleUrls: ['manage-data.component.css'],
 })
 export class ManageDataComponent implements OnInit, OnDestroy {
-    private static ACCEPTED_TYPES: string[] = [
-        'text/csv',
-        'text/comma-separated-values',
-        'application/csv',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-excel',
-        'application/vnd.msexcel'
-    ];
-
-    public DEFAULT_GROWL_LIFE: number = DEFAULT_GROWL_LIFE;
-
     @ViewChild(EditRecordsTableComponent)
     public editRecordsTableComponent: EditRecordsTableComponent;
 
-    @ViewChild(FileuploaderComponent)
-    public uploader: FileuploaderComponent;
+    @ViewChild(FileUploaderComponent)
+    public uploader: FileUploaderComponent;
 
     public breadcrumbItems: any = [];
     public projId: number;
     public datasetId: number;
     public dataset: Dataset;
-    public messages: Message[] = [];
     public uploadURL: string;
     public isUploading = false;
     public uploadCreateSites = false;
     public uploadDeleteExistingRecords = false;
-    public uploadErrorMessages: Message[] = [];
-    public uploadWarningMessages: Message[] = [];
 
     public pageState: any = {
         mapZoom: DEFAULT_ZOOM,
@@ -69,7 +55,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     private markersByRecordId: object;
 
     constructor(private apiService: APIService, private  authService: AuthService, private router: Router,
-                private route: ActivatedRoute) {
+                private route: ActivatedRoute, private messageService: MessageService) {
     }
 
     public ngOnInit() {
@@ -78,7 +64,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.projId = +params['projId'];
         this.datasetId = +params['datasetId'];
 
-        forkJoin(this.apiService.getProjectById(this.projId), this.apiService.getDatasetById(this.datasetId)).subscribe(
+        forkJoin([this.apiService.getProjectById(this.projId), this.apiService.getDatasetById(this.datasetId)]).subscribe(
             (result: [Project, Dataset]) => {
                 const project = result[0];
                 this.dataset = result[1];
@@ -111,32 +97,30 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             {label: 'Data Management - Projects', routerLink: '/data-management/projects'}
         ];
 
-        if ('recordSaved' in params) {
-            this.messages.push({
+        if (params.hasOwnProperty('recordSaved')) {
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Record saved',
-                detail: 'The record was saved'
+                detail: 'The record was saved',
+                key: 'mainToast'
             });
-        } else if ('recordDeleted' in params) {
-            this.messages.push({
+        } else if (params.hasOwnProperty('recordDeleted')) {
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Record deleted',
-                detail: 'The record was deleted'
+                detail: 'The record was deleted',
+                key: 'mainToast'
             });
         }
-
-        // for some reason the growls won't disappear if messages populated during init, so need
-        // to set a timeout to remove
-        setTimeout(() => {
-            this.messages = [];
-        }, DEFAULT_GROWL_LIFE);
     }
 
     public ngOnDestroy() {
         if (this.map) {
             this.pageState.mapZoom = this.map.getZoom();
             this.pageState.mapPosition = this.map.getCenter();
+            this.map.remove();
         }
+
         sessionStorage.setItem('pageState' + this.datasetId, JSON.stringify(this.pageState));
     }
 
@@ -192,34 +176,34 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.loading.start();
 
         this.apiService.getRecordsByDatasetId(this.datasetId, {fields: ['id', 'geometry']})
-        .subscribe(
-            (records: Record[]) => {
-                this.markers.clearLayers();
-                this.markersByRecordId = {};
+            .subscribe(
+                (records: Record[]) => {
+                    this.markers.clearLayers();
+                    this.markersByRecordId = {};
 
-                for (const record of records) {
-                    if (record.geometry) {
-                        const marker: L.Marker = L.marker(this.recordToLatLng(record),
-                            {icon: DEFAULT_MARKER_ICON});
-                        const popupContent: string = '<p class="m-0">Record ID: <strong>' + record.id + '</strong></p>' +
-                            '<p class="mt-1"><a href="#/data-management/projects/' + this.projId + '/datasets/' + this.datasetId +
-                            '/record/' + record.id + '">Edit Record</a></p>';
+                    for (const record of records) {
+                        if (record.geometry) {
+                            const marker: L.Marker = L.marker(this.recordToLatLng(record),
+                                {icon: DEFAULT_MARKER_ICON});
+                            const popupContent: string = '<p class="m-0">Record ID: <strong>' + record.id + '</strong></p>' +
+                                '<p class="mt-1"><a href="/data-management/projects/' + this.projId + '/datasets/' + this.datasetId +
+                                '/record/' + record.id + '">Edit Record</a></p>';
 
-                        marker.bindPopup(popupContent);
-                        marker.on('mouseover', function () {
-                            this.openPopup();
-                        });
-                        this.markers.addLayer(marker);
-                        this.markersByRecordId[record.id] = marker;
+                            marker.bindPopup(popupContent);
+                            marker.on('mouseover', function () {
+                                this.openPopup();
+                            });
+                            this.markers.addLayer(marker);
+                            this.markersByRecordId[record.id] = marker;
+                        }
                     }
-                }
-            },
-            (error: APIError) => {
-                console.log('error.msg', error.msg);
-                this.loading.stop();
-            },
-            () => this.loading.stop()
-        );
+                },
+                (error: APIError) => {
+                    console.log('error.msg', error.msg);
+                    this.loading.stop();
+                },
+                () => this.loading.stop()
+            );
     }
 
     public onRecordChanged(record: Record) {
@@ -233,7 +217,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public onUpload(event: any) {
-        this.parseAndDisplayResponse(event.xhr.response);
+        this.parseAndDisplayResponse(event);
         this.isUploading = false;
 
         this.editRecordsTableComponent.reloadRecords();
@@ -248,16 +232,14 @@ export class ManageDataComponent implements OnInit, OnDestroy {
     }
 
     public onUploadError(event: any) {
-        const statusCode = event.xhr.status;
-        const resp = event.xhr.response;
-        if (statusCode === 400) {
-            this.parseAndDisplayResponse(resp);
+        if (event.error.status === 400) {
+            this.parseAndDisplayResponse(event);
         } else {
-            this.uploadErrorMessages = [];
-            this.uploadErrorMessages.push({
+            this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: statusCode + ':' + resp
+                detail: `${event.error.status}: ${event.error.message}`,
+                key: 'uploadRecordsErrors'
             });
         }
         this.isUploading = false;
@@ -267,19 +249,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
         this.loadRecordMarkers();
     }
 
-    public onUploadBeforeSend(event: any) {
-        const xhr = event.xhr;
-
-        const authToken = this.authService.getAuthToken();
-        if (authToken) {
-            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
-        }
-    }
-
-    public onUploadSelect(event: any) {
-        this.uploadErrorMessages = [];
-        this.uploadWarningMessages = [];
-
+    public onUploadSelect() {
         // check file type (the last in the list)
         // use the file list of uploader instead of the file list given in the event so we can add/remove to it.
         const files: File[] = this.uploader.files;
@@ -309,82 +279,77 @@ export class ManageDataComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        if (file.type && ManageDataComponent.ACCEPTED_TYPES.indexOf(file.type) === -1) {
-            this.uploadErrorMessages.push({
-                severity: 'error',
-                summary: 'Wrong file type',
-                detail: `It must be an Excel (.xlsx) or a csv file. File type: ${file.type}. File name: ${file.name}`
-            });
-        } else {
-            // put back the file in the list
-            files.push(file);
-        }
+
+        // put back the file in the list
+        files.push(file);
     }
 
-    private parseAndDisplayResponse(resp: any) {
-        const items = resp ? JSON.parse(resp) : [];
+    private parseAndDisplayResponse(event: any) {
+        let items = [];
+        if (event.hasOwnProperty('originalEvent')) {
+            items = event.originalEvent.body;
+        } else if (event.hasOwnProperty('error')) {
+            items = event.error.error;
+        }
+
         const totalRecords = items.length;
 
         let totalErrors = 0;
         let totalWarnings = 0;
 
-        this.messages = [];
-        this.uploadErrorMessages = [];
-        this.uploadWarningMessages = [];
+        const uploadErrorMessages = [];
+        const uploadWarningMessages = [];
 
         for (const item of items) {
             if ('errors' in item) {
                 for (const errorKey of Object.keys(item['errors'])) {
                     totalErrors += 1;
-                    this.uploadErrorMessages.push({
+                    uploadErrorMessages.push({
                         severity: 'error',
-                        summary: 'Error for ' + errorKey + ' in row ' + item['row'],
-                        detail: item['errors'][errorKey]
+                        summary: `Error for ${errorKey} in row ${item['row']}`,
+                        detail: item['errors'][errorKey],
+                        key: 'uploadRecordsErrors'
                     });
                 }
             }
             if ('warnings' in item) {
                 for (const warningKey of Object.keys(item['warnings'])) {
                     totalWarnings += 1;
-                    this.uploadWarningMessages.push({
+                    uploadWarningMessages.push({
                         severity: 'warn',
-                        summary: 'Warning for ' + warningKey + ' in row ' + item['row'],
-                        detail: item['warnings'][warningKey]
+                        summary: `Warning for ${warningKey} in row ${item['row']}`,
+                        detail: item['warnings'][warningKey],
+                        key: 'uploadRecordsWarnings'
                     });
                 }
             }
         }
+
         if (totalErrors > 0) {
-            this.messages.push({
+            this.messageService.addAll(uploadErrorMessages);
+
+            this.messageService.add({
                 severity: 'error',
                 summary: 'Error uploading records',
-                detail: 'There were ' + totalErrors + ' error(s) uploading the records file. See details below.'
+                detail: `There were ${totalErrors} error(s) uploading the records file. See details below.`,
+                key: 'mainToast'
             });
         } else if (totalWarnings > 0) {
-            this.messages.push({
+            this.messageService.addAll(uploadWarningMessages);
+
+            this.messageService.add({
                 severity: 'warn',
                 summary: 'Records uploaded with some warnings',
-                detail: 'The records were accepted but there were ' + totalWarnings + ' warning(s). See details below.'
+                detail: `The records were accepted but there were ${totalWarnings} warning(s). See details below.`,
+                key: 'mainToast'
             });
         } else {
-            this.messages.push({
+            this.messageService.add({
                 severity: 'success',
                 summary: 'Upload successful',
-                detail: '' + totalRecords + ' records were successfully uploaded'
+                detail: `${totalRecords} records were successfully uploaded`,
+                key: 'mainToast'
             });
         }
-    }
-
-    private showUpdateError(error: APIError) {
-        this.messages = [];
-        error.msg['data'].forEach((err: string) => {
-            let field, message;
-            [field, message] = err.split('::');
-            this.messages.push({
-                severity: 'error',
-                summary: 'Error on ' + field,
-                detail: message
-            });
-        });
     }
 }

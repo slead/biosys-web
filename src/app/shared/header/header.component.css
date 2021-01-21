@@ -1,4 +1,5 @@
 .banner {
+    /*noinspection CssUnknownTarget*/
     background: url('/assets/img/banner_image.jpg') no-repeat;
     height: 150px;
     padding: 10px;

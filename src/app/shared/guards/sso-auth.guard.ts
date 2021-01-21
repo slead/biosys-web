@@ -14,7 +14,7 @@ export class SSOAuthGuard extends AuthGuard implements CanActivate {
     canActivate() {
         if (!this.authService.isLoggedIn()) {
             if (environment.production) {
-                window.location.reload(true);
+                window.location.reload();
             } else {
                 this.router.navigate(['/login']);
             }

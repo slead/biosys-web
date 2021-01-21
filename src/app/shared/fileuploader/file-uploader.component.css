@@ -1,0 +1,59 @@
+.p-fileupload-content {
+    position: relative;
+}
+
+.p-fileupload-row {
+    display: flex;
+    align-items: center;
+}
+
+.p-fileupload-row > div {
+    flex: 1 1 auto;
+    width: 25%;
+}
+
+.p-fileupload-row > div:last-child {
+    text-align: right;
+}
+
+.p-button.p-fileupload-choose {
+    position: relative;
+    overflow: hidden;
+}
+
+.p-button.p-fileupload-choose input[type=file] {
+    display: none;
+}
+
+.p-fileupload-choose.p-fileupload-choose-selected input[type=file] {
+    display: none;
+}
+
+.p-fluid .p-fileupload .p-button {
+    width: auto;
+}
+
+.p-fileupload {
+    position: relative;
+}
+
+.p-fileupload .p-fileupload-loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+    opacity: 0.2;
+    z-index: 1;
+    border-radius: 6px;
+}
+
+.p-fileupload .p-fileupload-loading-content {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    z-index: 2;
+}
+
+.p-fileupload .p-fileupload-spinner {
+    font-size: 2.5rem;
+}

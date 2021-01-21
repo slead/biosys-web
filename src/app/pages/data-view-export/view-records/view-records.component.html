@@ -10,54 +10,42 @@
                 the datasets and records using the filters below. Note that the species filter only shows species of
                 records already in the system.
             </p>
-            <div class="row mb-3">
-                <div class="col-2">
-                    <p-dropdown [(ngModel)]="projectId" (onChange)="filter()" [options]="projectDropdownItems"
-                                [filter]="true"
-                                [style]="{'width': '100%', 'font-weight': 'bold'}">
-                    </p-dropdown>
-                </div>
-                <div class="col-3">
-                    <p-calendar placeholder="Start Date" (onSelect)="filter()" yearNavigator="true"
-                                yearRange="2000:2020" [inputStyle]="{width: '120px'}"
-                                [(ngModel)]="dateStart" dateFormat="dd/mm/yy">
-                    </p-calendar>
-                    <p-calendar placeholder="End Date" (onSelect)="filter()" [(ngModel)]="dateEnd" yearNavigator="true"
-                                yearRange="2000:2020" dateFormat="dd/mm/yy" [inputStyle]="{width: '120px'}"
-                                [style]="{float: 'right'}">
-                    </p-calendar>
-                </div>
-                <div class="col-4" style="padding-top: 4px">
-                    <span class="filter-buffer">
-                        Validated Only
-                        <p-checkbox (onChange)="filter()" [(ngModel)]="validatedOnly" binary="true"></p-checkbox>
-                    </span>
-                    <span class="filter-buffer">
-                        Include Locked
-                        <p-checkbox (onChange)="filter()" [(ngModel)]="includeLocked" binary="true" ></p-checkbox>
-                    </span>
-                </div>
-                <div class="col-2">
-                    <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems"
-                                [filter]="true"
-                                [style]="{'width': '100%', 'font-weight': 'bold'}">
-                    </p-dropdown>
-                </div>
-                <div class="col-1">
-                    <button pButton class="float-right" type="button" label="Reset" (click)="reset()"></button>
-                </div>
+            <div class="mb-3 d-flex justify-content-between align-content-center">
+                <p-dropdown [(ngModel)]="projectId" (onChange)="filter()" [options]="projectDropdownItems"
+                            [filter]="true"
+                            [style]="{'width': '100%', 'font-weight': 'bold'}">
+                </p-dropdown>
+                <p-calendar placeholder="Start Date" (onSelect)="filter()" yearNavigator="true"
+                            yearRange="2000:2020" [inputStyle]="{width: '120px'}"
+                            [(ngModel)]="dateStart" dateFormat="dd/mm/yy">
+                </p-calendar>
+                <p-calendar placeholder="End Date" (onSelect)="filter()" [(ngModel)]="dateEnd" yearNavigator="true"
+                            yearRange="2000:2020" dateFormat="dd/mm/yy" [inputStyle]="{width: '120px'}"
+                            [style]="{float: 'right'}">
+                </p-calendar>
+                    <p-checkbox (onChange)="filter()" [(ngModel)]="validatedOnly" binary="true"
+                                label="Validated only">
+                    </p-checkbox>
+                    <p-checkbox (onChange)="filter()" [(ngModel)]="includeLocked" binary="true"
+                                label="Include Locked">
+                    </p-checkbox>
+                <p-dropdown [(ngModel)]="speciesName" (onChange)="filter()" [options]="speciesDropdownItems"
+                            [filter]="true"
+                            [style]="{'width': '100%', 'font-weight': 'bold'}">
+                </p-dropdown>
+                <button pButton class="float-right" type="button" label="Reset" (click)="reset()"></button>
             </div>
 
             <h4>Datasets</h4>
 
             <p-table #table [value]="datasets" autoLayout="true" resizableColumns="true" columnResizeMode="expand"
-                     selectionMode="single" [(selection)]="selectedDataset" (onRowSelect)="selectDataset($event)"
+                     selectionMode="single" [(selection)]="selectedDataset" (onRowSelect)="selectDataset()"
                      [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
                      [globalFilterFields]="['name', 'type', 'projectName', 'record_count']">
                 <ng-template pTemplate="caption">
-                    <i class="fa fa-search table-search-icon"></i>
+                    <i class="pi pi-search table-search-icon"></i>
                     <input type="text" pInputText size="50" placeholder="Search"
-                           (input)="table.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                           (input)="table.filterGlobal($event.target['value'], 'contains')" style="width:auto">
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
@@ -110,7 +98,7 @@
                              [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50, 100]"
                              [lazy]="true" (onLazyLoad)="loadRecordsLazy($event)" [loading]="records === null"
                              [totalRecords]="totalRecords">
-                        <ng-template pTemplate="colgroup" let-columns>
+                        <ng-template pTemplate="colgroup">
                             <colgroup>
                                 <col *ngFor="let field of selectedDataset?.data_package?.resources[0]?.schema?.fields"
                                      [style.width]="getRecordsTableColumnWidth(field.name)">
@@ -170,7 +158,7 @@
                         </button>
                     </div>
                 </div>
-                <div class="row mt-1">
+                <div class="row mt-3">
                     <div *ngIf="canChangeLockedState" class="col-3 offset-9">
                         <p-progressSpinner *ngIf="isLocking" animationDuration="1s"
                                            [style]="{width: '26px', height: '26px'}">

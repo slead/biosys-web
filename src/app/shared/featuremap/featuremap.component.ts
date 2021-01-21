@@ -1,5 +1,7 @@
-import { OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
-    EventEmitter, SimpleChange } from '@angular/core';
+import {
+    OnInit, Component, Directive, ContentChildren, Input, Output, QueryList, OnChanges,
+    EventEmitter, SimpleChange, OnDestroy
+} from '@angular/core';
 import {
     DEFAULT_CENTER,
     DEFAULT_MARKER_ICON,
@@ -27,10 +29,10 @@ export class MarkerDirective {
     templateUrl: 'featuremap.component.html',
     styleUrls: ['featuremap.component.css'],
 })
-export class FeatureMapComponent implements OnInit, OnChanges {
-    @Input() public drawFeatureTypes: [string] = [] as [string];
+export class FeatureMapComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() public drawFeatureTypes: string[] = [];
     @Input() public isEditing: boolean;
-    @Input() public geometry: GeoJSON.Point | GeoJSON.LineString | GeoJSON.Polygon;
+    @Input() public geometry: GeoJSON.Geometry;
     @Input() public bounds: GeoJSON.BBox;
     @Output() public geometryChanged =
         new EventEmitter<GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon>();
@@ -116,7 +118,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
 
         this.map.addLayer(this.drawnFeatures);
         this.map.on('draw:created', (e: any) => this.onFeatureCreated(e));
-        this.map.on('draw:edited', (e: any) => this.onFeatureEdited(e));
+        this.map.on('draw:edited', () => this.onFeatureEdited());
 
         this.drawControl = new L.Control.Draw(this.drawOptions);
 
@@ -167,6 +169,10 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         }
     }
 
+    ngOnDestroy(): void {
+        this.map.remove();
+    }
+
     public getFeatureGeometry(): GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon {
         const geom: GeoJSON.Point | GeoJSON.LineString | GeoJSON.MultiLineString | GeoJSON.Polygon | GeoJSON.MultiPolygon = null;
 
@@ -191,7 +197,7 @@ export class FeatureMapComponent implements OnInit, OnChanges {
         this.geometryChanged.emit(this.getFeatureGeometry());
     }
 
-    private onFeatureEdited(e: any) {
+    private onFeatureEdited() {
         this.geometryChanged.emit(this.getFeatureGeometry());
     }
 }

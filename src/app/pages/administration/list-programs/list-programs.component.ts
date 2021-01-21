@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { APIError, Program, Project, User } from '../../../../biosys-core/interfaces/api.interfaces';
+import { APIError, Program, User } from '../../../../biosys-core/interfaces/api.interfaces';
 import { APIService } from '../../../../biosys-core/services/api.service';
-import { DEFAULT_GROWL_LIFE } from '../../../shared/utils/consts';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmationService, Message, MessageService, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
 
@@ -26,8 +25,6 @@ export class ListProgramsComponent implements OnInit {
     }
 
     ngOnInit() {
-        const params = this.route.snapshot.params;
-
         this.apiService.getPrograms().subscribe(
             (programs: Program[]) => this.programs = programs,
             (error: APIError) => console.log('error.msg', error.msg)
@@ -57,14 +54,14 @@ export class ListProgramsComponent implements OnInit {
             accept: () => {
                 this.apiService.deleteProgram(program.id)
                     .subscribe(
-                        () => this.onDeleteSuccess(program),
+                        () => this.onDeleteSuccess(),
                         (error: APIError) => this.onDeleteError(error)
                     );
             }
         });
     }
 
-    private onDeleteSuccess(program: Program) {
+    private onDeleteSuccess() {
         this.apiService.getPrograms().subscribe(
             (programs: Program[]) => this.programs = programs,
             (error: APIError) => console.log('error.msg', error.msg)

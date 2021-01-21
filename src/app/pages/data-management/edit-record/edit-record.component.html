@@ -2,7 +2,6 @@
     <biosys-header></biosys-header>
     <biosys-navbar></biosys-navbar>
     <biosys-breadcrumbs [items]="breadcrumbItems"></biosys-breadcrumbs>
-    <p-growl [value]="messages" [life]="DEFAULT_GROWL_LIFE"></p-growl>
     <div *ngIf="record">
         <div class="row mt-1">
             <div class="col">
@@ -57,11 +56,10 @@
                                         <p-dropdown *ngIf="field.constraints?.enum"
                                                     [placeholder]="'Select a ' + field.name.toLowerCase()"
                                                     [options]="getDropdownOptions(field.name, field.constraints.enum)"
-                                                    [(ngModel)]="record.data[field.name]"
-                                                    [autoWidth]="false">
+                                                    [(ngModel)]="record.data[field.name]">
                                         </p-dropdown>
                                         <input pInputText *ngIf="!field.constraints?.enum"
-                                               [(ngModel)]="record.data[field.name]" (change)="onInputChanged($event)"/>
+                                               [(ngModel)]="record.data[field.name]" (change)="onInputChanged()"/>
                                         <div class="text-danger">
                                             {{recordErrors[field.name]}}
                                         </div>
@@ -81,11 +79,11 @@
         </div>
         <div class="row mt-3 mb-3">
             <div class="col-2">
-                <button pButton icon="fa fa-trash" (click)="confirmDelete()" label="Delete"></button>
+                <button pButton icon="pi pi-trash" (click)="confirmDelete()" label="Delete"></button>
             </div>
             <div class="col-4">
-                <button pButton class="right-buffer" icon="fa fa-close" label="Cancel" (click)="cancel()"></button>
-                <button pButton icon="fa fa-check" (click)="save()" label="Save"></button>
+                <button pButton class="right-buffer" icon="pi pi-times" label="Cancel" (click)="cancel()"></button>
+                <button pButton icon="pi pi-check" (click)="save()" label="Save"></button>
             </div>
         </div>
     </div>
@@ -104,9 +102,16 @@
         </h4>
         <div class="row mt-3 mb-3">
             <div class="col-8 offset-2">
-                <biosys-galleria [images]="imagesMetadata" panelWidth="100%" panelHeight="600" [showCaption]="false"
-                                 [autoPlay]="false">
-                </biosys-galleria>
+                <p-galleria [value]="imagesMetadata">
+                    <ng-template pTemplate="item" let-item>
+                        <img [src]="item.source" style="width: 100%;" />
+                    </ng-template>
+                    <ng-template pTemplate="thumbnail" let-item>
+                        <div class="p-grid p-nogutter p-justify-center">
+                            <img [src]="item.source" style="height: 100px;" />
+                        </div>
+                    </ng-template>
+                </p-galleria>
             </div>
         </div>
         <h5>
@@ -121,4 +126,4 @@
         </div>
     </div>
 </div>
-<p-confirmDialog header="Confirm Delete" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+<p-confirmDialog header="Confirm Delete" icon="pi pi-question-circle" width="425"></p-confirmDialog>

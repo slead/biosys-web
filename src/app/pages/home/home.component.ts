@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { APIService } from '../../../biosys-core/services/api.service';
 
@@ -9,10 +9,10 @@ import {
 } from '../../shared/utils/maputils';
 
 import * as L from 'leaflet';
+import * as GeoJSON from 'geojson';
 import 'leaflet-mouse-position';
 import '../../../lib/leaflet.latlng-graticule';
 import { AuthService } from '../../../biosys-core/services/auth.service';
-import { formatUserFullName } from '../../../biosys-core/utils/functions';
 
 /**
  * This class represents the lazy loaded HomeComponent.
@@ -24,7 +24,7 @@ import { formatUserFullName } from '../../../biosys-core/utils/functions';
     styleUrls: ['home.component.css'],
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
     public projects: Project[];
     public statistic: Statistic;
     public user: User;
@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.apiService.getProjects().subscribe(
             (projects: Project[]) => {
                 this.projects = projects;
@@ -47,10 +47,10 @@ export class HomeComponent implements OnInit {
         );
 
         this.apiService.getStatistics()
-        .subscribe(
-            (statistic: Statistic) => this.statistic = statistic,
-            (error: APIError) => console.log('error.msg', error.msg)
-        );
+            .subscribe(
+                (statistic: Statistic) => this.statistic = statistic,
+                (error: APIError) => console.log('error.msg', error.msg)
+            );
 
         this.map = L.map('map', {
             zoom: DEFAULT_ZOOM,
@@ -67,6 +67,9 @@ export class HomeComponent implements OnInit {
         L.control.scale({imperial: false, position: 'bottomright'}).addTo(this.map);
     }
 
+    ngOnDestroy(): void {
+        this.map.remove();
+    }
 
     public onMapReady(map: L.Map) {
         this.map = map;
@@ -83,7 +86,7 @@ export class HomeComponent implements OnInit {
                     popupContent += '<p class="mt-1 mb-0">' + project.description + '</p>';
                 }
                 if (this.user && project.custodians.indexOf(this.user.id) > -1) {
-                    popupContent += '<p class="mt-1"><a href="#/administration/projects/edit-project/' + project.id +
+                    popupContent += '<p class="mt-1"><a href="/administration/projects/edit-project/' + project.id +
                         '">Project Details</a></p>';
                 }
                 marker.bindPopup(popupContent);

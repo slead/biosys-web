@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { APIService } from '../../../../biosys-core/services/api.service';
@@ -33,7 +33,7 @@ export class ResetPasswordComponent {
         });
     }
 
-    public resetPassword() {
+    public resetPassword(event: Event) {
         event.preventDefault();
 
         this.apiService.resetPassword(this.uid, this.token, this.resetPasswordForm.value['password']).subscribe(

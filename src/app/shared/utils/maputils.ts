@@ -1,4 +1,5 @@
 import * as L from 'leaflet';
+import * as GeoJSON from 'geojson';
 
 export const DEFAULT_ZOOM = 4;
 
@@ -7,13 +8,13 @@ export const DEFAULT_CENTER: L.LatLng = L.latLng([-27, 121]);
 export const DEFAULT_BOUNDS_SIZE = 100000;
 
 export const DEFAULT_MARKER_ICON: L.Icon = L.icon({
-  iconRetinaUrl: 'css/images/marker-icon-2x.png',
-  iconUrl: 'css/images/marker-icon.png',
-  shadowUrl: 'css/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor:  [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize:  [41, 41]
+    iconRetinaUrl: 'css/images/marker-icon-2x.png',
+    iconUrl: 'css/images/marker-icon.png',
+    shadowUrl: 'css/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
 });
 
 export const DEFAULT_ROW_LIMIT = 10;
@@ -90,6 +91,5 @@ export function getGeometryBoundsFromExtent(extent: GeoJSON.BBox): L.LatLngBound
 }
 
 export function getExtentFromPoint(point: GeoJSON.Point): GeoJSON.BBox {
-    return JSON.parse(`[${L.latLng(point.coordinates[1], point.coordinates[0]).
-        toBounds(DEFAULT_BOUNDS_SIZE).toBBoxString()}]`);
+    return JSON.parse(`[${L.latLng(point.coordinates[1], point.coordinates[0]).toBounds(DEFAULT_BOUNDS_SIZE).toBBoxString()}]`);
 }

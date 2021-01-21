@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate } from '@angular/router';
 import { AuthService } from '../../../biosys-core/services/auth.service';
 import { map, mergeMap } from 'rxjs/operators';
 import { Program, Project, User } from '../../../biosys-core/interfaces/api.interfaces';
-import { forkJoin ,  Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { APIService } from '../../../biosys-core/services/api.service';
 
 
@@ -25,7 +25,7 @@ export class DataEngineerGuard implements CanActivate {
             mergeMap((project: Project) => this.apiService.getProgramById(project.program))
         );
 
-        return forkJoin(programObservable, this.authService.getCurrentUser()).pipe(
+        return forkJoin([programObservable, this.authService.getCurrentUser()]).pipe(
             map((result: [Program, User]) => {
                 const program: Program = result[0];
                 const user: User = result[1];

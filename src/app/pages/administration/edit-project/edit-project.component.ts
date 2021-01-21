@@ -2,7 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { ConfirmationService, MessageService, SelectItem } from 'primeng/primeng';
+import { from, forkJoin } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 
 import {
     APIError, User, Project, Site, Dataset, ModelChoice, Program, ProjectMedia, Media
@@ -14,8 +16,8 @@ import { environment } from '../../../../environments/environment';
 
 import { FeatureMapComponent } from '../../../shared/featuremap/featuremap.component';
 import { formatUserFullName } from '../../../../biosys-core/utils/functions';
-import { from, forkJoin } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { MediaManagerComponent } from '../../../shared/media-manager/media-manager.component';
+
 
 @Component({
     moduleId: module.id,
@@ -31,6 +33,9 @@ export class EditProjectComponent implements OnInit {
 
     @ViewChild(FeatureMapComponent)
     public featureMapComponent: FeatureMapComponent;
+
+    @ViewChild(MediaManagerComponent)
+    public mediaManagerComponent: MediaManagerComponent;
 
     public TEMPLATE_LATLNG_URL: string = environment.server + '/download/templates/site/lat-long';
     public TEMPLATE_EASTNORTH_URL: string = environment.server + '/download/templates/site/easting-northing';
@@ -91,27 +96,25 @@ export class EditProjectComponent implements OnInit {
         }
 
         // fetch authorized program list
-        forkJoin(
-            this.authService.getCurrentUser(),
-            this.apiService.getPrograms()
-        ).subscribe((data) => {
-            this.user = data[0];
-            const allPrograms = data[1];
-            let allowedPrograms = [];
-            if (this.user.is_admin) {
-                allowedPrograms = allPrograms;
-            } else {
-                allowedPrograms = allPrograms.filter((p: Program) => p.data_engineers.includes(this.user.id));
-            }
-            this.programChoices = allowedPrograms.map((program: Program) => ({
-                label: program.name,
-                value: program.id
-            }));
-            // initial value of program
-            if (this.programChoices.length > 0 ) {
-                this.project.program = this.project.program || this.programChoices[0].value;
-            }
-        });
+        forkJoin([this.authService.getCurrentUser(), this.apiService.getPrograms()])
+            .subscribe((data) => {
+                this.user = data[0];
+                const allPrograms = data[1];
+                let allowedPrograms;
+                if (this.user.is_admin) {
+                    allowedPrograms = allPrograms;
+                } else {
+                    allowedPrograms = allPrograms.filter((p: Program) => p.data_engineers.includes(this.user.id));
+                }
+                this.programChoices = allowedPrograms.map((program: Program) => ({
+                    label: program.name,
+                    value: program.id
+                }));
+                // initial value of program
+                if (this.programChoices.length > 0 ) {
+                    this.project.program = this.project.program || this.programChoices[0].value;
+                }
+            });
 
         this.apiService.getModelChoices('project', 'datum')
             .subscribe(
@@ -184,7 +187,7 @@ export class EditProjectComponent implements OnInit {
         const projId = this.project.id ? this.project.id : Number(this.route.snapshot.params['id']);
 
         if (projId) {
-            popupContent += '<p class="mt-1"><a href="#/administration/projects/edit-project/' + projId + '/edit-site/' +
+            popupContent += '<p class="mt-1"><a href="/administration/projects/edit-project/' + projId + '/edit-site/' +
                 site.id + '">Edit Site</a></p>';
         }
 
@@ -248,7 +251,7 @@ export class EditProjectComponent implements OnInit {
             accept: () => {
                 this.apiService.deleteDataset(dataset.id)
                     .subscribe(
-                        () => this.onDeleteDatasetSuccess(dataset),
+                        () => this.onDeleteDatasetSuccess(),
                         (error: APIError) => this.onDeleteDatasetError(error)
                     );
             }
@@ -268,7 +271,7 @@ export class EditProjectComponent implements OnInit {
         });
     }
 
-    private onDeleteDatasetSuccess(dataset: Dataset) {
+    private onDeleteDatasetSuccess() {
         this.datasets = null;
         this.apiService.getAllDatasetsForProjectID(this.project.id).subscribe(
             (datasets: Dataset[]) => this.datasets = datasets,
@@ -278,7 +281,8 @@ export class EditProjectComponent implements OnInit {
         this.messageService.add({
             severity: 'success',
             summary: 'Dataset deleted',
-            detail: 'The dataset was deleted'
+            detail: 'The dataset was deleted',
+            key: 'mainToast'
         });
     }
 
@@ -286,7 +290,8 @@ export class EditProjectComponent implements OnInit {
         this.messageService.add({
             severity: 'error',
             summary: 'Dataset delete error',
-            detail: 'There were error(s) deleting the dataset: ' + error.msg
+            detail: 'There were error(s) deleting the dataset: ' + error.msg,
+            key: 'mainToast'
         });
     }
 
@@ -319,7 +324,8 @@ export class EditProjectComponent implements OnInit {
         this.messageService.add({
             severity: 'success',
             summary: 'Site(s) deleted',
-            detail: 'The site(s) was deleted'
+            detail: 'The site(s) was deleted',
+            key: 'mainToast'
         });
     }
 
@@ -327,7 +333,8 @@ export class EditProjectComponent implements OnInit {
         this.messageService.add({
             severity: 'error',
             summary: 'Site delete error',
-            detail: 'There were error(s) deleting the site(s): ' + error.msg
+            detail: 'There were error(s) deleting the site(s): ' + error.msg,
+            key: 'mainToast'
         });
     }
 
@@ -341,7 +348,8 @@ export class EditProjectComponent implements OnInit {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'File Attachment Uploaded',
-                    detail: `The file ${pm.file.substring(pm.file.lastIndexOf('/') + 1)} was uploaded`
+                    detail: `The file ${pm.file.substring(pm.file.lastIndexOf('/') + 1)} was uploaded`,
+                    key: 'mainToast'
                 });
             },
             (error: APIError) => {
@@ -349,7 +357,8 @@ export class EditProjectComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error Uploading File Attachment',
-                    detail: error.msg as string
+                    detail: error.msg as string,
+                    key: 'mainToast'
                 });
             },
             () => this.isUploadingMedia = false
@@ -365,16 +374,19 @@ export class EditProjectComponent implements OnInit {
                         (pm: ProjectMedia) => pm.id
                         ).indexOf(media.id), 1
                     );
+                    this.mediaManagerComponent.refresh();
                     this.messageService.add({
                         severity: 'success',
                         summary: 'File Attachment Deleted',
-                        detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`
+                        detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`,
+                        key: 'mainToast'
                     });
                 },
                 (error: APIError) => this.messageService.add({
                     severity: 'error',
                     summary: 'Error Deleting File Attachment',
-                    detail: error.msg as string
+                    detail: error.msg as string,
+                    key: 'mainToast'
                 })
             )
         });

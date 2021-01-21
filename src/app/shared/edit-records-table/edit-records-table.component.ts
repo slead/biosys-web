@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
-import { ConfirmationService, LazyLoadEvent, Message, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, LazyLoadEvent, MessageService, SelectItem } from 'primeng/api';
 import { Table } from 'primeng/table';
 import * as moment from 'moment/moment';
 
@@ -31,7 +31,6 @@ export class EditRecordsTableComponent {
     public flatRecords: object[];
     public totalRecords = 0;
     public dropdownItems: any = {};
-    public messages: Message[] = [];
     public canChangeLockedState = false;
 
     @Input()
@@ -70,7 +69,8 @@ export class EditRecordsTableComponent {
     private previousRowData: any;
 
     constructor(private apiService: APIService, private router: Router, private sanitizer: DomSanitizer,
-                private confirmationService: ConfirmationService, authService: AuthService) {
+                private confirmationService: ConfirmationService, authService: AuthService,
+                private messageService: MessageService) {
         authService.getCurrentUser().subscribe(
             (user: User) => this.canChangeLockedState = user.is_admin || user.is_data_engineer
         );
@@ -158,11 +158,11 @@ export class EditRecordsTableComponent {
         this.apiService.updateRecordValidated(id, checked).subscribe((record: Record) =>
             this.flatRecords.filter(
                 (flatRecord: object) => flatRecord['_id'] === id)[0]['_validated'] = record.validated
-            );
+        );
     }
 
     public onRecordLockedChanged(checked: boolean, id: number) {
-        this.apiService.updateRecordLocked(id, checked).subscribe( (record: Record) =>
+        this.apiService.updateRecordLocked(id, checked).subscribe((record: Record) =>
             this.flatRecords.filter(
                 (flatRecord: object) => flatRecord['_id'] === id)[0]['_locked'] = record.locked
         );
@@ -191,7 +191,7 @@ export class EditRecordsTableComponent {
             (record: Record) => {
                 this.recordChanged.emit(record);
             },
-            (error: APIError) => {
+            () => {
                 // revert data
                 if (this.previousRowData) {
                     const flatRecord = this.flatRecords.filter((fr: object) => fr['_id'] === id)[0];
@@ -315,18 +315,20 @@ export class EditRecordsTableComponent {
 
         this.recordsDeleted.emit();
 
-        this.messages.push({
+        this.messageService.add({
             severity: 'success',
             summary: 'Record(s) deleted',
-            detail: 'The record(s) was deleted'
+            detail: 'The record(s) was deleted',
+            key: 'mainToast'
         });
     }
 
     private onDeleteRecordError(error: APIError) {
-        this.messages.push({
+        this.messageService.add({
             severity: 'error',
             summary: 'Record delete error',
-            detail: 'There were error(s) deleting the site(s): ' + error.msg
+            detail: `There were error(s) deleting the site(s):  + ${error.msg}`,
+            key: 'mainToast'
         });
     }
 }

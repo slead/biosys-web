@@ -275,7 +275,7 @@ L.LatLngGraticule = L.Layer.extend({
             }
             catch(e) {}
             return 0;
-        };
+        }
 
         var canvas = this._canvas,
             map = this._map,
@@ -416,7 +416,7 @@ L.LatLngGraticule = L.Layer.extend({
                         ctx.fillText(latstr, ww-txtWidth, _yy - 6);
                     }
                 }
-            };
+            }
 
             if (latInterval > 0) {
                 for (var i=latInterval; i<=_lat_t; i+=latInterval) {
@@ -486,7 +486,7 @@ L.LatLngGraticule = L.Layer.extend({
                         ctx.fillText(lngstr, bb.x - (txtWidth/2) - 12, hh-3);
                     }
                 }
-            };
+            }
 
             if (lngInterval > 0) {
                 for (var i=lngInterval; i<=_lon_r; i+=lngInterval) {

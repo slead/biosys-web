@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { map, mergeMap } from 'rxjs/operators';
 
 import {
@@ -10,11 +11,13 @@ import { formatAPIError } from '../../../../biosys-core/utils/functions';
 
 import { AuthService } from '../../../../biosys-core/services/auth.service';
 
-import { ConfirmationService, FileUpload, Message, MessageService, SelectItem } from 'primeng/primeng';
+import { ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 
 import { JsonEditorComponent } from '../../../shared/jsoneditor/jsoneditor.component';
 import { JsonEditorOptions } from '../../../shared/jsoneditor/jsoneditor.options';
-import { from } from 'rxjs/index';
+import { FileUpload } from 'primeng/fileupload';
+import { from } from 'rxjs';
+import { MediaManagerComponent } from '../../../shared/media-manager/media-manager.component';
 
 @Component({
     moduleId: module.id,
@@ -32,6 +35,9 @@ export class EditDatasetComponent implements OnInit {
 
     @ViewChild(FileUpload)
     public fileUpload: FileUpload;
+
+    @ViewChild(MediaManagerComponent)
+    public mediaManagerComponent: MediaManagerComponent;
 
     public breadcrumbItems: any = [];
     public typeChoices: SelectItem[];
@@ -120,13 +126,7 @@ export class EditDatasetComponent implements OnInit {
         this.editor.set(<JSON>this.ds.data_package);
     }
 
-    public onInferBeforeSend(event: any) {
-        const xhr = event.xhr;
-
-        const authToken = this.authService.getAuthToken();
-        if (authToken) {
-            xhr.setRequestHeader('Authorization', 'Token ' + authToken);
-        }
+    public onInferBeforeUpload(event: any) {
         event.formData.append('infer_dataset_type', this.inferDatasetType);
     }
 
@@ -151,7 +151,8 @@ export class EditDatasetComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Dataset saved',
-                        detail: 'The dataset was saved'
+                        detail: 'The dataset was saved',
+                        key: 'mainToast'
                     });
                 },
                 (error: APIError) => this.dsErrors = error.msg
@@ -163,7 +164,8 @@ export class EditDatasetComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Dataset created',
-                        detail: 'The dataset was created'
+                        detail: 'The dataset was created',
+                        key: 'mainToast'
                     });
                 },
                 (error: APIError) => this.onSaveError(error)
@@ -175,11 +177,11 @@ export class EditDatasetComponent implements OnInit {
         this.router.navigate([this.completeUrl]);
     }
 
-    public confirmDelete(event: any) {
+    public confirmDelete() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete this dataset?',
             accept: () => this.apiService.deleteDataset(this.ds.id).subscribe(
-                (ds: Dataset) => this.onDeleteSuccess(),
+                () => this.onDeleteSuccess(),
                 (error: APIError) => this.onDeleteError(error))
         });
     }
@@ -188,7 +190,7 @@ export class EditDatasetComponent implements OnInit {
         this.router.navigate([this.completeUrl, {'datasetDeleted': true}]);
     }
 
-    public confirmDeleteRecords(event: any) {
+    public confirmDeleteRecords() {
         this.confirmationService.confirm({
             message: 'Are you sure that you want to delete all records for this dataset?',
             accept: () => this.apiService.deleteAllRecords(this.ds.id).subscribe(
@@ -201,7 +203,8 @@ export class EditDatasetComponent implements OnInit {
         this.messageService.add({
             severity: 'success',
             summary: 'Records Deleted',
-            detail: 'All records for this dataset have been deleted.'
+            detail: 'All records for this dataset have been deleted.',
+            key: 'mainToast'
         });
     }
 
@@ -223,7 +226,8 @@ export class EditDatasetComponent implements OnInit {
         this.messageService.add({
             severity: 'error',
             summary: 'Dataset delete error',
-            detail: 'There were error(s) deleting the dataset'
+            detail: 'There were error(s) deleting the dataset',
+            key: 'mainToast'
         });
     }
 
@@ -237,7 +241,8 @@ export class EditDatasetComponent implements OnInit {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'File Attachment Uploaded',
-                    detail: `The file ${dm.file.substring(dm.file.lastIndexOf('/') + 1)} was uploaded`
+                    detail: `The file ${dm.file.substring(dm.file.lastIndexOf('/') + 1)} was uploaded`,
+                    key: 'mainToast'
                 });
             },
             (error: APIError) => {
@@ -245,7 +250,8 @@ export class EditDatasetComponent implements OnInit {
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error Uploading File Attachment',
-                    detail: error.msg as string
+                    detail: error.msg as string,
+                    key: 'mainToast'
                 });
             },
             () => this.isUploadingMedia = false
@@ -262,16 +268,19 @@ export class EditDatasetComponent implements OnInit {
                             (dm: DatasetMedia) => dm.id
                             ).indexOf(media.id), 1
                         );
+                        this.mediaManagerComponent.refresh();
                         this.messageService.add({
                             severity: 'success',
                             summary: 'File Attachment Deleted',
-                            detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`
+                            detail: `The file ${media.file.substring(media.file.lastIndexOf('/') + 1)} was deleted`,
+                            key: 'mainToast'
                         });
                     },
                     (error: APIError) => this.messageService.add({
                         severity: 'error',
                         summary: 'Error Deleting File Attachment',
-                        detail: error.msg as string
+                        detail: error.msg as string,
+                        key: 'mainToast'
                     })
                 );
             }
