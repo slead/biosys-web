@@ -2,16 +2,12 @@
 
 ## Requirements
 
-* nodejs v8.11.4 or later
+* nodejs v10 or later
 
 ## Installation
 
-The Biosys Client is build on Angular. To use the commands below, you need to globally install Angular-CLI v6.
-Note: the use installation of the angular CLI is not mandatory. All the ng CLI command can be done through npm commands.
-Optional
-```bash
-npm install -g @angular/cli@10.2.0
-```
+The Biosys Client is build on Angular (v10 at Jan 2021) and Angular-cli. Angular-cli will be installed as part of the project dependency (npm install).
+We don't recommend installing the Angular CLI globally but use the CLI through npm script commands or npx, example `npx ng --version` 
 
 This project contains submodules. To clone both the project and submodules, use:
 
@@ -31,6 +27,11 @@ Then install dependant packages:
 ```bash
 npm install
 ```
+From there you should be able to access angular cli command with npx
+```
+npx ng --version
+```
+Should show: Angular CLI: 10.2.0 (as of Jan 2021)
 
 ## Development server
 
@@ -39,8 +40,16 @@ To run a development server, use:
 ```bash
 npm start
 ``` 
-
 Navigate to [http://localhost:4200/](http://localhost:4200/). The app will automatically reload if you change any of the source files.
+
+The app is then expecting a server running at localhost:8000
+
+For running a frontend on a different server environment, for example gaia staging
+
+```shell
+npm start -- --configuration=staging-dev
+```
+See available configuration for `ng serve` in the `serve` section of `angular.json
 
 ## DBCA Builds
 

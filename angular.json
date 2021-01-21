@@ -254,6 +254,9 @@
             },
             "staging-dev": {
               "browserTarget": "biosys-web:build:staging-dev"
+            },
+            "oeh-prod": {
+                "browserTarget": "biosys-web:build:oeh-prod"
             }
           }
         },
