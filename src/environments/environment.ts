@@ -5,7 +5,7 @@
 
 export const environment = {
     production: false,
-    server: 'http://localhost:8000',
+    server: 'http://test-biosys-nsw.eba-x46ymxtj.ap-southeast-2.elasticbeanstalk.com',
     apiExtension: '/api/',
     adminOnly: false,  // special case/hack, if true prevents anyone except admin and data-engineer to access the app after login.
 };

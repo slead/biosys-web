@@ -315,6 +315,7 @@ export class ManageDataComponent implements OnInit, OnDestroy {
             if ('warnings' in item) {
                 for (const warningKey of Object.keys(item['warnings'])) {
                     totalWarnings += 1;
+                    console.log(`Warning for ${warningKey} in row ${item['row']}`)
                     uploadWarningMessages.push({
                         severity: 'warn',
                         summary: `Warning for ${warningKey} in row ${item['row']}`,
